@@ -66,8 +66,13 @@ this order (the first two change everything downstream, so they come first):
 5. **What must it never feel like?** (anti-attributes; also "which competitors do you *not* want to resemble")
 6. **What visual assets exist?** Photography, product shots, logo files, illustration, video. If none, we will write
    a shot list and use designed placeholders (`visual-material.md`).
-7. **What does done look like?** (fidelity, deliverables, metric, deadline) and **Standard or Deep** mode.
-8. Optional accelerators: 2–3 products (any category, ideally one local) whose *feel* you admire and why; 2–3 you dislike and why.
+7. **How much visual ambition?** Offer the four registers in one line each with their cost, and recommend one:
+   **R1 Utility** (tool, dense, no hero) · **R2 Composed** (clear poster page, one anchor image, 1.5× effort) ·
+   **R3 Expressive** (full-bleed art direction, big type, signature motion, 3–5× effort, needs real photography) ·
+   **R4 Experimental** (bespoke navigation, WebGL/scroll narrative, 8–20× effort, needs assets and a story). See
+   `expression-register.md` §1–2. Say what the audience's category norm is and whether we sit at it or one above it.
+8. **What does done look like?** (fidelity, deliverables, metric, deadline) and **Standard or Deep** mode.
+9. Optional accelerators: 2–3 products (any category, ideally one local) whose *feel* you admire and why; 2–3 you dislike and why.
 
 Tell the user they can answer in prose; you will structure it. If they have no opinions, say you will decide and
 mark decisions as revisable in the brief.
@@ -91,9 +96,10 @@ region.
 
 ## 5. Scope ladder, modes, and budgets
 
-**Standard** (default): 8–15 minutes wall time; research ≤ 15 min and ≤ 8 fetches; one recommended direction plus
-a five-line alternative; tokens edited from the template; one screen with all states; `DESIGN.md` + log; review
-gates 0, 1, 3, 5, 6, 10, 13. **Deep** (on request or for a new brand): the full menu, 30–60 minutes. State the mode
+**Standard** (default): 10–15 minutes wall time; research ≤ 6 min and ≤ 8 fetches; one recommended direction plus a
+five-line alternative **one register away**, written inside `DESIGN.md` (no separate research or moodboard file);
+tokens edited from the template; one page of 4–6 sections with all states; 3–6 three-match-tested photographs;
+review gates 0, 1, 3, 5, 6, 10, 13 written as ten lines at the end of `DESIGN.md`. Stop when any budget is hit. **Deep** (on request or for a new brand): the full menu, 30–60 minutes. State the mode
 in the brief. Token and time budgets are part of the design; a 45-minute run for a one-sentence request is a defect.
 
 

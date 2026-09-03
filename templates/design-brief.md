@@ -13,6 +13,7 @@
 | Business goal for this piece of work | {activation / retention / conversion / trust / speed / …} |
 | Market & audience locale | {country/region · language(s) & script · device mix · local conventions: payments, trust signals, regulation, formats, RTL} |
 | Platform(s) | {web marketing · web app · iOS · Android · cross-platform (Flutter/RN) · desktop} |
+| Expression register | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {audience decision type + category norm + asset budget} |
 | Mode | {Standard (default) · Deep} |
 | Surface type | {landing / marketing · product UI (data-dense) · editorial · e-commerce · tool · hybrid} |
 | Scope of this engagement | {new product · new feature · redesign · single screen · design system only} |

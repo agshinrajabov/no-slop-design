@@ -126,6 +126,17 @@ def file_rules(path: str, text: str):
     dl_hero = re.search(r"<(header|section)[^>]*>(?:(?!</(header|section)>).){0,4000}<dl\b", text, re.I | re.S)
     if dl_hero and not has_media:
         out.append(("ledger-hero", "MED", "definition-list / fact table as the first-viewport composition with no visual anchor — the 'honest ledger' over-correction (anti-slop.md §8)", "§3 Layout"))
+
+    # the "ledger site": label/value rows as the layout device across the page
+    dl_count = len(re.findall(r"<dl\b", text, re.I))
+    rowish = len(re.findall(r'class="[^"]*\b(fact|facts|ledger|spec|specs|meta-row|label-value|kv|detail-row)\b', text, re.I))
+    if is_page and dl_count + rowish >= 3:
+        out.append(("ledger-site", "MED", f"label/value tables used as the layout device in {dl_count + rowish} places — vary the device per section; this is the skill's own tell (expression-register.md §10)", "§3 Layout"))
+
+    if is_page:
+        img_count = len(re.findall(r"<img\b|<picture\b|<video\b", text, re.I))
+        if 0 < img_count < 2 and len(text) > 12000:
+            out.append(("thin-imagery", "MED", f"long page ({len(text) // 1000} kB of markup) carrying only {img_count} image element — imagery is treated as an obligation, not the argument (visual-material.md §1)", "§8 Imagery"))
     return out
 
 COMPILED = [(i, s, re.compile(p, re.IGNORECASE if i not in ("emoji-ui", "mobile-emoji-tab") else 0), m, sec) for i, s, p, m, sec in RULES]

@@ -125,14 +125,15 @@ decide now and write the tie-breaker.
 
 ## 8. Step 6 — compose 2–3 directions
 
-Each direction gets: a name (two words, evocative, not "Modern Clean"), the visual thesis sentence, its reference
-set, an **imagery art direction** (anchor type, subject, people, light, treatment, crop — `visual-material.md` §2–3;
+Each direction gets: a name (two words, evocative, not "Modern Clean"), the **expression register (R1–R4) with a
+one-sentence reason** (`expression-register.md` §2), the visual thesis sentence, its reference set, an **imagery art direction** (anchor type, subject, people, light, treatment, crop — `visual-material.md` §2–3;
 "no imagery" is a decision that needs a written reason), a type pairing (display + text, named), a five-swatch palette in OKLCH (surface, surface-raised, text, accent,
 accent-strong) for light and, if relevant, dark, one radius/shape statement, a density statement, a motion
 posture, an imagery statement, and a **"not this"** list of 5 items specific to this direction.
 
 Directions must differ on at least two axes (e.g. warm/cool, dense/airy, serif/grotesk, still/kinetic). Three
-variations of the same idea is one direction.
+variations of the same idea is one direction. In Standard mode the alternative is normally the same idea **one
+register away**, so the user trades ambition against cost in one decision.
 
 Include in each direction a **mini-specimen**: a headline, a paragraph, a primary button, an input, and a small data
 row rendered with the proposed tokens. This is where "looks nice as swatches" dies or survives.

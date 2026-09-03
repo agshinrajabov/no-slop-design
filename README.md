@@ -24,11 +24,23 @@ template:
 | 7 Review | 13-gate self-critique, slop linter, contrast check, studio test; grade B or better or it goes back | `design/review-{date}.md` |
 | 8 Hand off | Deliverables, specs, QA checks, decision records | handoff package |
 
-Two modes. **Standard** (default) targets 8–15 minutes: a short local + global research pass, one recommended
+Two modes. **Standard** (default) targets 10–15 minutes: a short local + global research pass, one recommended
 direction plus an alternative, tokens edited from the starter set, one screen with all states, a scripted review.
 **Deep** (on request, or a new brand) runs the full menu. The intake always asks three things first: which market and
 language the audience is in, whether an existing or preferred design system exists (Figma, Storybook, tokens, brand
-guide), and the one thing a first-time viewer should remember.
+guide), the one thing a first-time viewer should remember, and **how much visual ambition the work should carry**.
+
+That last one is the expression register, and it is the difference between a page that serves and a page that sells:
+
+| | R1 Utility | R2 Composed | R3 Expressive | R4 Experimental |
+|---|---|---|---|---|
+| For | tools, dashboards, docs | services, B2B, most marketing | hospitality, fashion, culture, brand sites | festivals, portfolios, launches, campaigns |
+| Looks like | dense, calm, no hero | poster page, one anchor image | full-bleed art direction, big type, signature motion | bespoke navigation, scroll narrative, WebGL, type as image |
+| Effort | 1× | 1.5× | 3–5× | 8–20× |
+
+The register is chosen from the audience's decision type, the category norm, and the asset budget, then written into
+the brief. Techniques are gated by it, and the review checks that the page actually reached it. Accessibility,
+tokens, honest content, and performance budgets do not move between registers.
 
 A critique request produces a report without a rebuild.
 
@@ -45,6 +57,12 @@ Version 1.1 added the lesson from the first field test: three different industri
 (dark surface, serif headline, fact table, one button, no images). Restraint without material is its own slop.
 `references/visual-material.md` now requires a designed visual anchor, art direction, and real image elements, and the
 linter flags text-only pages, ledger heroes, and gray placeholder boxes.
+
+Version 1.2 came from the second field test, which produced a competent page that still read as a document. It adds
+`references/expression-register.md` (R1–R4 with a technique catalogue and the five conditions for R4), the
+three-match test for choosing a specific photograph, an accent-hue check that catches a blue action color imported
+into a warm palette, and lint rules for the "ledger site" and for long pages carrying one image. Standard mode now
+writes the direction and the review inside `DESIGN.md` instead of producing separate documents.
 
 The catalog is enforced three ways: by the moodboard method (decisions traceable to attributes and references), by
 the review gate (13 gates, graded), and mechanically by `scripts/slop_lint.py`.
@@ -101,7 +119,7 @@ All stdlib Python; no installs.
 |---|---|
 | `scripts/slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift, Kotlin for slop signatures (purple gradients, default fonts, icon tiles, left-border cards, glass cards, emoji icons, banned copy, `transition: all`, removed focus outlines, …). Prints findings with the catalog section to read, and a grade A–F. `--json`, `--strict` for CI. |
 | `scripts/contrast.py` | WCAG 2.x ratio and APCA Lc for a pair, a pairs file, every pair in a file, or, with `--tokens build/tokens.flat.json`, every text role on every surface role per mode. Exit 1 on AA failure. |
-| `scripts/build_tokens.py tokens/*.json --out build/` | Compiles W3C DTCG tokens (with aliases and `*.dark.json` mode files) to CSS custom properties (light + dark), Tailwind v4 `@theme`, SwiftUI, Jetpack Compose, Flutter, and flat JSON. `--check` validates. |
+| `scripts/build_tokens.py tokens/*.json --out build/` | Compiles W3C DTCG tokens (with aliases and `*.dark.json` mode files) to CSS custom properties (light + dark), Tailwind v4 `@theme`, SwiftUI, Jetpack Compose, Flutter, and flat JSON. `--check` validates aliases and runs a palette sanity check (accent hue vs brand hue, untinted neutrals). |
 | `scripts/type_scale.py` | Fluid modular type scale (`clamp()`), with line-height and tracking per step; outputs table, CSS, or DTCG. |
 
 ## Layout
@@ -109,9 +127,9 @@ All stdlib Python; no installs.
 ```
 no-slop-design/
   SKILL.md                     the router (what to do, when to read what)
-  references/                  21 deep references, loaded per phase
+  references/                  22 deep references, loaded per phase
     discovery.md · existing-design-system.md · mini-user-research.md · moodboard.md · inspiration-sources.md
-    visual-material.md · anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
+    expression-register.md · visual-material.md · anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
     ux-patterns.md · content-microcopy.md · motion.md · accessibility.md · web-frontend.md
     mobile-ios.md · mobile-android.md · review-checklist.md · handoff.md
   templates/                   brief, research synthesis, moodboard.html, DESIGN.md, DTCG token starter set,

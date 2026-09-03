@@ -12,6 +12,7 @@ Input conventions (see references/design-tokens.md):
   • DTCG format: leaf tokens have "$value" and "$type"; groups nest freely; "$description" optional.
   • Aliases: "$value": "{color.primitive.blue.600}" — curly-brace path, resolved recursively.
   • Modes: a file named *.dark.json (or any *.<mode>.json) overrides the same token paths for that mode.
+    ".tokens.json" is the DTCG extension and is never treated as a mode.
     Base file(s) have no mode suffix. Mode outputs are emitted as
     [data-theme="dark"] { … } and, for "dark" only, also under @media (prefers-color-scheme: dark).
   • Composite types supported for CSS: color, dimension, number, fontFamily, fontWeight, duration,
@@ -62,10 +63,18 @@ def flatten(node: dict, prefix: tuple = (), inherited_type: str | None = None) -
     return leaves
 
 
+# ".tokens.json" is the DTCG file extension, not a mode; never read it as one.
+NON_MODE_SUFFIXES = {"tokens", "design-tokens", "json"}
+
+
 def mode_of(path: str) -> str | None:
+    """A file named base.<mode>.json declares overrides for <mode> (dark, compact, hc, ...)."""
     base = os.path.basename(path)
     parts = base.split(".")
-    return parts[-2] if len(parts) >= 3 and parts[-1] == "json" else None
+    if len(parts) < 3 or parts[-1] != "json":
+        return None
+    suffix = parts[-2].lower()
+    return None if suffix in NON_MODE_SUFFIXES else suffix
 
 
 def load(files: list[str]) -> tuple[dict[str, dict], dict[str, dict[str, dict]]]:
@@ -337,6 +346,81 @@ def build_flat_json(base: dict, modes: dict[str, dict]) -> str:
     return json.dumps(out, indent=2) + "\n"
 
 
+# --------------------------------------------------------------------------- palette sanity
+def _srgb_to_oklch(r: float, g: float, b: float) -> tuple[float, float, float]:
+    import math
+
+    def lin(c: float) -> float:
+        c /= 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    r, g, b = lin(r), lin(g), lin(b)
+    l = (0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b) ** (1 / 3)
+    m = (0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b) ** (1 / 3)
+    s = (0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b) ** (1 / 3)
+    L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s
+    a = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s
+    bb = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+    C = math.hypot(a, bb)
+    H = math.degrees(math.atan2(bb, a)) % 360
+    return L, C, H
+
+
+def _lch(value: Any) -> tuple[float, float, float] | None:
+    """Best-effort (L, C, H) for a resolved color value."""
+    if not isinstance(value, str):
+        return None
+    v = value.strip()
+    m = re.match(r"oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)", v)
+    if m:
+        L = float(m.group(1).rstrip("%"))
+        if m.group(1).endswith("%"):
+            L /= 100
+        return L, float(m.group(2)), float(m.group(3))
+    m = re.match(r"#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b", v)
+    if m:
+        h = m.group(1)
+        if len(h) == 3:
+            h = "".join(c * 2 for c in h)
+        return _srgb_to_oklch(*(int(h[i:i + 2], 16) for i in (0, 2, 4)))
+    return None
+
+
+def _hue_gap(a: float, b: float) -> float:
+    d = abs(a - b) % 360
+    return min(d, 360 - d)
+
+
+def palette_check(base: dict[str, dict]) -> list[str]:
+    """Warn about the palette tells: an accent unrelated to the brand hue, untinted neutrals."""
+    warns: list[str] = []
+    lch = {p: _lch(l["$resolved"]) for p, l in base.items() if p.startswith("color.") and l.get("$type") == "color"}
+    lch = {p: v for p, v in lch.items() if v}
+
+    def hues(prefix: str) -> list[float]:
+        return [v[2] for p, v in lch.items() if p.startswith(prefix) and v[1] > 0.03]
+
+    brand = hues("color.brand")
+    action = lch.get("color.action.primary")
+    if brand and action and action[1] > 0.03:
+        brand_h = sorted(brand)[len(brand) // 2]
+        gap = _hue_gap(brand_h, action[2])
+        if gap > 40:
+            warns.append(
+                f"palette: action.primary hue {action[2]:.0f}° is {gap:.0f}° from the brand hue {brand_h:.0f}° — "
+                "the accent should sit on the brand scale (anti-slop.md §1, SKILL.md non-negotiable 7)"
+            )
+            if 235 <= action[2] <= 305:
+                warns.append(
+                    "palette: that accent is in the blue/indigo/violet band — the single most recognisable AI-UI tell. "
+                    "Derive it from the brand hue or justify it in DESIGN.md."
+                )
+    neutrals = [v for p, v in lch.items() if p.startswith("color.neutral")]
+    if neutrals and all(v[1] < 0.002 for v in neutrals):
+        warns.append("palette: neutrals are pure gray (chroma 0) — tint them toward the brand hue (color.md §3)")
+    return warns
+
+
 # --------------------------------------------------------------------------- main
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -354,6 +438,8 @@ def main() -> int:
         modes[m] = res
         errors += [f"[{m}] {e}" for e in errs]
 
+    for w in palette_check(base):
+        print("warning:", w)
     untyped = [p for p, l in base.items() if not l.get("$type")]
     print(f"tokens: {len(base)} base, modes: {', '.join(f'{m}({len(r)})' for m, r in modes.items()) or 'none'}")
     if untyped:

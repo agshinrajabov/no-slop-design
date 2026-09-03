@@ -1,7 +1,7 @@
 {
   "name": "no-slop-design",
   "description": "Senior product-design workflow for web and mobile UI: discovery, mini user research, moodboard, DTCG design tokens, composition, and a 13-gate self-critique that removes generic AI-generated patterns.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": { "name": "Agshin Rajabov" },
   "homepage": "https://github.com/agshinrajabov/no-slop-design",
   "repository": "https://github.com/agshinrajabov/no-slop-design",

@@ -49,6 +49,11 @@ fabricating anything.
 | Diagram / data as image | developer tools, logistics, analytics, science | the diagram is decorative rather than explanatory |
 | Collage / editorial composition | culture, publishing, fashion, music | corporate trust contexts |
 | Video / motion loop | product demos, hospitality, sport, games | bandwidth-sensitive audiences; must have a poster frame |
+| Type as image (display type is the anchor) | R3–R4 culture, publishing, music, fashion; a name or claim worth setting large | when the words are generic |
+| Real-time scene (WebGL / 3D / generative) | R4 only, with the five conditions in `expression-register.md` §6 | anything whose job is a phone number |
+
+Register raises the stakes: at R3–R4 the anchor is usually full-bleed and the composition is built around it, so a
+weak image sinks the page. Do not choose R3 without assets.
 
 Decide by asking: what does this business have that a competitor does not have a photograph of? The room, the
 people, the product, the process, the place. Then show that.
@@ -70,6 +75,28 @@ Write the art direction into the moodboard and DESIGN.md; it drives the shot lis
 
 Provide a **shot list** of 6–12 photographs with subject, framing, and where each is used. This is a real deliverable
 the client can hand to a photographer.
+
+## 3b. The three-match test (choosing a specific photograph)
+
+Writing the art direction is not enough; the individual image has to be checked against it. Every photograph placed
+in a prototype must match the written direction on **all three** of these, or it is rejected:
+
+1. **Subject** — it shows the thing on the shot list (this kind of room, this material, this process), not a cousin
+   of it. A modern hotel room with a glass-tower view does not stand in for a stone house with a courtyard.
+2. **Light** — the same light the direction names (morning side light, overcast, studio). Mixed light across a set
+   is the fastest way to look like stock.
+3. **Material and palette** — the surfaces and colors sit inside the token palette after the stated grade. If it
+   needs a heavy filter to fit, it does not fit.
+
+Also check: crop leaves room where type sits; no recognisable faces or logos you have no rights to; not the first
+row of results for the obvious search term (those images are on a thousand sites); resolution ≥ 2× the display size;
+no visible watermark, artefacts, or AI-generation errors.
+
+**Look at the image before you ship it.** Open it, or render the page and screenshot it. Do not place a URL you have
+not seen. Record subject, photographer, source page and the three-match note in `design/assets.md`.
+
+If nothing passes, use a designed placeholder (§8) and say so; a wrong photograph is a stronger tell than an honest
+color field.
 
 ## 4. Illustration and graphic devices
 

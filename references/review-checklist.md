@@ -87,7 +87,11 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 
 ## 6. Gate 3 — hierarchy and composition
 
+- [ ] The expression register (R1–R4) is named in the brief and honoured on screen: scale, imagery, motion and
+      technique match its row in `expression-register.md` §7; anything off-row is justified in writing.
+- [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
 - [ ] Persuade: a designed visual anchor is present in the first viewport and the prototype contains real image elements (no gray placeholder boxes).
+- [ ] Every photograph passes the three-match test (subject, light, material) and was actually looked at.
 - [ ] Exactly one focal point per viewport; scale contrast ≥ 2× between tiers.
 - [ ] Squint test: hierarchy visible when blurred.
 - [ ] Cover-the-logo test: brand still recognisable.
@@ -110,6 +114,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 ## 8. Gate 5 — color and contrast
 
 - [ ] One dominant hue; 60/30/10 distribution; ≤ 3 hue families + status.
+- [ ] `action.primary` sits on the brand scale or within ~40° of the brand hue (`build_tokens.py --check` clean of palette warnings).
 - [ ] Neutrals tinted consistently (warm or cool, never mixed).
 - [ ] All text/surface pairs pass WCAG 2.2 AA (contrast pairs file); APCA Lc targets met for body (75) and secondary (60).
 - [ ] UI boundaries and icons ≥ 3:1 vs adjacent.
