@@ -3,6 +3,20 @@
 Build palettes as **systems**, in **OKLCH**, from **one decided hue**, with **semantic roles** on top. Never ship a
 primitive (`blue-600`) into UI code; ship a role (`action.primary`).
 
+## Contents
+
+1. Decide before generating
+2. Why OKLCH
+3. Building a scale
+4. Semantic roles (the layer UI code uses)
+5. Contrast: comply with WCAG 2.2, design with APCA
+6. Practical recipes
+7. Gradients, if the brand earns them
+8. Token shape (DTCG)
+9. Anti-patterns
+
+---
+
 ## 1. Decide before generating
 
 From the moodboard: the dominant hue (one), its temperature, the neutral tint, the chroma ceiling (muted vs. rich),

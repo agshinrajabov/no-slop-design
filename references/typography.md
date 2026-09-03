@@ -4,6 +4,17 @@ Typography is 80% of what makes a UI read as designed. It is also where generate
 the flat scale, the tracked uppercase eyebrow. Every typographic decision here must trace back to an attribute in
 the brief.
 
+## Contents
+
+1. Selecting typefaces
+2. Pairing
+3. Scale
+4. Setting text well (the details that read as craft)
+5. Tokens
+6. Review questions
+
+---
+
 ## 1. Selecting typefaces
 
 **Method:** attributes → construction → candidates → test in situ → pick one display voice and one text workhorse.

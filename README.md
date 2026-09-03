@@ -51,7 +51,7 @@ the three icon cards, the card inside a card, the fade-up on every section, the 
 The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 84 tells across
 color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
 **over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
-that replaced the first wave. 39 of the mechanical ones are checked by the linter, including cross-file checks for
+that replaced the first wave. 40 of the mechanical ones are checked by the linter, including cross-file checks for
 text-only pages, ledger layouts, and reveals that hide content when JavaScript fails.
 
 Version 1.1 added the lesson from the first field test: three different industries came back as the same page

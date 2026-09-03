@@ -1,0 +1,50 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.12"]
+    name: scripts (py${{ matrix.python }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Self-test (the rules still catch what they claim)
+        run: python3 scripts/selftest.py
+      - name: Repo audit (docs, templates and scripts describe the same skill)
+        run: python3 scripts/audit_repo.py
+
+  skill-format:
+    runs-on: ubuntu-latest
+    name: Agent Skills format
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frontmatter, naming and progressive disclosure
+        run: |
+          python3 - <<'PY'
+          import re, sys, os
+          src = open("SKILL.md", encoding="utf-8").read()
+          fm = re.match(r"^---\n(.*?)\n---\n", src, re.S)
+          assert fm, "SKILL.md has no YAML frontmatter"
+          body = fm.group(1)
+          name = re.search(r'^name:\s*(\S+)', body, re.M).group(1)
+          desc = re.search(r'^description:\s*(.+)$', body, re.M).group(1)
+          assert re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", name), f"bad name: {name}"
+          assert name == os.path.basename(os.getcwd()) or name == "no-slop-design", name
+          assert 1 <= len(desc) <= 1024, f"description is {len(desc)} chars"
+          for reserved in ("anthropic", "claude"):
+              assert reserved not in name, f"reserved word in name: {reserved}"
+          lines = len(src.splitlines())
+          assert lines <= 500, f"SKILL.md is {lines} lines (guidance: under 500)"
+          print(f"ok — name={name}, description={len(desc)} chars, SKILL.md={lines} lines")
+          PY

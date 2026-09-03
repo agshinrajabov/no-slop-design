@@ -15,6 +15,12 @@ read unowned as untrustworthy, cheap, and forgettable.
 
 The catalog is organised by category. `scripts/slop_lint.py` catches the mechanical subset; the rest needs eyes.
 
+## Contents
+
+- §1 Color · §2 Typography · §3 Layout & composition · §4 Components & surfaces · §5 Iconography & imagery
+- §6 Copy & microcopy · §7 Motion · §8 Over-correction slop · §9 Accessibility as a slop signal · §10 Process slop
+- The studio test (the final gate)
+
 ---
 
 ## §1 Color
