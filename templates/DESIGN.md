@@ -183,7 +183,9 @@ Ten lines from the review gate (`review-checklist.md`); Deep mode writes the ful
 | 10 Accessibility (incl. JS-disabled pass) | | |
 | 13 Slop & originality | | |
 
-Scripts: `slop_lint.py` {grade} · `contrast.py --tokens` {exit} · `build_tokens.py --check` {warnings}.
+Scripts: `slop_lint.py` {grade} · `contrast.py --tokens` {exit} · `build_tokens.py --check` {warnings} ·
+`design_log.py check` {convergence warnings, and which axes this direction broke}.
+Budget: {mode} target {n} min, actual {n} min; {what was cut, or what overran and why}.
 Studio test: {would a studio sign it; what they would change first}. Open items: {…}.
 
 ## 12. Changelog

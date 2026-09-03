@@ -73,9 +73,18 @@ a defect, and the fix is fewer artefacts, not faster typing.
 | Review | Gate 0 scripts + Gates 1, 3, 5, 6, 10, 13 + studio test, written as 10 lines at the end of `DESIGN.md` | all 13 gates in `review-{date}.md` |
 | Reference reading | only the sections named per phase below | full files |
 
-**Stop conditions for Standard.** When any of these hit, finish with what you have and note the rest as next steps:
-15 minutes elapsed, 8 web fetches used, 6 page sections written, 6 photographs placed. Do not write documents nobody
-asked for. Do not build three directions when one plus an alternative answers the question.
+**Checkpoints, not hopes.** Note the clock when you start. Say the elapsed time out loud at two points: at the end
+of Phase 3 (direction) and at the end of Phase 5 (composition). If more than half the budget is gone at the Phase 3
+checkpoint, drop to the floor for the rest: one direction, four sections, three photographs, no alternative written
+out beyond a single line, review gates 0 and 13 only.
+
+**Stop conditions for Standard.** When any of these hit, finish what is on screen and list the rest as next steps:
+15 minutes elapsed, 8 web fetches used, 6 page sections written, 6 photographs placed. Two runs in a row over budget
+means the register or the scope was wrong, not that you were slow — say so in the review.
+
+**Compile only what the target consumes.** `build_tokens.py` emits five platforms; a web page needs two.
+Web: `--format css,tailwind` (or `css`). iOS: `--format swift`. Android: `--format kotlin`. Flutter: `--format dart`.
+Add `flat-json` when you want `contrast.py --tokens`. Do not write documents nobody asked for.
 
 ## Workflow
 
