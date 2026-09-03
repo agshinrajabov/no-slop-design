@@ -245,6 +245,59 @@ def build_tailwind(base: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _oklch_to_rgb255(L: float, C: float, h_deg: float) -> tuple[int, int, int]:
+    import math
+
+    h = math.radians(h_deg)
+    a, b = C * math.cos(h), C * math.sin(h)
+    l_, m_, s_ = L + 0.3963377774 * a + 0.2158037573 * b, L - 0.1055613458 * a - 0.0638541728 * b, L - 0.0894841775 * a - 1.2914855480 * b
+    l, m, s = l_ ** 3, m_ ** 3, s_ ** 3
+    r = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s
+    g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s
+    bl = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
+
+    def gam(c: float) -> int:
+        c = max(0.0, min(1.0, c))
+        c = 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+        return max(0, min(255, round(c * 255)))
+
+    return gam(r), gam(g), gam(bl)
+
+
+def to_hex(value: Any) -> str | None:
+    """Resolve any supported colour value to #rrggbb so the native emitters never silently drop a token.
+
+    The skill's own guidance is to author colours in OKLCH; a Swift/Kotlin/Dart emitter that only understood
+    hex quietly produced empty token files for exactly the recommended input.
+    """
+    if isinstance(value, dict):  # DTCG 2024+ colour object
+        if value.get("hex"):
+            return str(value["hex"])
+        comps, space = value.get("components") or value.get("channels"), (value.get("colorSpace") or "srgb").lower()
+        if comps and space == "srgb":
+            return "#%02x%02x%02x" % tuple(max(0, min(255, round(c * 255))) for c in comps[:3])
+        if comps and space in ("oklch", "oklch()"):
+            return "#%02x%02x%02x" % _oklch_to_rgb255(*comps[:3])
+        return None
+    if not isinstance(value, str):
+        return None
+    v = value.strip()
+    m = re.match(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", v)
+    if m:
+        h = m.group(1)
+        if len(h) in (3, 4):
+            h = "".join(c * 2 for c in h[:3])
+        return "#" + h[:6].lower()
+    m = re.match(r"^oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:deg)?", v, re.I)
+    if m:
+        L = float(m.group(1)) / (100 if m.group(2) else 1)
+        return "#%02x%02x%02x" % _oklch_to_rgb255(L, float(m.group(3)), float(m.group(4)))
+    m = re.match(r"^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)", v, re.I)
+    if m:
+        return "#%02x%02x%02x" % tuple(int(x) for x in m.groups()[:3])
+    return None
+
+
 def const_name(path: str) -> str:
     parts = re.split(r"[.\-_/ ]+", path)
     return parts[0].lower() + "".join(p[:1].upper() + p[1:] for p in parts[1:] if p)
@@ -261,11 +314,13 @@ def build_swift(base: dict, modes: dict[str, dict]) -> str:
         leaf = base[path]
         t, v = leaf.get("$type"), leaf["$resolved"]
         n = const_name(path)
-        if t == "color" and isinstance(v, str) and v.startswith("#"):
-            if path in dark and isinstance(dark[path]["$resolved"], str) and dark[path]["$resolved"] != v:
+        if t == "color" and (hexed := to_hex(v)):
+            v = hexed
+            dv = to_hex(dark[path]["$resolved"]) if path in dark else None
+            if dv and dv != v:
                 lines.append(
                     f"    static let {n} = Color(UIColor {{ $0.userInterfaceStyle == .dark ? "
-                    f"UIColor({swift_color(dark[path]['$resolved'])}) : UIColor({swift_color(v)}) }})"
+                    f"UIColor({swift_color(dv)}) : UIColor({swift_color(v)}) }})"
                 )
             else:
                 lines.append(f"    static let {n} = {swift_color(v)}")
@@ -299,10 +354,12 @@ def build_kotlin(base: dict, modes: dict[str, dict]) -> str:
         leaf = base[path]
         t, v = leaf.get("$type"), leaf["$resolved"]
         n = const_name(path)
-        if t == "color" and isinstance(v, str) and v.startswith("#"):
+        if t == "color" and (hexed := to_hex(v)):
+            v = hexed
             lines.append(f"    val {n} = Color(0xFF{v.lstrip('#').upper()[:6]})")
-            if path in dark and isinstance(dark[path]["$resolved"], str) and dark[path]["$resolved"] != v:
-                lines.append(f"    val {n}Dark = Color(0xFF{dark[path]['$resolved'].lstrip('#').upper()[:6]})")
+            dv = to_hex(dark[path]["$resolved"]) if path in dark else None
+            if dv and dv != v:
+                lines.append(f"    val {n}Dark = Color(0xFF{dv.lstrip('#').upper()[:6]})")
         elif t == "dimension" and isinstance(v, (int, float, str)):
             num = re.sub(r"[a-z%]+$", "", str(v))
             try:
@@ -326,10 +383,12 @@ def build_dart(base: dict, modes: dict[str, dict]) -> str:
         leaf = base[path]
         t, v = leaf.get("$type"), leaf["$resolved"]
         n = const_name(path)
-        if t == "color" and isinstance(v, str) and v.startswith("#"):
+        if t == "color" and (hexed := to_hex(v)):
+            v = hexed
             lines.append(f"  static const {n} = Color(0xFF{v.lstrip('#').upper()[:6]});")
-            if path in dark and isinstance(dark[path]["$resolved"], str) and dark[path]["$resolved"] != v:
-                lines.append(f"  static const {n}Dark = Color(0xFF{dark[path]['$resolved'].lstrip('#').upper()[:6]});")
+            dv = to_hex(dark[path]["$resolved"]) if path in dark else None
+            if dv and dv != v:
+                lines.append(f"  static const {n}Dark = Color(0xFF{dv.lstrip('#').upper()[:6]});")
         elif t in ("dimension", "number", "duration"):
             try:
                 lines.append(f"  static const double {n} = {float(re.sub(r'[a-z%]+$', '', str(v)))};")

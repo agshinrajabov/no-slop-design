@@ -113,8 +113,10 @@ RULES = [
 
 # File-level rules: evaluated once per HTML document
 def file_rules(path: str, text: str):
+    """Page-level checks. Only rendered documents can be judged for imagery: a .tsx page that composes
+    <Panel> and <Chart> components has no <img> in its own source and is not a text-only page."""
     out = []
-    if not path.lower().endswith((".html", ".htm", ".astro", ".vue", ".svelte", ".jsx", ".tsx", ".mdx")):
+    if not path.lower().endswith((".html", ".htm", ".astro")):
         return out
     base = os.path.basename(path).lower()
     if any(k in base for k in ("moodboard", "review", "spec", "storybook", "handoff")) or "data-nsd-doc" in text:

@@ -122,6 +122,30 @@ def main() -> int:
     check("starter tokens have no palette warnings", "warning: palette" not in starter.stdout,
           starter.stdout.strip()[:200])
 
+    print("build_tokens — OKLCH survives into the native emitters")
+    with tempfile.TemporaryDirectory() as d:
+        base, dark = os.path.join(d, "t.json"), os.path.join(d, "t.dark.json")
+        open(base, "w").write(json.dumps({"color": {"$type": "color", "brand": {"9": {"$value": "oklch(0.58 0.17 40)"}},
+                                                    "obj": {"1": {"$value": {"colorSpace": "oklch", "components": [0.6, 0.1, 200]}}}},
+                                          "space": {"$type": "dimension", "4": {"$value": "16px"}}}))
+        open(dark, "w").write(json.dumps({"color": {"$type": "color", "brand": {"9": {"$value": "oklch(0.72 0.13 40)"}}}}))
+        run("scripts/build_tokens.py", base, dark, "--out", d, "--format", "swift,kotlin,dart")
+        sw = open(os.path.join(d, "DesignTokens.swift")).read()
+        kt = open(os.path.join(d, "DesignTokens.kt")).read()
+        dt = open(os.path.join(d, "design_tokens.dart")).read()
+        check("swift keeps the OKLCH token", "colorBrand9" in sw, sw[:200])
+        check("swift emits the dark variant", "userInterfaceStyle" in sw, sw[:200])
+        check("kotlin keeps the OKLCH token", "colorBrand9 = Color(0xFFC94C18)" in kt, kt[:200])
+        check("dart keeps the OKLCH token", "colorBrand9 = Color(0xFFC94C18)" in dt, dt[:200])
+        check("DTCG colour objects resolve too", "colorObj1" in kt, kt[:200])
+
+    print("slop_lint — page rules judge rendered documents, not component source")
+    with tempfile.TemporaryDirectory() as d:
+        tsx = os.path.join(d, "page.tsx")
+        open(tsx, "w").write("<main><section><h1>x</h1><Panel title='a'/></section></main>" + "x" * 4000)
+        check("no no-imagery on a .tsx that composes components",
+              "no-imagery" not in {f["rule"] for f in lint_json(tsx)["findings"]}, "tsx was flagged")
+
     print("build_tokens — .tokens.json is the DTCG extension, not a mode")
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "x.tokens.json")
