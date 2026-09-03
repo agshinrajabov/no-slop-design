@@ -147,6 +147,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Only `transform`/`opacity` animated; no `transition: all`.
 - [ ] One orchestrated entrance at most; no fade-up on every section; no marquee, typewriter, count-up, parallax, tilt.
 - [ ] `prefers-reduced-motion` path defined and tested.
+- [ ] **JavaScript disabled (or blocked) and reloaded: every section is still visible and readable.** Scroll-reveal
+      styles must be gated behind a `js` class or reset in `<noscript>`; `opacity: 0` at rest with no fallback is a blocker.
 - [ ] Loading indicators follow the ladder (nothing < 300ms → skeleton → progress).
 
 ## 12. Gate 9 — content

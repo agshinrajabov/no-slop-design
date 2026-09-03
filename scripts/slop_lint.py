@@ -160,8 +160,14 @@ def iter_files(paths):
                     yield os.path.join(root, f)
 
 
+REVEAL_HIDE = re.compile(r"\.(reveal|fade-?in|animate-?in|scroll-?reveal|gsap|aos)[^{]*\{[^}]*opacity:\s*0", re.I)
+REVEAL_SHOW = re.compile(r"\.(is-in|is-visible|in-view|revealed|is-revealed|aos-animate|active)\b", re.I)
+NOJS_GUARD = re.compile(r"<noscript|\.no-js\b|html\.js\b|documentElement\.classList\.add\(['\"]js", re.I)
+
+
 def scan(paths):
     findings, counts, total_lines = [], Counter(), 0
+    reveal_hides, nojs_guard = [], False
     for path in iter_files(paths):
         try:
             text = open(path, encoding="utf-8", errors="ignore").read()
@@ -169,6 +175,10 @@ def scan(paths):
             continue
         lines = text.splitlines()
         total_lines += len(lines)
+        if REVEAL_HIDE.search(text) and REVEAL_SHOW.search(text):
+            reveal_hides.append(path)
+        if NOJS_GUARD.search(text):
+            nojs_guard = True
         for rid, sev, msg, sec in file_rules(path, text):
             counts[rid] += 1
             findings.append({"rule": rid, "severity": sev, "file": path, "line": 1, "section": sec, "message": msg, "snippet": ""})
@@ -185,6 +195,14 @@ def scan(paths):
                         continue  # aggregated below
                     findings.append({"rule": rid, "severity": sev, "file": path, "line": ln, "section": sec,
                                      "message": msg, "snippet": line.strip()[:140]})
+    if reveal_hides and not nojs_guard:
+        counts["reveal-no-fallback"] += 1
+        findings.append({"rule": "reveal-no-fallback", "severity": "HIGH", "file": reveal_hides[0], "line": 0,
+                         "section": "§7 Motion",
+                         "message": "scroll-reveal styles hide content at rest (opacity: 0) with no no-JS fallback — "
+                                    "if the script fails the page is blank. Add a <noscript> reset or gate the hiding "
+                                    "behind a `js` class set by script (motion.md, anti-slop.md §7)",
+                         "snippet": ""})
     for rid, (thr, msg) in DENSITY_RULES.items():
         if total_lines and counts[rid] / max(total_lines, 1) * 100 >= thr:
             findings.append({"rule": rid, "severity": "MED", "file": "(aggregate)", "line": 0,

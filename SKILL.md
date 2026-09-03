@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with real visual material. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition with imagery → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---

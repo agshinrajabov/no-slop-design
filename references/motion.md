@@ -193,6 +193,31 @@ Not legitimate: fading up every section of a marketing page (§10). Always wrap 
 | Selection / checkmark confirm | 100ms color + 150ms mark draw | | Haptic selection tick on mobile |
 | Haptics pairing (iOS `UIImpactFeedbackGenerator`, Android `HapticFeedbackConstants`) | Light: toggle, selection; Medium: drag lift, threshold reached; Success/Error notification: completed payment, failed submit | | Never on hover or scroll; at most one haptic per user action |
 
+## 7b. Reveals must not hide content at rest
+
+The scroll-reveal pattern sets `opacity: 0` and waits for an observer. If the script fails, is blocked, or is slow,
+the page is blank, and readers and crawlers see nothing. Two acceptable shapes:
+
+```css
+/* hide only when we know JS is running and motion is welcome */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal { opacity: 0; transform: translateY(20px); transition: opacity .32s, transform .32s; }
+  .js .reveal.is-in { opacity: 1; transform: none; }
+}
+```
+```html
+<script>document.documentElement.classList.add('js')</script>  <!-- in <head>, before first paint -->
+```
+
+or, when the hiding cannot be gated, undo it for readers without script:
+
+```html
+<noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>
+```
+
+Wrapping the reveal in `prefers-reduced-motion: no-preference` alone is not enough: that covers the reduced-motion
+reader, not the failed-script reader. `scripts/slop_lint.py` flags the gap as `reveal-no-fallback`.
+
 ## 8. Reduced motion
 
 Strategy: reduced motion is a different design, not a switch that breaks the current one. Keep opacity and color
@@ -274,7 +299,7 @@ Expanded from `anti-slop.md` §7. Any item present is a fail in review unless th
 | Tilt / 3D hover cards | Pointer gimmick; no touch equivalent; layout noise | Color or underline hover state |
 | Bounce / elastic easing on UI chrome | Toys, not tools; adds 200ms of settling | `standard`, `decelerate`, springs with ratio >= 0.8 |
 | Hover scale on every card | Reflow noise; scale > 1.02 blurs text | `translateY(-1px)` + shadow cross-fade, or nothing |
-| Content invisible at rest (opacity 0 until JS) | Blank page on slow JS, in reader mode, in reduced motion | Progressive enhancement; animate from visible |
+| Content invisible at rest (opacity 0 until JS) | Blank page on slow JS, in reader mode, in reduced motion | Progressive enhancement; animate from visible; see §7b (`reveal-no-fallback`) |
 | 500ms+ UI transitions | Feels like lag; blocks the next action | §2 table |
 | `transition: all` | Animates layout properties by accident; hard to reason about | Explicit property list |
 | Spinners for instant actions | Flicker; lies about latency | Nothing < 300ms; optimistic UI |
