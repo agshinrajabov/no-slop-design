@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Slop fixture — must grade D or F</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: Inter, system-ui, sans-serif; }
+  .hero-glow { position: absolute; inset: 0; filter: blur(80px); background: radial-gradient(circle at 30% 20%, #7c3aed88, transparent 60%); }
+  .card { border-left: 4px solid #8b5cf6; transition: all 0.3s ease-in-out; }
+  .card:hover { transform: translateY(-4px) scale(1.03); }
+  .btn:focus { outline: none; }
+  .gradient-text { background: linear-gradient(90deg, #7c3aed, #ec4899); -webkit-background-clip: text; color: transparent; }
+</style>
+</head>
+<body class="bg-black text-white">
+  <nav class="sticky top-0 bg-white/10 backdrop-blur-md border-b border-white/20">
+    <div class="max-w-7xl mx-auto flex justify-between items-center p-4">
+      <span class="font-bold">✨ Nexora</span>
+      <a href="#" class="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full px-5 py-2">Get Started 🚀</a>
+    </div>
+  </nav>
+
+  <section class="relative min-h-screen flex items-center justify-center text-center">
+    <div class="hero-glow"></div>
+    <div class="max-w-3xl mx-auto relative">
+      <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-sm">✨ New: AI-powered insights</span>
+      <h1 class="text-6xl font-bold tracking-tighter mt-6 gradient-text">Unlock the power of seamless collaboration</h1>
+      <p class="text-gray-400 mt-6 text-lg">Welcome to Nexora, your all-in-one solution to supercharge your workflow and elevate your team to the next level.</p>
+      <div class="flex gap-4 justify-center mt-8">
+        <a class="btn bg-indigo-600 rounded-2xl px-8 py-4 font-semibold">Get Started</a>
+        <a class="btn border border-white/20 rounded-2xl px-8 py-4">Learn More</a>
+      </div>
+      <p class="text-sm text-gray-500 mt-4">Trusted by 10,000+ teams worldwide</p>
+    </div>
+  </section>
+
+  <section id="features" class="py-20">
+    <p class="text-center uppercase tracking-widest text-xs text-indigo-400">Features</p>
+    <h2 class="text-center text-4xl font-bold mt-2">Everything you need to succeed</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-12 px-4">
+      <div class="card rounded-2xl bg-white/5 p-6 shadow-lg animate-fade-in-up">
+        <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center">⚡</div>
+        <h3 class="font-semibold mt-4">Lightning-fast</h3>
+        <p class="text-gray-400 mt-2">Experience blazing-fast performance that revolutionizes how you work.</p>
+      </div>
+      <div class="card rounded-2xl bg-white/5 p-6 shadow-lg animate-fade-in-up">
+        <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">🔒</div>
+        <h3 class="font-semibold mt-4">Enterprise-grade security</h3>
+        <p class="text-gray-400 mt-2">Robust, cutting-edge protection so you can focus on what matters.</p>
+      </div>
+      <div class="card rounded-2xl bg-white/5 p-6 shadow-lg animate-fade-in-up">
+        <div class="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center">🚀</div>
+        <h3 class="font-semibold mt-4">Scale effortlessly</h3>
+        <p class="text-gray-400 mt-2">Empower your teams to streamline everything, seamlessly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="py-20 text-center">
+    <h2 class="text-4xl font-bold">Loved by industry leaders</h2>
+    <div class="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-12 px-4">
+      <div class="rounded-2xl bg-white/5 p-6"><img src="https://i.pravatar.cc/64" alt=""><p class="mt-4">"Game-changing!"</p><p class="text-sm text-gray-500">Jane Doe, CEO at Acme</p></div>
+      <div class="rounded-2xl bg-white/5 p-6"><img src="https://i.pravatar.cc/65" alt=""><p class="mt-4">"Say goodbye to chaos."</p><p class="text-sm text-gray-500">John Smith, CTO at Globex</p></div>
+      <div class="rounded-2xl bg-white/5 p-6"><img src="https://i.pravatar.cc/66" alt=""><p class="mt-4">"Next-generation."</p><p class="text-sm text-gray-500">Alex Lee, Initech</p></div>
+    </div>
+  </section>
+
+  <section id="pricing" class="py-20 text-center"><h2 class="text-4xl font-bold">Simple pricing</h2></section>
+  <section id="faq" class="py-20 text-center"><h2 class="text-4xl font-bold">FAQ</h2></section>
+  <section id="cta" class="py-20 text-center bg-gradient-to-r from-purple-600 to-indigo-600">
+    <h2 class="text-4xl font-bold">Ready to transform your workflow?</h2>
+    <a class="inline-block mt-6 bg-white text-black rounded-full px-8 py-4">Get Started for free</a>
+  </section>
+  <footer class="py-10 text-center text-gray-500 text-sm">Made with ❤ by Nexora</footer>
+</body>
+</html>

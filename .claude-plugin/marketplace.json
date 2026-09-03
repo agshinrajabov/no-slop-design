@@ -1,0 +1,31 @@
+{
+  "name": "no-slop-design",
+  "owner": {
+    "name": "Agshin Rajabov",
+    "url": "https://github.com/agshinrajabov"
+  },
+  "plugins": [
+    {
+      "name": "no-slop-design",
+      "source": "./",
+      "description": "Senior product-design workflow for web and mobile UI that avoids generic AI-generated patterns: research, moodboard, design tokens, composition, review.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Agshin Rajabov"
+      },
+      "category": "design",
+      "keywords": [
+        "design",
+        "ux",
+        "ui",
+        "design-system",
+        "design-tokens",
+        "accessibility"
+      ]
+    }
+  ],
+  "metadata": {
+    "description": "Marketplace for the no-slop-design skill: senior product-design workflow for web and mobile UI without generic AI-generated patterns.",
+    "version": "1.0.0"
+  }
+}

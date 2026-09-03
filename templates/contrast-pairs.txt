@@ -1,0 +1,19 @@
+#! design/contrast-pairs.txt — one "fg bg label" per line. Run: python3 scripts/contrast.py --pairs design/contrast-pairs.txt
+#! Prefer `contrast.py --tokens build/tokens.flat.json`, which derives these pairs automatically from semantic roles.
+#! Keep this file for pairs the auto-check cannot know about (text on images, chart labels, third-party embeds). Exit code 1 = a pair fails WCAG AA.
+#! light
+#1f1915 #fefbf9 text.primary on surface.base (light)
+#5a544f #fefbf9 text.secondary on surface.base (light)
+#635c57 #f9f6f3 text.tertiary on surface.sunken (light)
+#ffffff #c94c18 text.on-action on action.primary (light)
+#ffffff #d73337 text.on-destructive on action.destructive (light)
+#8e3510 #fefbf9 text.link on surface.base (light)
+#774b00 #ffebc2 status.warning.text on status.warning.surface (light)
+#! dark
+#eeeae7 #161311 text.primary on surface.base (dark)
+#c2bcb8 #161311 text.secondary on surface.base (dark)
+#9d9793 #161311 text.tertiary on surface.sunken (dark)
+#161311 #d96a42 text.on-action on action.primary (dark)
+#ffffff #d73337 text.on-destructive on action.destructive (dark)
+#f2a58a #161311 text.link on surface.base (dark)
+#774b00 #ffebc2 status.warning.text on status.warning.surface (dark)

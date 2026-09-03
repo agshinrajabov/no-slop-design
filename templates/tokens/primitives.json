@@ -1,0 +1,451 @@
+{
+  "$description": "Primitive (option) tokens. Never referenced directly by UI code. Values are placeholders from a warm-neutral example direction; replace after the moodboard is approved.",
+  "color": {
+    "$type": "color",
+    "neutral": {
+      "$description": "Tinted toward the brand hue (H 60) at very low chroma. 12 steps follow Radix semantics: 1-2 backgrounds, 3-5 component states, 6-8 borders, 9-10 solids, 11-12 text.",
+      "1": {
+        "$value": "oklch(0.99 0.004 60)"
+      },
+      "2": {
+        "$value": "oklch(0.975 0.005 60)"
+      },
+      "3": {
+        "$value": "oklch(0.95 0.006 60)"
+      },
+      "4": {
+        "$value": "oklch(0.92 0.007 60)"
+      },
+      "5": {
+        "$value": "oklch(0.89 0.008 60)"
+      },
+      "6": {
+        "$value": "oklch(0.85 0.009 60)"
+      },
+      "7": {
+        "$value": "oklch(0.79 0.010 60)"
+      },
+      "8": {
+        "$value": "oklch(0.64 0.011 60)"
+      },
+      "9": {
+        "$value": "oklch(0.55 0.012 60)"
+      },
+      "10": {
+        "$value": "oklch(0.48 0.012 60)"
+      },
+      "11": {
+        "$value": "oklch(0.45 0.012 60)"
+      },
+      "12": {
+        "$value": "oklch(0.22 0.012 60)"
+      }
+    },
+    "neutral-dark": {
+      "$description": "Separate dark palette, not an inversion.",
+      "1": {
+        "$value": "oklch(0.19 0.006 60)"
+      },
+      "2": {
+        "$value": "oklch(0.22 0.009 60)"
+      },
+      "3": {
+        "$value": "oklch(0.25 0.009 60)"
+      },
+      "4": {
+        "$value": "oklch(0.28 0.009 60)"
+      },
+      "5": {
+        "$value": "oklch(0.31 0.009 60)"
+      },
+      "6": {
+        "$value": "oklch(0.35 0.009 60)"
+      },
+      "7": {
+        "$value": "oklch(0.4 0.009 60)"
+      },
+      "8": {
+        "$value": "oklch(0.5 0.009 60)"
+      },
+      "9": {
+        "$value": "oklch(0.62 0.009 60)"
+      },
+      "10": {
+        "$value": "oklch(0.68 0.009 60)"
+      },
+      "11": {
+        "$value": "oklch(0.8 0.009 60)"
+      },
+      "12": {
+        "$value": "oklch(0.94 0.006 60)"
+      }
+    },
+    "brand": {
+      "$description": "One decided hue. Chroma follows a sin curve peaking at step 9.",
+      "1": {
+        "$value": "oklch(0.98 0.01 40)"
+      },
+      "2": {
+        "$value": "oklch(0.96 0.02 40)"
+      },
+      "3": {
+        "$value": "oklch(0.93 0.04 40)"
+      },
+      "4": {
+        "$value": "oklch(0.89 0.06 40)"
+      },
+      "5": {
+        "$value": "oklch(0.85 0.08 40)"
+      },
+      "6": {
+        "$value": "oklch(0.79 0.10 40)"
+      },
+      "7": {
+        "$value": "oklch(0.72 0.13 40)"
+      },
+      "8": {
+        "$value": "oklch(0.65 0.15 40)"
+      },
+      "9": {
+        "$value": "oklch(0.58 0.17 40)"
+      },
+      "10": {
+        "$value": "oklch(0.53 0.16 40)"
+      },
+      "11": {
+        "$value": "oklch(0.45 0.13 40)"
+      },
+      "12": {
+        "$value": "oklch(0.28 0.07 40)"
+      }
+    },
+    "success": {
+      "9": {
+        "$value": "oklch(0.60 0.13 148)"
+      },
+      "3": {
+        "$value": "oklch(0.94 0.04 148)"
+      },
+      "11": {
+        "$value": "oklch(0.42 0.11 148)"
+      }
+    },
+    "warning": {
+      "9": {
+        "$value": "oklch(0.75 0.15 80)"
+      },
+      "3": {
+        "$value": "oklch(0.95 0.06 80)"
+      },
+      "11": {
+        "$value": "oklch(0.45 0.12 80)"
+      }
+    },
+    "danger": {
+      "9": {
+        "$value": "oklch(0.58 0.20 25)"
+      },
+      "3": {
+        "$value": "oklch(0.94 0.04 25)"
+      },
+      "11": {
+        "$value": "oklch(0.42 0.17 25)"
+      }
+    },
+    "info": {
+      "9": {
+        "$value": "oklch(0.58 0.14 245)"
+      },
+      "3": {
+        "$value": "oklch(0.94 0.03 245)"
+      },
+      "11": {
+        "$value": "oklch(0.42 0.12 245)"
+      }
+    },
+    "white": {
+      "$value": "#ffffff"
+    },
+    "black": {
+      "$value": "#000000"
+    }
+  },
+  "space": {
+    "$type": "dimension",
+    "$description": "4px base. Semantic aliases (inset/stack/inline) live in semantic.json.",
+    "0": {
+      "$value": "0px"
+    },
+    "1": {
+      "$value": "2px"
+    },
+    "2": {
+      "$value": "4px"
+    },
+    "3": {
+      "$value": "6px"
+    },
+    "4": {
+      "$value": "8px"
+    },
+    "5": {
+      "$value": "12px"
+    },
+    "6": {
+      "$value": "16px"
+    },
+    "7": {
+      "$value": "20px"
+    },
+    "8": {
+      "$value": "24px"
+    },
+    "9": {
+      "$value": "32px"
+    },
+    "10": {
+      "$value": "40px"
+    },
+    "11": {
+      "$value": "48px"
+    },
+    "12": {
+      "$value": "64px"
+    },
+    "13": {
+      "$value": "80px"
+    },
+    "14": {
+      "$value": "96px"
+    },
+    "15": {
+      "$value": "128px"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "control": {
+      "sm": {
+        "$value": "32px"
+      },
+      "md": {
+        "$value": "40px"
+      },
+      "lg": {
+        "$value": "48px"
+      }
+    },
+    "icon": {
+      "sm": {
+        "$value": "16px"
+      },
+      "md": {
+        "$value": "20px"
+      },
+      "lg": {
+        "$value": "24px"
+      }
+    },
+    "target": {
+      "min": {
+        "$value": "44px"
+      }
+    },
+    "content": {
+      "max": {
+        "$value": "1200px"
+      }
+    },
+    "measure": {
+      "max": {
+        "$value": "65ch"
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "0": {
+      "$value": "0px"
+    },
+    "1": {
+      "$value": "4px"
+    },
+    "2": {
+      "$value": "6px"
+    },
+    "3": {
+      "$value": "8px"
+    },
+    "4": {
+      "$value": "12px"
+    },
+    "5": {
+      "$value": "16px"
+    },
+    "6": {
+      "$value": "20px"
+    },
+    "7": {
+      "$value": "28px"
+    },
+    "full": {
+      "$value": "9999px"
+    }
+  },
+  "border": {
+    "width": {
+      "$type": "dimension",
+      "hairline": {
+        "$value": "1px"
+      },
+      "strong": {
+        "$value": "2px"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "$description": "Placeholders. Choose per typography.md after the moodboard; never leave a watch-list face without a written reason.",
+      "display": {
+        "$value": [
+          "Bricolage Grotesque",
+          "system-ui",
+          "sans-serif"
+        ]
+      },
+      "text": {
+        "$value": [
+          "Schibsted Grotesk",
+          "system-ui",
+          "sans-serif"
+        ]
+      },
+      "mono": {
+        "$value": [
+          "Commit Mono",
+          "ui-monospace",
+          "SFMono-Regular",
+          "monospace"
+        ]
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": {
+        "$value": 400
+      },
+      "medium": {
+        "$value": 500
+      },
+      "semibold": {
+        "$value": 600
+      },
+      "bold": {
+        "$value": 700
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "instant": {
+      "$value": "80ms"
+    },
+    "fast": {
+      "$value": "120ms"
+    },
+    "base": {
+      "$value": "200ms"
+    },
+    "slow": {
+      "$value": "320ms"
+    },
+    "slower": {
+      "$value": "480ms"
+    }
+  },
+  "ease": {
+    "$type": "cubicBezier",
+    "standard": {
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "decelerate": {
+      "$value": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "accelerate": {
+      "$value": [
+        0.3,
+        0,
+        1,
+        1
+      ]
+    },
+    "emphasized": {
+      "$value": [
+        0.2,
+        0,
+        0,
+        1.0
+      ]
+    }
+  },
+  "opacity": {
+    "$type": "number",
+    "disabled": {
+      "$value": 0.4
+    },
+    "overlay": {
+      "$value": 0.6
+    },
+    "skeleton": {
+      "$value": 0.12
+    }
+  },
+  "z": {
+    "$type": "number",
+    "base": {
+      "$value": 0
+    },
+    "raised": {
+      "$value": 10
+    },
+    "sticky": {
+      "$value": 100
+    },
+    "overlay": {
+      "$value": 1000
+    },
+    "modal": {
+      "$value": 1100
+    },
+    "toast": {
+      "$value": 1200
+    }
+  },
+  "breakpoint": {
+    "$type": "dimension",
+    "$description": "Named by layout change, not device.",
+    "narrow": {
+      "$value": "600px"
+    },
+    "regular": {
+      "$value": "905px"
+    },
+    "wide": {
+      "$value": "1240px"
+    },
+    "max": {
+      "$value": "1440px"
+    }
+  }
+}

@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{Project} — Moodboard</title>
+<!--
+  no-slop-design moodboard template.
+  Fill the three direction blocks (or delete one). Every reference needs a "Taken:" line.
+  Fonts: replace the placeholder @import with the faces each direction actually proposes; the document chrome
+  itself uses the system stack on purpose (this is a working document, not the design).
+  Mark the approved direction with class="direction approved".
+-->
+<style>
+  :root {
+    --doc-bg: #f6f5f2; --doc-fg: #1b1a18; --doc-muted: #6b6864; --doc-rule: #d9d6d0; --doc-accent: #1b1a18;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--doc-bg); color: var(--doc-fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1200px; margin: 0 auto; padding: clamp(24px, 4vw, 64px); }
+  h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h2 { font-size: 22px; letter-spacing: -0.01em; margin: 48px 0 12px; }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  p { max-width: 65ch; }
+  .meta { color: var(--doc-muted); font-size: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--doc-rule); }
+  th { font-weight: 600; }
+  hr { border: 0; border-top: 1px solid var(--doc-rule); margin: 40px 0; }
+
+  /* ---- directions ---- */
+  .direction { border: 1px solid var(--doc-rule); padding: clamp(16px, 3vw, 32px); margin: 24px 0; background: #fff; }
+  .direction.approved { outline: 2px solid var(--doc-accent); outline-offset: 2px; }
+  .direction.approved > header::after { content: "Approved"; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-inline-start: 12px; }
+  .direction header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .direction header h2 { margin: 0; }
+  .thesis { font-size: 18px; max-width: 60ch; margin: 8px 0 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 24px; }
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 8px 0; }
+  .swatch { aspect-ratio: 4 / 3; border: 1px solid rgb(0 0 0 / 0.08); display: flex; align-items: end; padding: 6px; font: 11px/1.2 ui-monospace, monospace; }
+  .refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .ref { border: 1px solid var(--doc-rule); padding: 12px; font-size: 13px; }
+  .ref .img { aspect-ratio: 16 / 10; background: #e9e7e2; margin-bottom: 8px; display: grid; place-items: center; color: var(--doc-muted); }
+  .ref .img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ref b { display: block; margin-top: 4px; }
+  .not { columns: 2; gap: 24px; font-size: 14px; }
+
+  /* ---- specimen: the proposed tokens applied to real UI ---- */
+  .specimen { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; margin-top: 16px; padding: 24px; }
+  .specimen h4 { margin: 0 0 8px; }
+  .specimen .row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+  .specimen input, .specimen button { font: inherit; height: 40px; padding: 0 14px; border-radius: var(--r-control, 6px); border: 1px solid var(--border, #bbb); }
+  .specimen button { border: 0; background: var(--action, #333); color: var(--on-action, #fff); font-weight: 500; }
+  .specimen .datarow { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border, #ddd); font-variant-numeric: tabular-nums; font-size: 14px; }
+  @media (max-width: 720px) { .specimen { grid-template-columns: 1fr; } .not { columns: 1; } }
+
+  /* Per-direction token scopes — replace values with the proposed OKLCH tokens. */
+  .dir-a { --surface: oklch(0.99 0.004 60); --surface-raised: #fff; --text: oklch(0.22 0.012 60); --text-2: oklch(0.45 0.012 60);
+           --action: oklch(0.58 0.17 40); --on-action: #fff; --border: oklch(0.85 0.009 60); --r-control: 6px;
+           --display: "Bricolage Grotesque", system-ui, sans-serif; --textface: "Schibsted Grotesk", system-ui, sans-serif; }
+  .dir-b { --surface: oklch(0.97 0.01 90); --surface-raised: oklch(0.99 0.005 90); --text: oklch(0.2 0.02 60); --text-2: oklch(0.45 0.02 60);
+           --action: oklch(0.35 0.08 150); --on-action: #fff; --border: oklch(0.82 0.02 90); --r-control: 2px;
+           --display: "Newsreader", Georgia, serif; --textface: "Source Sans 3", system-ui, sans-serif; }
+  .dir-c { --surface: oklch(0.22 0.01 260); --surface-raised: oklch(0.26 0.012 260); --text: oklch(0.94 0.005 260); --text-2: oklch(0.78 0.01 260);
+           --action: oklch(0.80 0.12 85); --on-action: oklch(0.2 0.02 85); --border: oklch(0.36 0.012 260); --r-control: 8px;
+           --display: "Hanken Grotesk", system-ui, sans-serif; --textface: "Hanken Grotesk", system-ui, sans-serif; }
+  .specimen { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .specimen .display { font: 600 clamp(28px, 4vw, 40px)/1.05 var(--display); letter-spacing: -0.02em; margin: 0 0 12px; }
+  .specimen p { font: 16px/1.55 var(--textface); color: var(--text-2); }
+  .specimen .card { background: var(--surface-raised); border: 1px solid var(--border); padding: 16px; border-radius: calc(var(--r-control) * 2); font-family: var(--textface); }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">no-slop-design · moodboard · {date} · brief v{n}</p>
+  <h1>{Project} — visual direction</h1>
+  <p class="meta">Memorable thing: <strong>{one sentence from the brief}</strong></p>
+
+  <h2>Attributes</h2>
+  <table>
+    <thead><tr><th>We are</th><th>We are not (nearby failure)</th><th>Visual consequence</th></tr></thead>
+    <tbody>
+      <tr><td>{attribute 1}</td><td>{anti-attribute 1}</td><td>{concrete consequence}</td></tr>
+      <tr><td>{attribute 2}</td><td>{anti-attribute 2}</td><td>{concrete consequence}</td></tr>
+      <tr><td>{attribute 3}</td><td>{anti-attribute 3}</td><td>{concrete consequence}</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Category map</h2>
+  <p>Axes: <em>{axis 1 left ↔ right}</em> × <em>{axis 2 bottom ↔ top}</em>. Competitors cluster at {where}. The open position that still serves the job is {where}, because {research insight}.</p>
+
+  <!-- ================= DIRECTION A ================= -->
+  <section class="direction approved dir-a">
+    <header><h2>A · {Two-word name}</h2><span class="meta">recommended</span></header>
+    <p class="thesis">{Visual thesis — one sentence: typography discipline of X × color world of Y × density of Z.}</p>
+    <div class="grid">
+      <div>
+        <h3>Type</h3>
+        <p class="meta">Display: <strong>{Face}</strong> — because {attribute}.<br>Text: <strong>{Face}</strong> — because {attribute}.<br>Mono: {Face or none}.</p>
+      </div>
+      <div>
+        <h3>Color (OKLCH)</h3>
+        <div class="swatches">
+          <div class="swatch" style="background:var(--surface)">surface</div>
+          <div class="swatch" style="background:var(--surface-raised)">raised</div>
+          <div class="swatch" style="background:var(--text);color:#fff">text</div>
+          <div class="swatch" style="background:var(--action);color:var(--on-action)">action</div>
+          <div class="swatch" style="background:var(--border)">border</div>
+        </div>
+        <p class="meta">Hue {h}°, chroma ceiling {c}, neutrals {warm/cool}-tinted. Dark mode: {separate palette / not needed}.</p>
+      </div>
+      <div>
+        <h3>Shape, space, motion</h3>
+        <p class="meta">Radius: control {n} / card {n} / sheet {n}. Density: {comfortable/compact}. Motion: {posture, durations}. Imagery: {direction}.</p>
+      </div>
+    </div>
+
+    <h3>References (each with what is taken)</h3>
+    <div class="refs">
+      <article class="ref"><div class="img">[R01 screenshot]</div><span class="meta">{source URL} · {type}</span><b>Taken:</b> {one thing, precisely}<b>Serves:</b> {attribute}</article>
+      <article class="ref"><div class="img">[R02 screenshot]</div><span class="meta">{source URL} · non-UI</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R03 screenshot]</div><span class="meta">{source URL} · {type}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R04 screenshot]</div><span class="meta">{source URL} · outside category</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R05 screenshot]</div><span class="meta">{source URL} · {type}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+    </div>
+
+    <h3>Specimen</h3>
+    <div class="specimen">
+      <div>
+        <h4 class="display">{A real headline from the product, not lorem}</h4>
+        <p>{A real supporting sentence. Long enough to show measure and leading. Numbers like 1,248 and 3.5% should appear.}</p>
+        <div class="row"><input placeholder="{Real placeholder}" aria-label="Example field"><button type="button">{Verb + object}</button></div>
+      </div>
+      <div class="card">
+        <div class="datarow"><span>{Row label}</span><span>1,248</span><span>+3.5%</span></div>
+        <div class="datarow"><span>{Row label}</span><span>96</span><span>−0.8%</span></div>
+        <div class="datarow" style="border:0"><span>{Row label}</span><span>12,004</span><span>+11.2%</span></div>
+      </div>
+    </div>
+
+    <h3>Not this (direction-specific)</h3>
+    <ul class="not"><li>{…}</li><li>{…}</li><li>{…}</li><li>{…}</li><li>{…}</li></ul>
+  </section>
+
+  <!-- ================= DIRECTION B ================= -->
+  <section class="direction dir-b">
+    <header><h2>B · {Two-word name}</h2></header>
+    <p class="thesis">{Thesis. Must differ from A on ≥ 2 axes.}</p>
+    <div class="grid">
+      <div><h3>Type</h3><p class="meta">Display: <strong>{Face}</strong>. Text: <strong>{Face}</strong>.</p></div>
+      <div><h3>Color (OKLCH)</h3>
+        <div class="swatches">
+          <div class="swatch" style="background:var(--surface)">surface</div><div class="swatch" style="background:var(--surface-raised)">raised</div>
+          <div class="swatch" style="background:var(--text);color:#fff">text</div><div class="swatch" style="background:var(--action);color:var(--on-action)">action</div>
+          <div class="swatch" style="background:var(--border)">border</div>
+        </div></div>
+      <div><h3>Shape, space, motion</h3><p class="meta">{…}</p></div>
+    </div>
+    <h3>References</h3>
+    <div class="refs">
+      <article class="ref"><div class="img">[R06]</div><span class="meta">{source}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R07]</div><span class="meta">{source}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R08]</div><span class="meta">{source}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R09]</div><span class="meta">{source}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+      <article class="ref"><div class="img">[R10]</div><span class="meta">{source}</span><b>Taken:</b> {…}<b>Serves:</b> {…}</article>
+    </div>
+    <h3>Specimen</h3>
+    <div class="specimen">
+      <div><h4 class="display">{Real headline}</h4><p>{Real sentence with numbers 1,248 and 3.5%.}</p>
+        <div class="row"><input placeholder="{Real placeholder}" aria-label="Example field"><button type="button">{Verb + object}</button></div></div>
+      <div class="card"><div class="datarow"><span>{Row}</span><span>1,248</span><span>+3.5%</span></div><div class="datarow" style="border:0"><span>{Row}</span><span>96</span><span>−0.8%</span></div></div>
+    </div>
+    <h3>Not this</h3><ul class="not"><li>{…}</li><li>{…}</li><li>{…}</li></ul>
+  </section>
+
+  <!-- ================= DIRECTION C (optional) ================= -->
+  <section class="direction dir-c">
+    <header><h2>C · {Two-word name}</h2></header>
+    <p class="thesis">{Thesis.}</p>
+    <div class="grid">
+      <div><h3>Type</h3><p class="meta">{…}</p></div>
+      <div><h3>Color (OKLCH)</h3>
+        <div class="swatches">
+          <div class="swatch" style="background:var(--surface);color:var(--text)">surface</div><div class="swatch" style="background:var(--surface-raised);color:var(--text)">raised</div>
+          <div class="swatch" style="background:var(--text)">text</div><div class="swatch" style="background:var(--action);color:var(--on-action)">action</div>
+          <div class="swatch" style="background:var(--border);color:var(--text)">border</div>
+        </div></div>
+      <div><h3>Shape, space, motion</h3><p class="meta">{…}</p></div>
+    </div>
+    <h3>Specimen</h3>
+    <div class="specimen">
+      <div><h4 class="display">{Real headline}</h4><p>{Real sentence.}</p>
+        <div class="row"><input placeholder="{Real placeholder}" aria-label="Example field" style="background:var(--surface-raised);color:var(--text)"><button type="button">{Verb + object}</button></div></div>
+      <div class="card"><div class="datarow"><span>{Row}</span><span>1,248</span><span>+3.5%</span></div><div class="datarow" style="border:0"><span>{Row}</span><span>96</span><span>−0.8%</span></div></div>
+    </div>
+    <h3>Not this</h3><ul class="not"><li>{…}</li><li>{…}</li><li>{…}</li></ul>
+  </section>
+
+  <hr>
+  <h2>Decision</h2>
+  <p>Recommended: <strong>{A}</strong> because {ties to memorable thing + research insight}. Rejected: {B: reason}, {C: reason}. Recorded in <code>design/design-log.json</code>.</p>
+  <p class="meta">Coherence check passed: {yes/no + note}. Anti-convergence: differs from the previous direction in this workspace on {axes}.</p>
+</main>
+</body>
+</html>

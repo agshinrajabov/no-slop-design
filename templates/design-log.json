@@ -1,0 +1,13 @@
+{
+  "$schema": "no-slop-design/design-log v1",
+  "project": "{project-name}",
+  "created": "2026-01-01",
+  "brief": { "memorable_thing": "", "attributes": ["", "", ""], "anti_attributes": ["", "", ""], "surface_mode": "persuade | operate | read | play", "platforms": [] },
+  "existing_system": { "level": 0, "source": "none | repo path | figma url", "notes": "" },
+  "direction": { "name": "", "approved": "", "thesis": "", "fonts": { "display": "", "text": "", "mono": "" }, "hue": null, "chroma_ceiling": "", "neutral_temperature": "warm | cool", "density": "comfortable | compact", "radius_scale": "", "motion_posture": "", "rejected": [] },
+  "references": [ { "id": "R01", "source": "", "type": "", "taken": "", "serves": "" } ],
+  "research": { "methods": [], "top_jobs": [], "insights_to_decisions": [] },
+  "reviews": [ { "date": "", "grades": {}, "slop_grade": "", "fixed": [], "open": [] } ],
+  "anti_convergence": { "$description": "Read at session start. The next unrelated project in this workspace must differ from the last on ≥ 2 axes.", "previous_directions": [] },
+  "decisions": [ { "date": "", "decision": "", "context": "", "alternatives": [], "consequences": "" } ]
+}
