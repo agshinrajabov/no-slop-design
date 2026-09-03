@@ -133,6 +133,35 @@ def file_rules(path: str, text: str):
     if is_page and dl_count + rowish >= 3:
         out.append(("ledger-site", "MED", f"label/value tables used as the layout device in {dl_count + rowish} places — vary the device per section; this is the skill's own tell (expression-register.md §10)", "§3 Layout"))
 
+    # performance and provenance of the imagery that is there
+    imgs = re.findall(r"<img\b[^>]*>", text, re.I)
+    if imgs:
+        first = imgs[0]
+        if re.search(r'loading\s*=\s*["\']?lazy', first, re.I):
+            out.append(("lcp-lazy", "MED", "the first image on the page is loading=\"lazy\" — the LCP image must load eagerly "
+                                           "(web-frontend.md, performance as design)", "§8 Imagery"))
+        undim = [i for i in imgs if not (re.search(r"\bwidth\s*=", i, re.I) and re.search(r"\bheight\s*=", i, re.I))
+                 and not re.search(r"aspect-ratio", i, re.I)]
+        if undim:
+            out.append(("img-no-dimensions", "MED", f"{len(undim)} of {len(imgs)} images have no width/height or aspect-ratio — "
+                                                    "each one is a layout shift (CLS)", "§8 Imagery"))
+        # provenance: if the project keeps design/assets.md, every image must be recorded there
+        assets = None
+        d = os.path.dirname(os.path.abspath(path))
+        for _ in range(3):
+            cand = os.path.join(d, "design", "assets.md")
+            if os.path.exists(cand):
+                assets = open(cand, encoding="utf-8", errors="ignore").read()
+                break
+            d = os.path.dirname(d)
+        if assets:
+            srcs = [m.group(1) for i in imgs for m in [re.search(r'src\s*=\s*["\']([^"\']+)', i, re.I)] if m]
+            missing = [s for s in srcs if s.split("?")[0].rsplit("/", 1)[-1][:24] not in assets and s[:60] not in assets]
+            if missing:
+                out.append(("asset-unrecorded", "MED", f"{len(missing)} image(s) are not recorded in design/assets.md "
+                                                       f"(first: {missing[0][:60]}) — provenance, licence and the three-match note "
+                                                       "belong there before hand-off (visual-material.md §3b, §9)", "§8 Imagery"))
+
     if is_page:
         img_count = len(re.findall(r"<img\b|<picture\b|<video\b", text, re.I))
         if 0 < img_count < 2 and len(text) > 12000:

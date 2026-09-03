@@ -51,7 +51,7 @@ the three icon cards, the card inside a card, the fade-up on every section, the 
 The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 84 tells across
 color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
 **over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
-that replaced the first wave. 40 of the mechanical ones are checked by the linter, including cross-file checks for
+that replaced the first wave. 43 of the mechanical ones are checked by the linter, including cross-file checks for
 text-only pages, ledger layouts, and reveals that hide content when JavaScript fails.
 
 Version 1.1 added the lesson from the first field test: three different industries came back as the same page
@@ -125,6 +125,8 @@ All stdlib Python; no installs.
 | `scripts/contrast.py` | WCAG 2.x ratio and APCA Lc for a pair, a pairs file, every pair in a file, or, with `--tokens build/tokens.flat.json`, every text role on every surface role per mode. Exit 1 on AA failure. |
 | `scripts/build_tokens.py tokens/*.json --out build/` | Compiles W3C DTCG tokens (with aliases and `*.dark.json` mode files) to CSS custom properties (light + dark), Tailwind v4 `@theme`, SwiftUI, Jetpack Compose, Flutter, and flat JSON. `--check` validates aliases and runs a palette sanity check (accent hue vs brand hue, untinted neutrals). |
 | `scripts/type_scale.py` | Fluid modular type scale (`clamp()`), with line-height and tracking per step; outputs table, CSS, or DTCG. |
+| `scripts/design_log.py check` / `add` | Cross-project memory. Records a fingerprint of each finished direction (register, surface polarity, brand hue, typefaces, structural idea) in `~/.no-slop-design/history.json` and warns before the next one repeats it. The per-project log is empty on a new project; this is what catches a house style forming. |
+| `scripts/audit_repo.py`, `scripts/selftest.py` | Maintainer tools, run in CI: the docs, templates and scripts must describe the same skill, and every lint rule must still fire on its fixture. |
 
 ## Layout
 
@@ -139,7 +141,8 @@ no-slop-design/
   templates/                   brief, DESIGN.md (direction + art direction + review of record), assets.md,
                                DTCG token starter set, contrast pairs, design log; Deep mode adds research
                                synthesis, moodboard.html, component spec, review report
-  scripts/                     slop_lint.py · contrast.py · build_tokens.py · type_scale.py
+  scripts/                     slop_lint.py · contrast.py · build_tokens.py · type_scale.py · design_log.py
+                               audit_repo.py · selftest.py (maintainers, run in CI)
   evals/                       scenarios and rubrics to test the skill against a model
   .claude-plugin/              plugin and marketplace manifests
 ```

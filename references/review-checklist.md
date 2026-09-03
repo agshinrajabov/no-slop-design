@@ -57,6 +57,7 @@ Nothing below B ships. C requires a revision pass, not an apology.
 
 ```bash
 python3 scripts/slop_lint.py <src or file>                 # grade A/B required; annotate remaining hits
+python3 scripts/design_log.py check                        # convergence with recent projects; obey it
 python3 scripts/contrast.py --pairs design/contrast-pairs.txt   # exit 0 required
 python3 scripts/build_tokens.py tokens/*.json --check      # 0 errors
 grep -rnE "#[0-9a-fA-F]{3,8}\b" src/components | grep -v tokens | head   # literal colors → 0
@@ -92,6 +93,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
 - [ ] Persuade: a designed visual anchor is present in the first viewport and the prototype contains real image elements (no gray placeholder boxes).
 - [ ] Every photograph passes the three-match test (subject, light, material) and was actually looked at.
+- [ ] Every image is recorded in `design/assets.md` with source, licence and the three-match note (`asset-unrecorded` clean).
+- [ ] The LCP image loads eagerly; every image carries width/height or aspect-ratio (`lcp-lazy`, `img-no-dimensions` clean).
 - [ ] Exactly one focal point per viewport; scale contrast ≥ 2× between tiers.
 - [ ] Squint test: hierarchy visible when blurred.
 - [ ] Cover-the-logo test: brand still recognisable.

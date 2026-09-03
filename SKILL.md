@@ -47,8 +47,10 @@ Read the sections the step names; skim the rest by its table of contents.
 11. **Platform first on native.** iOS follows HIG (`references/mobile-ios.md`); Android follows Material 3 (`references/mobile-android.md`).
 12. **Accessibility is a floor at every register.** WCAG 2.2 AA, verified with `scripts/contrast.py`; keyboard, focus, target sizes, reduced motion. Ambition is bought with craft, never with accessibility.
 13. **Nothing ships on the first pass.** Render it, look at it, run the review gate (`references/review-checklist.md`) and `scripts/slop_lint.py`; grade B or better.
-14. **Anti-convergence.** Do not repeat the previous project's direction, and do not let this skill's own outputs
-    become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
+14. **Anti-convergence.** Run `scripts/design_log.py check` before choosing a direction and obey what it reports;
+    record the finished one with `design_log.py add`. The per-project log is empty on a new project, so the
+    cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: register, surface
+    polarity, hue family, typeface class, structural idea. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
     label/value spec table used as the primary layout device in every section; one small photo on a long page.
 15. **Brief beats skill.** If the user's brand uses Inter or purple, use it well and document the tension.
 
@@ -81,7 +83,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 
 | Phase | Do | Read (Standard: named sections) | Output |
 |---|---|---|---|
-| **0 Detect** | Classify the request; scan repo, brand assets, live product, `design/design-log.json`; baseline existing UI with `scripts/slop_lint.py` | `discovery.md` §1–2; `existing-design-system.md` §1–2 | findings |
+| **0 Detect** | Classify the request; scan repo, brand assets, live product, `design/design-log.json`; run `scripts/design_log.py check` for what recent projects already looked like; baseline existing UI with `scripts/slop_lint.py` | `discovery.md` §1–2; `existing-design-system.md` §1–2 | findings |
 | **1 Brief** | One intake message with the four questions from non-negotiable 2 plus product, user, top job, anti-attributes, constraints, done-criteria. Decide the **surface mode** (Persuade / Operate / Read / Play) and the **expression register** (R1–R4) | `discovery.md` §3–5; `expression-register.md` §1–2 | `design/brief.md` |
 | **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | Standard: the research summary inside `design/DESIGN.md`. Deep: `design/research.md` |
 | **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
@@ -89,7 +91,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, real image elements, all states, 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
 | **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
-| **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records | `handoff.md` | handoff package |
+| **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
 **Scope shortcuts.** Single component: 0 → 1 (short) → 5 → 6 → 7. Critique only: 0 → 7, report without rebuilding.
 Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refine vs redesign → 5–7 or 3–7.
@@ -126,6 +128,8 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 | `python3 scripts/contrast.py fg bg` · `--tokens build/tokens.flat.json` · `--pairs file` | WCAG 2.x + APCA; `--tokens` checks every text role on every surface per mode |
 | `python3 scripts/build_tokens.py tokens/*.json --out build/ [--check]` | DTCG → CSS vars (light/dark), Tailwind v4 `@theme`, Swift, Kotlin, Dart, flat JSON |
 | `python3 scripts/type_scale.py` | fluid modular type scale with line-height and tracking |
+| `python3 scripts/design_log.py check` · `add --project … --register … --surface … --hue … --display … --structure …` | cross-project convergence: what the last few directions looked like, which axes must differ now |
+| `python3 scripts/audit_repo.py` · `scripts/selftest.py` | maintainers only: the skill's own consistency, and rule regressions |
 
 External tools when present: a **browser** for capturing references and rendering the prototype (screenshots are the
 review evidence; render in the color scheme the audience will see); **Figma MCP** for reading an existing library and

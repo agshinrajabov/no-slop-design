@@ -78,6 +78,38 @@ def main() -> int:
     check("moodboard template grades A", mood["grade"] == "A", f"grade {mood['grade']}, rules "
           f"{sorted({f['rule'] for f in mood['findings']})}")
 
+    print("slop_lint — imagery performance and provenance")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "assets.md"), "w").write("| P1 | hero | street | photo-1608315172253 | Unsplash | ok |\n")
+        page = os.path.join(d, "index.html")
+        open(page, "w").write(
+            "<html><body><main><section><h1>x</h1>"
+            "<img src='https://images.unsplash.com/photo-1608315172253?w=1600' loading='lazy' alt='a'>"
+            "<img src='https://images.unsplash.com/photo-9999999999999?w=800' width='800' height='600' alt='b'>"
+            "</section></main></body></html>")
+        rules = {f["rule"] for f in lint_json(page)["findings"]}
+        check("lcp-lazy", "lcp-lazy" in rules, f"rules: {sorted(rules)}")
+        check("img-no-dimensions", "img-no-dimensions" in rules, f"rules: {sorted(rules)}")
+        check("asset-unrecorded", "asset-unrecorded" in rules, f"rules: {sorted(rules)}")
+
+    print("design_log — cross-project convergence")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "history.json"))
+        for i, (proj, ind) in enumerate([("a", "dental"), ("b", "coffee"), ("c", "law")]):
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--register", "R2",
+                            "--surface", "dark", "--hue", "40", "--display", "Fraunces",
+                            "--structure", "fact ledger beside headline", "--industry", ind],
+                           cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("streak on surface polarity is reported", "surface polarity" in out, out.strip()[-200:])
+        check("same-surface across industries is called the skill's own tell", "skill's own tell" in out, out.strip()[-200:])
+        subprocess.run([PY, "scripts/design_log.py", "add", "--project", "d", "--register", "R3", "--surface", "light",
+                        "--hue", "66", "--display", "Archivo Expanded", "--structure", "full-bleed photo",
+                        "--industry", "festival"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out2 = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("breaking two axes clears the warnings", "no convergence warnings" in out2, out2.strip()[-200:])
+
     print("build_tokens — palette sanity")
     indigo = run("scripts/build_tokens.py", "evals/fixtures/indigo-accent.json", "--check")
     check("imported indigo accent warns", "blue/indigo/violet band" in indigo.stdout, indigo.stdout.strip()[:120])
