@@ -16,17 +16,17 @@ template:
 |---|---|---|
 | 0 Detect | Classifies the request; finds any existing design system, brand, tokens, or prior direction; baselines the current UI with the slop linter | findings |
 | 1 Brief | One pre-filled intake message: product, user, top job, the memorable thing, anti-attributes, constraints; picks a surface mode (Persuade / Operate / Read / Play) | `design/brief.md` |
-| 2 Research | 30–120 min mini research: job stories, assumption map, competitor teardown, review mining, heuristic pass; each insight ends in a decision | `design/research.md` |
-| 3 Moodboard | Attributes → brand-driver exercise → annotated real-world references → remix thesis → 2–3 named directions with live specimens | `design/moodboard.html` |
+| 2 Research | Local + global mini research: job stories, competitor first-screens, review mining, heuristic pass; each insight ends in a decision | Standard: inside `DESIGN.md` · Deep: `design/research.md` |
+| 3 Direction | Attributes → brand-driver exercise → annotated references (local + global) → remix thesis → register → imagery art direction → direction + alternative | Standard: direction block in `DESIGN.md` · Deep: `design/moodboard.html` with 2–3 directions |
 | 4 System | OKLCH color scales, fluid type scale, spacing, radius, elevation, motion; semantic roles for light and dark; compiled to CSS, Tailwind v4, Swift, Kotlin, Dart; every role contrast-checked | `tokens/`, `build/`, `design/DESIGN.md` |
 | 5 Compose | Per screen: content by priority, one focal point, reading path, structure that fits the content; full component state matrix; copy last | screen and component specs |
 | 6 Build | HTML/CSS prototype with real content and all states at three widths, the repo's framework, or native code; Figma via MCP when available | working UI |
-| 7 Review | 13-gate self-critique, slop linter, contrast check, studio test; grade B or better or it goes back | `design/review-{date}.md` |
+| 7 Review | Self-critique gates, slop linter, contrast and palette checks, a JS-disabled pass, studio test; grade B or better or it goes back | Standard: review of record in `DESIGN.md` · Deep: `design/review-{date}.md` |
 | 8 Hand off | Deliverables, specs, QA checks, decision records | handoff package |
 
 Two modes. **Standard** (default) targets 10–15 minutes: a short local + global research pass, one recommended
 direction plus an alternative, tokens edited from the starter set, one screen with all states, a scripted review.
-**Deep** (on request, or a new brand) runs the full menu. The intake always asks three things first: which market and
+**Deep** (on request, or a new brand) runs the full menu. The intake always asks four things first: which market and
 language the audience is in, whether an existing or preferred design system exists (Figma, Storybook, tokens, brand
 guide), the one thing a first-time viewer should remember, and **how much visual ambition the work should carry**.
 
@@ -48,15 +48,19 @@ A critique request produces a report without a rebuild.
 
 Slop is not a style. It is what happens when a visual decision is *not made*: the default font, the purple gradient,
 the three icon cards, the card inside a card, the fade-up on every section, the "Unlock the power of…" headline.
-The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 86 tells across
+The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 84 tells across
 color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
 **over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
-that replaced the first wave. 35 of the mechanical ones are checked by the linter.
+that replaced the first wave. 39 of the mechanical ones are checked by the linter, including cross-file checks for
+text-only pages, ledger layouts, and reveals that hide content when JavaScript fails.
 
 Version 1.1 added the lesson from the first field test: three different industries came back as the same page
 (dark surface, serif headline, fact table, one button, no images). Restraint without material is its own slop.
 `references/visual-material.md` now requires a designed visual anchor, art direction, and real image elements, and the
 linter flags text-only pages, ledger heroes, and gray placeholder boxes.
+
+Version 1.2.1 adds a `reveal-no-fallback` check after a rendered test page turned out to be blank with scripting
+disabled: `opacity: 0` reveals inside a `prefers-reduced-motion` query still need a `js` class or a `<noscript>` reset.
 
 Version 1.2 came from the second field test, which produced a competent page that still read as a document. It adds
 `references/expression-register.md` (R1–R4 with a technique catalogue and the five conditions for R4), the
@@ -132,8 +136,9 @@ no-slop-design/
     expression-register.md · visual-material.md · anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
     ux-patterns.md · content-microcopy.md · motion.md · accessibility.md · web-frontend.md
     mobile-ios.md · mobile-android.md · review-checklist.md · handoff.md
-  templates/                   brief, research synthesis, moodboard.html, DESIGN.md, DTCG token starter set,
-                               contrast pairs, design log, component spec, review report
+  templates/                   brief, DESIGN.md (direction + art direction + review of record), assets.md,
+                               DTCG token starter set, contrast pairs, design log; Deep mode adds research
+                               synthesis, moodboard.html, component spec, review report
   scripts/                     slop_lint.py · contrast.py · build_tokens.py · type_scale.py
   evals/                       scenarios and rubrics to test the skill against a model
   .claude-plugin/              plugin and marketplace manifests

@@ -12,6 +12,10 @@
 | Owner | |
 | Last reviewed | {date} |
 | Applies to | {web app · marketing · iOS · Android · Flutter} |
+| Market & audience | {country/region · language(s) & script · local conventions honoured} |
+| Surface mode | {Persuade · Operate · Read · Play} |
+| **Expression register** | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {decision type + category norm + asset budget} |
+| Mode | {Standard · Deep} |
 | Token source | `tokens/primitives.json`, `tokens/semantic.json`, `tokens/semantic.dark.json`, `tokens/components.json` |
 | Build | `python3 scripts/build_tokens.py tokens/*.json --out build/` |
 
@@ -27,7 +31,28 @@
 | | | |
 | | | |
 
-**Moodboard:** `design/moodboard.html` — Direction {A/B/C} "{name}" approved on {date}. Reference set: {n} references, each annotated with what was taken.
+**Direction: "{Two-word name}"** — {visual thesis in one sentence: typography discipline of X × colour world of Y × density of Z}.
+
+*Standard mode records the direction here; Deep mode also builds `design/moodboard.html`.*
+
+**References** (≥ 5; ≥ 2 from the audience's market; ≥ 30% non-UI; each with what was taken):
+
+| # | Source (URL) | Type | Taken | Serves |
+|---|---|---|---|---|
+| R1 | | | | |
+| R2 | | | | |
+| R3 | | | | |
+| R4 | | | | |
+| R5 | | | | |
+
+**Alternative considered — "{name}" ({one register away})**: {five lines: what changes, what it costs, why it was
+not chosen}. Recorded so the ambition can be traded without redoing the research.
+
+**Imagery art direction** (drives `design/assets.md` and the shot list): subject {…} · people {none / hands only /
+candid} · light {…} · treatment {…} · crop {…} · ratios {hero 3:2, portrait 4:5, detail 1:1} · banned {…}.
+Anchor type: {full-bleed photograph · product-first · type as image · colour field · illustration · video · scene}.
+
+**Register techniques used** (from `expression-register.md` §7, anything off-row justified): {…}
 
 **Design principles (max 5, each with a tie-breaker rule):**
 1. *{Principle}* — when in conflict with {other}, {this} wins because {…}.
@@ -145,7 +170,23 @@ Tone in three words: {…}. Sentence case. Verb-first buttons. Errors say what h
 - {e.g. no icon-in-circle feature rows}
 - …
 
-## 11. Changelog
+## 11. Review of record
+
+Ten lines from the review gate (`review-checklist.md`); Deep mode writes the full report to `design/review-{date}.md`.
+
+| Gate | Grade | One line |
+|---|---|---|
+| 1 Brief & register honoured | | |
+| 3 Hierarchy & composition | | |
+| 5 Colour & contrast | | |
+| 6 Spacing, layout, responsive | | |
+| 10 Accessibility (incl. JS-disabled pass) | | |
+| 13 Slop & originality | | |
+
+Scripts: `slop_lint.py` {grade} · `contrast.py --tokens` {exit} · `build_tokens.py --check` {warnings}.
+Studio test: {would a studio sign it; what they would change first}. Open items: {…}.
+
+## 12. Changelog
 
 | Version | Date | Change |
 |---|---|---|

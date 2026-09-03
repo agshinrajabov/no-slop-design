@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with real visual material. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition with imagery → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.2.1"
+  version: "1.3.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -83,12 +83,12 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 |---|---|---|---|
 | **0 Detect** | Classify the request; scan repo, brand assets, live product, `design/design-log.json`; baseline existing UI with `scripts/slop_lint.py` | `discovery.md` §1–2; `existing-design-system.md` §1–2 | findings |
 | **1 Brief** | One intake message with the four questions from non-negotiable 2 plus product, user, top job, anti-attributes, constraints, done-criteria. Decide the **surface mode** (Persuade / Operate / Read / Play) and the **expression register** (R1–R4) | `discovery.md` §3–5; `expression-register.md` §1–2 | `design/brief.md` |
-| **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | `design/research.md` |
+| **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | Standard: the research summary inside `design/DESIGN.md`. Deep: `design/research.md` |
 | **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
 | **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, real image elements, all states, 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
-| **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | `design/review-{date}.md` |
+| **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records | `handoff.md` | handoff package |
 
 **Scope shortcuts.** Single component: 0 → 1 (short) → 5 → 6 → 7. Critique only: 0 → 7, report without rebuilding.
@@ -167,6 +167,7 @@ build/    (generated)
 | `references/web-frontend.md` · `references/mobile-ios.md` · `references/mobile-android.md` | Phase 6 per platform |
 | `references/review-checklist.md` · `references/handoff.md` | Phase 7–8 |
 
-Templates: `templates/design-brief.md`, `templates/research-synthesis.md`, `templates/moodboard.html`,
-`templates/DESIGN.md`, `templates/tokens/*.json`, `templates/contrast-pairs.txt`, `templates/design-log.json`,
+Templates: `templates/design-brief.md`, `templates/DESIGN.md` (direction, art direction and review of record live
+here in Standard mode), `templates/assets.md`, `templates/tokens/*.json`, `templates/contrast-pairs.txt`,
+`templates/design-log.json`; Deep mode also uses `templates/research-synthesis.md`, `templates/moodboard.html`,
 `templates/component-spec.md`, `templates/review-report.md`.

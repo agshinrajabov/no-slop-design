@@ -7,6 +7,9 @@
 > except the name. Stack is Next.js with Tailwind v4. I'm not available for questions for the next few hours; make
 > sensible decisions and tell me what you assumed.
 
+**Mode:** Deep (a new brand with no assets). A Standard-mode run of the same prompt should produce the same
+decisions with the direction and review written inside `DESIGN.md` and no separate research or moodboard file.
+
 ## Expected behaviour
 
 Phases 0–7 in order, autonomous mode (assumptions stated), one check-in artefact (the moodboard with a recommended
