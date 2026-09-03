@@ -24,8 +24,13 @@ template:
 | 7 Review | 13-gate self-critique, slop linter, contrast check, studio test; grade B or better or it goes back | `design/review-{date}.md` |
 | 8 Hand off | Deliverables, specs, QA checks, decision records | handoff package |
 
-Short requests take the short path (a single component is detect → short brief → 30-minute research → compose →
-build → review). A critique request produces a report without a rebuild.
+Two modes. **Standard** (default) targets 8–15 minutes: a short local + global research pass, one recommended
+direction plus an alternative, tokens edited from the starter set, one screen with all states, a scripted review.
+**Deep** (on request, or a new brand) runs the full menu. The intake always asks three things first: which market and
+language the audience is in, whether an existing or preferred design system exists (Figma, Storybook, tokens, brand
+guide), and the one thing a first-time viewer should remember.
+
+A critique request produces a report without a rebuild.
 
 ## What "no slop" means here
 
@@ -35,6 +40,11 @@ The skill treats every one of these as a question ("was this chosen?") and ships
 color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
 **over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
 that replaced the first wave. 35 of the mechanical ones are checked by the linter.
+
+Version 1.1 added the lesson from the first field test: three different industries came back as the same page
+(dark surface, serif headline, fact table, one button, no images). Restraint without material is its own slop.
+`references/visual-material.md` now requires a designed visual anchor, art direction, and real image elements, and the
+linter flags text-only pages, ledger heroes, and gray placeholder boxes.
 
 The catalog is enforced three ways: by the moodboard method (decisions traceable to attributes and references), by
 the review gate (13 gates, graded), and mechanically by `scripts/slop_lint.py`.
@@ -99,9 +109,9 @@ All stdlib Python; no installs.
 ```
 no-slop-design/
   SKILL.md                     the router (what to do, when to read what)
-  references/                  20 deep references, loaded per phase
+  references/                  21 deep references, loaded per phase
     discovery.md · existing-design-system.md · mini-user-research.md · moodboard.md · inspiration-sources.md
-    anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
+    visual-material.md · anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
     ux-patterns.md · content-microcopy.md · motion.md · accessibility.md · web-frontend.md
     mobile-ios.md · mobile-android.md · review-checklist.md · handoff.md
   templates/                   brief, research synthesis, moodboard.html, DESIGN.md, DTCG token starter set,

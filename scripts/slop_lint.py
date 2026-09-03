@@ -107,7 +107,26 @@ RULES = [
     ("mobile-emoji-tab", "MED", r"(BottomNavigationBarItem|Tab\()[^)]*[\U0001F300-\U0001FAFF]", "emoji in mobile tab bar", "§5 Iconography"),
     ("mobile-gradient-button", "MED", r"LinearGradient\([^)]*Colors\.(purple|deepPurple|indigo)|gradient:\s*LinearGradient",
      "gradient-filled button (Flutter/SwiftUI)", "§4 Components"),
+    ("placeholder-box", "HIGH", r"\[(Photo|Image|Photograph|Illustration|Video|Hero image)[:\s][^\]]{0,160}\]",
+     "bracketed image caption in a box instead of a real or designed placeholder image (visual-material.md §8)", "§8 Imagery"),
 ]
+
+# File-level rules: evaluated once per HTML document
+def file_rules(path: str, text: str):
+    out = []
+    if not path.lower().endswith((".html", ".htm", ".astro", ".vue", ".svelte", ".jsx", ".tsx", ".mdx")):
+        return out
+    base = os.path.basename(path).lower()
+    if any(k in base for k in ("moodboard", "review", "spec", "storybook", "handoff")) or "data-nsd-doc" in text:
+        return out  # working documents, not product pages
+    is_page = re.search(r"<(main|section|header)\b", text, re.I) and len(text) > 3000
+    has_media = re.search(r"<(img|picture|video|canvas)\b|<svg[^>]*(viewBox=\"0 0 (?!2[04] 2[04])[^\"]+\"|width=\"(?!1[0-9]|2[0-9]|3[0-2])\d{3,})", text, re.I)
+    if is_page and not has_media:
+        out.append(("no-imagery", "HIGH", "page-level document with no image, picture, video, or illustration element — text-only pages read as unfinished (visual-material.md §1)", "§8 Imagery"))
+    dl_hero = re.search(r"<(header|section)[^>]*>(?:(?!</(header|section)>).){0,4000}<dl\b", text, re.I | re.S)
+    if dl_hero and not has_media:
+        out.append(("ledger-hero", "MED", "definition-list / fact table as the first-viewport composition with no visual anchor — the 'honest ledger' over-correction (anti-slop.md §8)", "§3 Layout"))
+    return out
 
 COMPILED = [(i, s, re.compile(p, re.IGNORECASE if i not in ("emoji-ui", "mobile-emoji-tab") else 0), m, sec) for i, s, p, m, sec in RULES]
 DENSITY_RULES = {  # id: (threshold per 100 lines, message)
@@ -139,6 +158,9 @@ def scan(paths):
             continue
         lines = text.splitlines()
         total_lines += len(lines)
+        for rid, sev, msg, sec in file_rules(path, text):
+            counts[rid] += 1
+            findings.append({"rule": rid, "severity": sev, "file": path, "line": 1, "section": sec, "message": msg, "snippet": ""})
         is_native = path.endswith((".swift", ".kt", ".dart"))
         for ln, line in enumerate(lines, 1):
             if line.strip().startswith(("//", "#", "*", "/*")) and "font" not in line.lower():

@@ -50,14 +50,24 @@ dictates.
 
 ## 3. The intake conversation
 
-One message, not a questionnaire. Pre-fill everything inferable; ask only the gaps. The essential questions:
+One message, not a questionnaire. Pre-fill everything inferable; ask only the gaps. The essential questions, in
+this order (the first two change everything downstream, so they come first):
 
-1. **What is it, for whom, and what job do they hire it for?** (product, primary user, top task)
-2. **What should someone remember after seeing it once?** (the memorable thing — a feeling, a visual, a claim, a posture)
-3. **What must it never feel like?** (anti-attributes; also "which competitors do you *not* want to resemble")
-4. **What exists that I must respect?** (design system, brand assets, platform, tech stack, localisation, a11y target)
-5. **What does done look like?** (fidelity, deliverables, metric, deadline)
-6. Optional accelerators: 2–3 products (any category) whose *feel* you admire and why; 2–3 you dislike and why.
+1. **Which market and audience?** Country/region, language(s) and script, device mix, and any local conventions
+   (payment methods, trust signals, regulation, date/number formats, RTL). Research and references will combine
+   this market's leading products with worldwide ones; without the answer, assume the user's own locale and say so.
+2. **Is there an existing or preferred design system?** Ask for the artefact, not an opinion: a Figma library link,
+   Storybook URL, tokens file, component library (shadcn/MUI/Material/own), brand guide PDF, or a live product to
+   match. "Use Material 3" or "match our Figma" is a valid answer. If none exists, say we will build one and that it
+   will be delivered as tokens they can keep. Recommend: if a company already has any of these, adopt it; a second
+   visual language costs more than an imperfect existing one.
+3. **What is it, for whom, and what job do they hire it for?** (product, primary user, top task)
+4. **What should someone remember after seeing it once?** (the memorable thing — a feeling, a visual, a claim, a posture)
+5. **What must it never feel like?** (anti-attributes; also "which competitors do you *not* want to resemble")
+6. **What visual assets exist?** Photography, product shots, logo files, illustration, video. If none, we will write
+   a shot list and use designed placeholders (`visual-material.md`).
+7. **What does done look like?** (fidelity, deliverables, metric, deadline) and **Standard or Deep** mode.
+8. Optional accelerators: 2–3 products (any category, ideally one local) whose *feel* you admire and why; 2–3 you dislike and why.
 
 Tell the user they can answer in prose; you will structure it. If they have no opinions, say you will decide and
 mark decisions as revisable in the brief.
@@ -79,7 +89,13 @@ Every screen belongs to one mode; the mode sets the rules that apply. Decide per
 Hybrids exist (a marketing site with an interactive demo; an app with an onboarding pitch); apply the mode per
 region.
 
-## 5. Scope ladder and deliverables
+## 5. Scope ladder, modes, and budgets
+
+**Standard** (default): 8–15 minutes wall time; research ≤ 15 min and ≤ 8 fetches; one recommended direction plus
+a five-line alternative; tokens edited from the template; one screen with all states; `DESIGN.md` + log; review
+gates 0, 1, 3, 5, 6, 10, 13. **Deep** (on request or for a new brand): the full menu, 30–60 minutes. State the mode
+in the brief. Token and time budgets are part of the design; a 45-minute run for a one-sentence request is a defect.
+
 
 | Level | Deliverables | When enough |
 |---|---|---|

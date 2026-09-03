@@ -11,7 +11,9 @@
 | Who it is for | {primary user — role, context, device, frequency of use} |
 | The job they hire it for | When I {situation}, I want to {motivation}, so I can {outcome}. |
 | Business goal for this piece of work | {activation / retention / conversion / trust / speed / …} |
+| Market & audience locale | {country/region · language(s) & script · device mix · local conventions: payments, trust signals, regulation, formats, RTL} |
 | Platform(s) | {web marketing · web app · iOS · Android · cross-platform (Flutter/RN) · desktop} |
+| Mode | {Standard (default) · Deep} |
 | Surface type | {landing / marketing · product UI (data-dense) · editorial · e-commerce · tool · hybrid} |
 | Scope of this engagement | {new product · new feature · redesign · single screen · design system only} |
 
@@ -23,7 +25,8 @@
 
 ## 3. Constraints (real ones)
 
-- **Existing design system?** {none · partial (list what exists: Figma library / tokens.json / Tailwind config / component lib) · complete (link)}
+- **Existing or preferred design system?** {none → we build one · partial (list: Figma library link / Storybook / tokens.json / Tailwind config / component lib) · complete (link) · preferred external system (Material 3 / HIG / shadcn / other)}
+- **Visual assets available:** {photography · product shots · logo files · illustration · video · none → shot list + designed placeholders}
 - **Brand assets that are fixed:** {logo · brand colors · typeface · voice guide · none}
 - **Tech stack:** {Next.js + Tailwind v4 · SwiftUI · Jetpack Compose · Flutter · Vue · plain CSS · unknown}
 - **Accessibility target:** {WCAG 2.2 AA (default) · AAA for {areas} · platform HIG only}
@@ -39,7 +42,7 @@
 | {name / role} | | | | |
 | {name / role} | | | | |
 
-## 5. Competitive & reference landscape (3–7 entries)
+## 5. Competitive & reference landscape (3–7 entries; at least 2 from the audience's market, at least 2 global)
 
 | Product | What they do well (steal the principle, not the pixels) | Where they fail users | Visual cliché they share |
 |---|---|---|---|

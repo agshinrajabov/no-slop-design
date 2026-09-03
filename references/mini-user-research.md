@@ -22,6 +22,14 @@ must end in a design decision.
 
 ---
 
+## 0. Local + global, always
+
+Every method below runs on two sets: the **audience's market** (the country/region and language from the brief:
+its leading products, app-store charts, local competitors, local review sites, local forums) and the **global**
+field. Note where local conventions differ (payment methods, ID/verification norms, trust signals, formality of
+address, colour and symbol meanings, date/number/currency formats, script and RTL, regulatory notices). Local
+conventions are table stakes; global references are where the differentiation ideas come from.
+
 ## 1. Choosing the time box
 
 | Situation | Time box | Minimum method set |
@@ -91,7 +99,7 @@ with "does this sound like you?" on 3–5 real users.
 
 ## 6. Competitor & category teardown
 
-Pick 3–5 direct + 2 adjacent products (adjacent = same job, different category — often where the good ideas are).
+Pick 3–5 direct (at least 2 from the audience's market) + 2 adjacent products (adjacent = same job, different category — often where the good ideas are). In Standard mode: 3 first-screens only.
 For each, walk the top job end to end and record:
 
 | Field | Note |

@@ -116,7 +116,9 @@ columns: reorder, drop, and change component type (table → priority columns; s
 ## 7. Marketing / landing pages (Persuade)
 
 - **First viewport = poster, not document.** Budget: brand, one headline (≤ 8 words), one supporting sentence, one
-  action group, one real image or product. Full-bleed or deliberate asymmetry; no inset rounded hero panel.
+  action group, and **one designed visual anchor** (photograph, product, illustration, graphic device, color field,
+  or video; see `visual-material.md` §2). The anchor is chosen before the type is set. A fact table can support the
+  anchor; it cannot replace it. Full-bleed or deliberate asymmetry; no inset rounded hero panel.
 - **No cards in the hero.** No pill badge above the headline. No two identical buttons.
 - **Each section has one job** and its own composition. Ban the fixed skeleton (hero → 3 features → logos →
   testimonials → pricing → FAQ → CTA). Choose from structures that fit the argument:

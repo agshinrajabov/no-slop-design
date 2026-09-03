@@ -77,7 +77,9 @@ and density.
 
 ## 5. Step 3 — reference gathering (real world, annotated)
 
-Minimum **5 references per direction**, ideally 8–12, from *shipped* products and *non-UI* sources. Use the source
+Minimum **5 references per direction** (Standard: 5–6; Deep: 8–12), from *shipped* products and *non-UI* sources,
+**at least 2 from the audience's own market** (its leading brands, signage, print, architecture, local design studios)
+and at least 2 global. Use the source
 map in `inspiration-sources.md`. For each reference record:
 
 ```
@@ -124,7 +126,8 @@ decide now and write the tie-breaker.
 ## 8. Step 6 — compose 2–3 directions
 
 Each direction gets: a name (two words, evocative, not "Modern Clean"), the visual thesis sentence, its reference
-set, a type pairing (display + text, named), a five-swatch palette in OKLCH (surface, surface-raised, text, accent,
+set, an **imagery art direction** (anchor type, subject, people, light, treatment, crop — `visual-material.md` §2–3;
+"no imagery" is a decision that needs a written reason), a type pairing (display + text, named), a five-swatch palette in OKLCH (surface, surface-raised, text, accent,
 accent-strong) for light and, if relevant, dark, one radius/shape statement, a density statement, a motion
 posture, an imagery statement, and a **"not this"** list of 5 items specific to this direction.
 
@@ -165,6 +168,9 @@ typeface or primary color for an existing brand unless the brief asks for a rebr
 - Fonts chosen from the watch list in `typography.md` without a written reason.
 - The specimen missing (swatches never tested against real text and controls).
 - A direction that repeats the last project's direction in this workspace (check `design-log.json`).
+- Imagery left as "TBD" or gray boxes; a text-only direction for a business that has rooms, people, products, or places to show.
+- The skill's own recurring output (dark surface, serif display, fact table, one button) presented as if it were a decision. It is a template now; treat it as one.
+- Serif chosen because the attribute was "warm", "craft", or "heritage" without testing a sans or a slab against the same attribute.
 
 ## 12. Quality bar
 

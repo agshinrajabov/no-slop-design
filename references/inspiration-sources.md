@@ -121,6 +121,24 @@ content guidelines, and "when to use" sections.
 | "Top 10 UI trends 2026" articles | Trends are next year's slop | Know them to avoid stacking them |
 | Component library default showcases (shadcn examples, MUI demos) | Default look | Structure and API only |
 
+## 9b. The audience's own market
+
+Every moodboard includes local references. Where to find them fast:
+
+| Source | What it gives |
+|---|---|
+| App Store / Google Play top charts filtered by country | what the audience uses daily; local UI conventions |
+| Local award bodies and design weeks (e.g. ADC*E, D&AD regional, Red Dot regional lists, national design prizes) | the market's best studios |
+| Fonts In Use filtered by country/language; Typewolf country tags | typography that works in the script |
+| Local design studios' portfolios (search "[city] design studio branding") | current craft level and idioms |
+| Local newspapers, transit systems, public signage, banknotes, stamps | typographic and colour heritage |
+| Local e-commerce and banking leaders | trust signals, payment badges, formality of copy |
+| Local review sites and forums (Reddit country subs, Trustpilot country, national equivalents) | pain language, expectations |
+| Wikimedia Commons by region; museum open-access collections | historical palettes and motifs |
+
+Use local references for conventions and cultural fit, global references for the idea that makes the design
+stand out; write down which is which.
+
 ## 10. How to search
 
 - Search by **pattern and context**, not by adjective: "settings screen banking app" beats "clean UI".

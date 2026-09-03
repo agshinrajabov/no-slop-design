@@ -70,6 +70,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Top job story is the primary path; primary action is where the reading path ends.
 - [ ] Every research insight marked "drives a decision" is visible somewhere; list where.
 - [ ] Constraints respected (existing system, brand assets, platform, localisation, performance floor).
+- [ ] Market and language from the brief are visible in the design (locale formats, script support, local conventions, local references in the moodboard).
+- [ ] Mode budget respected (Standard: ≤ 15 min, one direction + alternative, no unrequested documents).
 - [ ] Nothing was added that the brief did not ask for and the research did not justify.
 
 ## 5. Gate 2 — UX and flow
@@ -85,6 +87,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 
 ## 6. Gate 3 — hierarchy and composition
 
+- [ ] Persuade: a designed visual anchor is present in the first viewport and the prototype contains real image elements (no gray placeholder boxes).
 - [ ] Exactly one focal point per viewport; scale contrast ≥ 2× between tiers.
 - [ ] Squint test: hierarchy visible when blurred.
 - [ ] Cover-the-logo test: brand still recognisable.
@@ -183,6 +186,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Walk `anti-slop.md` §1–§9 with the screenshots; zero unannotated tells.
 - [ ] Over-correction check (§8): every style signal traceable to an attribute or content type; ≤ 2 trend signals stacked.
 - [ ] Anti-convergence: this design differs from the last one logged in `design-log.json` on ≥ 2 axes (structure, type, hue, density, motion) unless it is the same product.
+- [ ] Not the skill's own tell: dark surface + serif display + fact table + one button. If the page could be swapped with another industry's page by changing the nouns, the direction failed.
+- [ ] Local fit: at least one decision traceable to the audience's market (convention, reference, copy register).
 - [ ] Name three decisions no template would have made.
 - [ ] Name the brand attribute behind: typeface, primary color, radius, densest screen, the one motion.
 

@@ -47,3 +47,13 @@ direction), then a built prototype and a review report.
 22. Final message: decisions and why, evidence, assumptions, open items, grades; in plain sentences; no process narration.
 
 Max 44. Pass ≥ 35 with items 16, 11, and 21 at 2.
+
+## Rubric additions (1.1)
+
+| Criterion | Pass condition |
+|---|---|
+| Market and audience | Brief names country, language, script, local conventions; research and moodboard include at least 2 local references |
+| Design system question | Intake explicitly asked for Figma / Storybook / tokens / brand guide, or stated none and that one will be built |
+| Visual anchor | First viewport has a designed photograph, product, illustration, or graphic device; prototype contains real img/picture/video elements; no gray placeholder boxes |
+| Not the skill's own tell | Not dark surface + serif display + fact table + one button; could not be mistaken for another industry's page by swapping nouns |
+| Budget | Standard mode finished in 15 minutes or less with one direction plus an alternative; no unrequested documents |

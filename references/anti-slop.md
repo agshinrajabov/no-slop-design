@@ -137,9 +137,14 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | Frutiger-Aero / Y2K chrome / lo-fi pixel nostalgia | Youth, gaming, music, or an ironic brand voice |
 | Swiss-grid hyper-minimal with 12px labels everywhere | Design-literate audience, information-dense product |
 | Neon-brutalist dark ("Warp × Sentry") | Dev tools, and only once |
+| **Text-only "honest" page**: serif display, fact table / definition list as the hero, one button, no imagery | A brand that is genuinely typographic (type foundry, publication) and names it as the memorable thing; never for a clinic, café, firm, hotel, shop |
+| Dark surface by default on a marketing page | Night-time or screen-native contexts (cinema, music, dev tools) |
+| Gray placeholder boxes with "[Photo: …]" captions in a delivered prototype | Never; use real licensed placeholders or designed placeholders mapped to a shot list |
+| Serif chosen by reflex for "warm / craft / heritage" | Only after testing a sans and a slab against the same attribute |
 
 Rule: **a style must be traceable to a brand attribute or a content type.** Never stack more than two trend
-signals. Match trend intensity to brand stage (an unknown startup can't carry an "understated" look; a bank can't
+signals. And a second rule: **the absence of material is also a style choice**, and usually the wrong one; see
+`visual-material.md`. Match trend intensity to brand stage (an unknown startup can't carry an "understated" look; a bank can't
 carry glitch).
 
 ## §9 Accessibility as a slop signal
