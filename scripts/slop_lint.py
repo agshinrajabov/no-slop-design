@@ -97,6 +97,10 @@ RULES = [
     ("outline-none", "HIGH", r"outline-none(?!\s+[^\"']*focus-visible)|outline:\s*none(?![^}]*focus-visible)",
      "focus outline removed — must be replaced with focus-visible ring", "§9 Accessibility"),
     ("hover-scale", "LOW", r"hover:scale-1\d\d|hover:-translate-y-[12]\b", "hover lift/scale on cards", "§7 Motion"),
+    ("marquee", "MED",
+     r"\bmarquee\b|animation:[^;]*\binfinite\b|<marquee|animate-\[?scroll|ticker__track|infinite-scroll",
+     "auto-scrolling marquee or infinite ticker — content that moves at rest cannot be read or clicked, and a "
+     "thematic story (\"they tour\", \"logos scroll\") is the usual dressing for it (anti-slop.md \u00a77)", "\u00a77 Motion"),
     # ---------------------------------------------------------------- imagery / structure
     ("stock-avatar", "MED", r"randomuser\.me|pravatar\.cc|i\.pravatar|unsplash\.com/photo-\w+.*(?:face|portrait|person)|placeholder\.com|placehold\.co",
      "placeholder avatar/image service", "§8 Imagery"),
@@ -243,8 +247,12 @@ def scan(paths):
 
 
 def slop_score(findings, total_lines) -> tuple[str, int]:
+    """Grade distinct (rule, file) pairs. One choice repeated across six lines of CSS is one choice."""
     weight = {"HIGH": 3, "MED": 1.5, "LOW": 0.5}
-    raw = sum(weight[f["severity"]] for f in findings)
+    seen: dict[tuple[str, str], str] = {}
+    for f in findings:
+        seen.setdefault((f["rule"], f["file"]), f["severity"])
+    raw = sum(weight[s] for s in seen.values())
     per_kloc = raw / max(total_lines / 1000, 0.25)
     grade = "A" if per_kloc < 1 else "B" if per_kloc < 4 else "C" if per_kloc < 10 else "D" if per_kloc < 20 else "F"
     return grade, round(per_kloc, 1)

@@ -73,6 +73,13 @@ def main() -> int:
         check("no false positive on guarded reveal", "reveal-no-fallback" not in {f["rule"] for f in g["findings"]},
               "guarded page was flagged")
 
+    print("slop_lint — the marquee the catalog bans")
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "m.html")
+        open(p, "w").write("<html><body><main><div class='marquee'><ul class='marquee__track'><li>date</li></ul></div>"
+                           "<style>.marquee__track{animation:scroll 30s linear infinite}</style></main></body></html>")
+        check("marquee flagged", "marquee" in {f["rule"] for f in lint_json(p)["findings"]}, "not flagged")
+
     print("slop_lint — working documents are exempt")
     mood = lint_json("templates/moodboard.html")
     check("moodboard template grades A", mood["grade"] == "A", f"grade {mood['grade']}, rules "

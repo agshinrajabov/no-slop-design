@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4.0 — 2026-09-03
+
+Three field tests of the paths that had never been run — an existing design system, an iOS screen, and eval 04 on
+a weaker model — found three defects in the tools and one in the guidance.
+
+- `build_tokens.py`: OKLCH colours were silently dropped from the Swift, Kotlin and Dart output. `color.md` tells
+  authors to work in OKLCH, so the recommended input produced native token files with the colours missing and no
+  error. `to_hex()` now resolves hex, `oklch()`, `rgb()` and DTCG colour objects, dark variants included.
+- `slop_lint.py`: page-level imagery rules judged component source. A `.tsx` page that composes `<Panel>` has no
+  `<img>` of its own and was graded C for it; those rules now read rendered documents only.
+- `slop_lint.py`: new `marquee` rule. The catalog has banned the auto-scrolling marquee since 1.0, but nothing
+  checked for it, and the weaker model shipped one for tour dates with a thematic justification.
+  `expression-register.md` now marks it off-row at every register and names the rationalisation pattern.
+- `slop_lint.py`: grades count distinct (rule, file) pairs. One choice repeated over six lines of CSS is one choice,
+  not six, and should not turn a B into an F.
+- Budgets are register-aware: 10–15 minutes at R1–R2, 20–25 at R3, where sourcing and checking real photography is
+  most of the cost. Three runs in a row overran a flat 15-minute target, which made the target wrong, not the runs.
+
 ## 1.3.0 — 2026-09-03
 
 - `reveal-no-fallback` (HIGH, cross-file) in `slop_lint.py`: scroll-reveal styles that set `opacity: 0` with no

@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with real visual material. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition with imagery → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -62,7 +62,7 @@ a defect, and the fix is fewer artefacts, not faster typing.
 
 | | Standard (default) | Deep |
 |---|---|---|
-| Target wall time | 10–15 min | 30–60 min |
+| Target wall time | R1–R2: 10–15 min · R3: 20–25 min (sourcing and checking real photography is most of the difference) | 30–60 min |
 | Research | ≤ 6 min, ≤ 8 web fetches: 3 job stories, 3 competitor first-screens (1 local), 1 review-mining pass | full `mini-user-research.md` menu |
 | Direction | 1 recommended, fully specified, **written inside `DESIGN.md`** + 1 alternative in five lines, one register away. No separate `research.md` or `moodboard.html` | 2–3 full directions in `moodboard.html`, specimens |
 | References | 5–6, annotated, ≥ 2 local | 8–12 per direction |
@@ -79,7 +79,7 @@ checkpoint, drop to the floor for the rest: one direction, four sections, three 
 out beyond a single line, review gates 0 and 13 only.
 
 **Stop conditions for Standard.** When any of these hit, finish what is on screen and list the rest as next steps:
-15 minutes elapsed, 8 web fetches used, 6 page sections written, 6 photographs placed. Two runs in a row over budget
+the register's time target passed, 8 web fetches used, 6 page sections written, 6 photographs placed. Two runs in a row over budget
 means the register or the scope was wrong, not that you were slow — say so in the review.
 
 **Compile only what the target consumes.** `build_tokens.py` emits five platforms; a web page needs two.

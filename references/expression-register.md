@@ -146,6 +146,12 @@ launches, agency portfolios, game marketing, exhibitions, hardware reveals, awar
 studios Active Theory, Resn, Lusion, Basement Studio, Immersive Garden, Bruno Simon's portfolio (bruno-simon.com),
 Igloo Inc, Dogstudio, North Kingdom. Read them for *structure and narrative*, not to copy the effect.
 
+**A note on thematic rationalisations.** "The company tours, so the dates scroll"; "it is a record label, so the
+sleeves spin"; "they ship worldwide, so the logos move". A metaphor is not a reason: the test is whether the
+technique serves the reader's task, and moving text serves nothing except the impression of movement. Transactional
+content (dates, prices, addresses, availability) never moves at rest. If the metaphor is worth expressing, express
+it somewhere the reader is not trying to read.
+
 **The R4 failure mode:** an effect reel with no argument. If a visitor cannot say what the thing is and what to do
 next within 10 seconds, the register was used as decoration and the page fails Gate 2 no matter how impressive it is.
 
@@ -165,6 +171,7 @@ next within 10 seconds, the register was used as decoration and the page fails G
 | WebGL / 3D / shaders | no | no | one contained moment | yes |
 | Page transitions | no | no | optional | yes |
 | Sound | no | no | opt-in | opt-in, designed |
+| Auto-scrolling marquee / infinite ticker | no | no | no | no — the one technique that is off-row at every register |
 | Spec/definition tables | yes, core | yes, supporting | sparingly, styled | rarely |
 | Data density | high | medium | low | very low |
 

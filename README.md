@@ -24,7 +24,8 @@ template:
 | 7 Review | Self-critique gates, slop linter, contrast and palette checks, a JS-disabled pass, studio test; grade B or better or it goes back | Standard: review of record in `DESIGN.md` · Deep: `design/review-{date}.md` |
 | 8 Hand off | Deliverables, specs, QA checks, decision records | handoff package |
 
-Two modes. **Standard** (default) targets 10–15 minutes: a short local + global research pass, one recommended
+Two modes. **Standard** (default) targets 10–15 minutes at R1–R2 and 20–25 at R3, where sourcing and checking real
+photography is most of the cost: a short local + global research pass, one recommended
 direction plus an alternative, tokens edited from the starter set, one screen with all states, a scripted review.
 **Deep** (on request, or a new brand) runs the full menu. The intake always asks four things first: which market and
 language the audience is in, whether an existing or preferred design system exists (Figma, Storybook, tokens, brand
@@ -51,7 +52,7 @@ the three icon cards, the card inside a card, the fade-up on every section, the 
 The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 84 tells across
 color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
 **over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
-that replaced the first wave. 43 of the mechanical ones are checked by the linter, including cross-file checks for
+that replaced the first wave. 44 of the mechanical ones are checked by the linter, including cross-file checks for
 text-only pages, ledger layouts, and reveals that hide content when JavaScript fails.
 
 Version 1.1 added the lesson from the first field test: three different industries came back as the same page
