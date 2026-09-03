@@ -1,83 +1,37 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.png">
+  <img alt="Four unretouched screenshots produced by the skill from four one-sentence briefs: a Berlin electronic music festival, a Lyon dance company, a billing page added to an existing design system, and an iOS package tracker." src="docs/images/banner-light.png">
+</picture>
+
 # no-slop-design
 
-An open-source [Agent Skill](https://agentskills.io) that turns a coding agent into a senior product designer:
-one that researches before it draws, builds a moodboard from real references, works in design tokens, respects the
-platform it ships on, and refuses to produce the generic "AI-generated" look.
+A design skill for coding agents. It researches before it draws, builds a direction from real references, works in
+design tokens, respects the platform it ships on, and refuses to hand you the generic AI-generated look.
 
-Works with Claude Code (as a skill or a plugin) and with any agent that reads the `SKILL.md` format
-(Codex, Cursor, Copilot, OpenClaw, and others).
+Works in Claude Code as a skill or a plugin, and in any agent that reads the [Agent Skills](https://agentskills.io)
+`SKILL.md` format — Codex, Cursor, Copilot, OpenClaw.
 
-## What it does
+[![checks](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml/badge.svg)](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml)
+![Agent Skills format](https://img.shields.io/badge/Agent_Skills-SKILL.md-1c1c1c?style=flat-square)
+![MIT](https://img.shields.io/badge/licence-MIT-1c1c1c?style=flat-square)
 
-When you ask the agent to design, redesign, or review UI, the skill runs a real design process instead of emitting a
-template:
+---
 
-| Phase | What happens | Artefact |
-|---|---|---|
-| 0 Detect | Classifies the request; finds any existing design system, brand, tokens, or prior direction; baselines the current UI with the slop linter | findings |
-| 1 Brief | One pre-filled intake message: product, user, top job, the memorable thing, anti-attributes, constraints; picks a surface mode (Persuade / Operate / Read / Play) | `design/brief.md` |
-| 2 Research | Local + global mini research: job stories, competitor first-screens, review mining, heuristic pass; each insight ends in a decision | Standard: inside `DESIGN.md` · Deep: `design/research.md` |
-| 3 Direction | Attributes → brand-driver exercise → annotated references (local + global) → remix thesis → register → imagery art direction → direction + alternative | Standard: direction block in `DESIGN.md` · Deep: `design/moodboard.html` with 2–3 directions |
-| 4 System | OKLCH color scales, fluid type scale, spacing, radius, elevation, motion; semantic roles for light and dark; compiled to CSS, Tailwind v4, Swift, Kotlin, Dart; every role contrast-checked | `tokens/`, `build/`, `design/DESIGN.md` |
-| 5 Compose | Per screen: content by priority, one focal point, reading path, structure that fits the content; full component state matrix; copy last | screen and component specs |
-| 6 Build | HTML/CSS prototype with real content and all states at three widths, the repo's framework, or native code; Figma via MCP when available | working UI |
-| 7 Review | Self-critique gates, slop linter, contrast and palette checks, a JS-disabled pass, studio test; grade B or better or it goes back | Standard: review of record in `DESIGN.md` · Deep: `design/review-{date}.md` |
-| 8 Hand off | Deliverables, specs, QA checks, decision records | handoff package |
+## The problem it solves
 
-Two modes. **Standard** (default) targets 10–15 minutes at R1–R2 and 20–25 at R3, where sourcing and checking real
-photography is most of the cost: a short local + global research pass, one recommended
-direction plus an alternative, tokens edited from the starter set, one screen with all states, a scripted review.
-**Deep** (on request, or a new brand) runs the full menu. The intake always asks four things first: which market and
-language the audience is in, whether an existing or preferred design system exists (Figma, Storybook, tokens, brand
-guide), the one thing a first-time viewer should remember, and **how much visual ambition the work should carry**.
+Slop is not a style. It is what happens when a visual decision is **not made**: the default font, the purple
+gradient, the three icon cards, the fade-up on every section, the "Unlock the power of…" headline. Models converge
+on the median of every Tailwind tutorial ever scraped, so four different businesses come back as the same page.
 
-That last one is the expression register, and it is the difference between a page that serves and a page that sells:
+Every decision in this skill answers one question:
 
-| | R1 Utility | R2 Composed | R3 Expressive | R4 Experimental |
-|---|---|---|---|---|
-| For | tools, dashboards, docs | services, B2B, most marketing | hospitality, fashion, culture, brand sites | festivals, portfolios, launches, campaigns |
-| Looks like | dense, calm, no hero | poster page, one anchor image | full-bleed art direction, big type, signature motion | bespoke navigation, scroll narrative, WebGL, type as image |
-| Effort | 1× | 1.5× | 3–5× | 8–20× |
+> **Was this chosen, or did it happen?**
 
-The register is chosen from the audience's decision type, the category norm, and the asset budget, then written into
-the brief. Techniques are gated by it, and the review checks that the page actually reached it. Accessibility,
-tokens, honest content, and performance budgets do not move between registers.
-
-A critique request produces a report without a rebuild.
-
-## What "no slop" means here
-
-Slop is not a style. It is what happens when a visual decision is *not made*: the default font, the purple gradient,
-the three icon cards, the card inside a card, the fade-up on every section, the "Unlock the power of…" headline.
-The skill treats every one of these as a question ("was this chosen?") and ships a catalog of roughly 84 tells across
-color, type, layout, components, iconography, copy, motion, imagery, accessibility, and process, including the
-**over-correction** tells (brutalism-for-no-reason, mono-everywhere, editorial-serif costume, cream + terracotta)
-that replaced the first wave. 44 of the mechanical ones are checked by the linter, including cross-file checks for
-text-only pages, ledger layouts, and reveals that hide content when JavaScript fails.
-
-Version 1.1 added the lesson from the first field test: three different industries came back as the same page
-(dark surface, serif headline, fact table, one button, no images). Restraint without material is its own slop.
-`references/visual-material.md` now requires a designed visual anchor, art direction, and real image elements, and the
-linter flags text-only pages, ledger heroes, and gray placeholder boxes.
-
-Version 1.2.1 adds a `reveal-no-fallback` check after a rendered test page turned out to be blank with scripting
-disabled: `opacity: 0` reveals inside a `prefers-reduced-motion` query still need a `js` class or a `<noscript>` reset.
-
-Version 1.2 came from the second field test, which produced a competent page that still read as a document. It adds
-`references/expression-register.md` (R1–R4 with a technique catalogue and the five conditions for R4), the
-three-match test for choosing a specific photograph, an accent-hue check that catches a blue action color imported
-into a warm palette, and lint rules for the "ledger site" and for long pages carrying one image. Standard mode now
-writes the direction and the review inside `DESIGN.md` instead of producing separate documents.
-
-The catalog is enforced three ways: by the moodboard method (decisions traceable to attributes and references), by
-the review gate (13 gates, graded), and mechanically by `scripts/slop_lint.py`.
-
-The brief always beats the catalog. If your brand uses Inter or purple, the skill uses them well and documents the
-tension.
+If you cannot name the brand attribute, the content type, or the user need behind a choice, it is slop, and it gets
+replaced by a decision. That applies to the over-corrections too — brutalism for no reason, mono everywhere, an
+editorial serif costume, a page of restrained tables with no imagery. Those are just the second wave.
 
 ## Install
-
-**Claude Code, as a plugin (recommended):**
 
 ```bash
 claude plugin marketplace add agshinrajabov/no-slop-design
@@ -87,85 +41,184 @@ claude plugin marketplace add agshinrajabov/no-slop-design
 claude plugin install no-slop-design@no-slop-design
 ```
 
-Or in a session: `/plugin marketplace add agshinrajabov/no-slop-design`, then `/plugin install no-slop-design@no-slop-design`.
-
-**Claude Code, as a plain skill:**
+As a plain skill, or for a non-Claude agent, clone it where your agent loads skills from:
 
 ```bash
 git clone https://github.com/agshinrajabov/no-slop-design ~/.claude/skills/no-slop-design
 ```
 
-**Try without installing:**
+To try it without installing: `claude --plugin-dir ./no-slop-design`. The scripts need Python 3.9+ and nothing else.
 
-```bash
-claude --plugin-dir ./no-slop-design
-```
+## Use it
 
-**Other agents:** copy the directory into wherever your agent loads `SKILL.md` skills from (for example
-`.agents/skills/`, `.cursor/skills/`, or the project root). The scripts need only Python 3.9+ and the standard library.
+Ask for design work in your own words. The skill triggers on requests like *"design the onboarding flow"*, *"this
+landing page looks AI-generated, fix it"*, *"add a settings page in our existing design system"*, *"create a design
+system, we have a logo and a brand colour"*, *"review this screen"*.
 
-## Use
+The intake asks four things before anything is drawn, and decides them itself if you are not around:
 
-Just ask for design work. The skill triggers on requests like:
-
-- "Design the onboarding flow for this app."
-- "This landing page looks AI-generated. Fix it."
-- "Create a design system for our product; we have a logo and a brand color."
-- "Review this screen."
-- "Build the settings page in our existing design system."
-
-Explicitly: `/no-slop-design` (skill) or `/no-slop-design:no-slop-design` (plugin), followed by the request.
-
-## Scripts
-
-All stdlib Python; no installs.
-
-| Script | Purpose |
+| | Why it comes first |
 |---|---|
-| `scripts/slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift, Kotlin for slop signatures (purple gradients, default fonts, icon tiles, left-border cards, glass cards, emoji icons, banned copy, `transition: all`, removed focus outlines, …). Prints findings with the catalog section to read, and a grade A–F. `--json`, `--strict` for CI. |
-| `scripts/contrast.py` | WCAG 2.x ratio and APCA Lc for a pair, a pairs file, every pair in a file, or, with `--tokens build/tokens.flat.json`, every text role on every surface role per mode. Exit 1 on AA failure. |
-| `scripts/build_tokens.py tokens/*.json --out build/` | Compiles W3C DTCG tokens (with aliases and `*.dark.json` mode files) to CSS custom properties (light + dark), Tailwind v4 `@theme`, SwiftUI, Jetpack Compose, Flutter, and flat JSON. `--check` validates aliases and runs a palette sanity check (accent hue vs brand hue, untinted neutrals). |
-| `scripts/type_scale.py` | Fluid modular type scale (`clamp()`), with line-height and tracking per step; outputs table, CSS, or DTCG. |
-| `scripts/design_log.py check` / `add` | Cross-project memory. Records a fingerprint of each finished direction (register, surface polarity, brand hue, typefaces, structural idea) in `~/.no-slop-design/history.json` and warns before the next one repeats it. The per-project log is empty on a new project; this is what catches a house style forming. |
-| `scripts/audit_repo.py`, `scripts/selftest.py` | Maintainer tools, run in CI: the docs, templates and scripts must describe the same skill, and every lint rule must still fire on its fixture. |
+| **Market and language** | A Spanish audience is not researched from US SaaS references. Local conventions are table stakes; global references are where the differentiation comes from. |
+| **Existing or preferred design system** | A Figma library, Storybook, tokens file or brand guide is adopted, not replaced. A second visual language costs more than an imperfect existing one. |
+| **The memorable thing** | One sentence that every later decision serves. "Clean and modern" gets pushed back on, once. |
+| **Expression register** | How much visual ambition the work carries, and what that costs. |
+
+## The register
+
+The dial that stops a festival and a dental clinic from coming out the same. Chosen from the audience's decision
+type, the category norm and the asset budget, then written into the brief and checked at review.
+
+| | **R1 Utility** | **R2 Composed** | **R3 Expressive** | **R4 Experimental** |
+|---|---|---|---|---|
+| For | tools, dashboards, docs | services, B2B, most marketing | hospitality, fashion, culture, brand sites | festivals, portfolios, launches |
+| Reads as | dense, calm, no hero | a poster page with one anchor image | full-bleed art direction, big type, a signature moment | bespoke navigation, scroll narrative, WebGL, type as image |
+| Effort | 1× | 1.5× | 3–5× | 8–20× |
+| Fails as | a wall of rows | a template | a mood board with a button | a demo nobody can use |
+
+Registers are not quality levels: R1 done well beats R4 done badly. But choosing R1 for a music festival is a wrong
+answer, not a safe one. Techniques are gated per register, and four things never move with it — accessibility,
+tokens, honest content, and the performance budget.
+
+## What it actually does
+
+| Phase | What happens | Artefact |
+|---|---|---|
+| 0 Detect | Classifies the request; finds any existing design system, brand or tokens; checks what recent projects already looked like; baselines the current UI with the linter | findings |
+| 1 Brief | The four intake questions plus product, user, top job, anti-attributes, constraints; picks a surface mode and the register | `design/brief.md` |
+| 2 Research | Local **and** global: job stories, competitor first screens, review mining, a heuristic pass; every insight ends in a decision | in `DESIGN.md` · Deep: `research.md` |
+| 3 Direction | Attributes → annotated real references (≥ 30% non-UI, ≥ 2 local) → a remix thesis → imagery art direction → one direction plus an alternative one register away | in `DESIGN.md` · Deep: `moodboard.html` |
+| 4 System | OKLCH scales, fluid type scale, spacing, radius, elevation, motion; semantic roles for light and dark; compiled for the target platform; every role contrast-checked | `tokens/`, `build/`, `DESIGN.md` |
+| 5 Compose | Content by priority, a visual anchor, one focal point, a structure that fits the content and the register; full component state matrix; copy last | screen composition |
+| 6 Build | A prototype with real content, real images and every state at three widths — or your framework, or SwiftUI/Compose | working UI |
+| 7 Review | Render it and look; the scripts; the gates; a JavaScript-disabled pass; the studio test. Grade B or better, or it goes back | review of record |
+| 8 Hand off | Deliverables, specs, shot list, QA checks, decision records | handoff package |
+
+Two modes. **Standard** (default) targets 10–15 minutes at R1–R2 and 20–25 at R3, where sourcing and checking real
+photography is most of the cost. **Deep** runs the full menu with two or three directions. A critique request
+produces a report and rebuilds nothing.
+
+## What it refuses
+
+A catalog of roughly 84 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+accessibility and process. 44 of the mechanical ones are checked by the linter, some of them across files. A few:
+
+- purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
+- the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
+- Inter/Roboto/Poppins by reflex — and Space Grotesk, Geist and the italic-serif-accent formula that replaced them
+- fabricated metrics, testimonials, logos and avatars; placeholders stay bracketed and get listed for you
+- auto-scrolling marquees, fade-up on every section, `transition: all`, removed focus outlines
+- reveals that leave the page blank when the script fails
+- **and the over-corrections**: text-only "honest" pages, the label-value ledger used as a layout device, grey
+  placeholder boxes where a photograph belongs
+
+Your brief always beats the catalog. If your brand uses Inter and purple, the skill uses them well and writes down
+the tension.
+
+## What it produced
+
+Real runs, unedited. Each was one sentence, with the agent told the user was unavailable.
+
+<details>
+<summary><b>An electronic music festival</b> — R3 Expressive, Berlin, 21 min</summary>
+
+![Festival landing page](docs/images/output-festival.png)
+
+Register argued down from R4 because two of its five conditions failed: no film, no 3D. Sodium-orange hue taken
+from the photograph, Archivo Expanded over a full-bleed crowd shot, a night-by-night timetable that scrolls
+sideways, German copy with local ticketing conventions (Soli-Ticket, the official resale exchange).
+</details>
+
+<details>
+<summary><b>A contemporary dance company in Lyon</b> — R3 Expressive, 28 min, run on a weaker model</summary>
+
+![Dance company site](docs/images/output-dance.png)
+
+Proof the workflow survives a smaller model: four intake answers, a defended register, French copy, an ember hue
+referenced from the Opéra de Lyon. It also shipped an auto-scrolling marquee for tour dates with a thematic excuse.
+The catalog had banned that since 1.0 but nothing checked for it, so the run bought a linter rule and the page now
+grades C. Field tests are supposed to cost you something.
+</details>
+
+<details>
+<summary><b>A billing page inside an existing design system</b> — adopted, not replaced, 16 min</summary>
+
+![Billing page in the Meridian system](docs/images/output-billing.png)
+
+Detected a mature system, reused its components unchanged, added three through the project's own RFC process, and
+found a real WCAG failure in the host system on the way: white on the existing action colour measured 4.35:1, so
+every primary button in that app failed AA. Fixed at the token level, same hue, flagged as touching other screens.
+</details>
+
+<details>
+<summary><b>An iOS package tracker</b> — R1 Utility, SwiftUI, 15 min</summary>
+
+![iOS main screen](docs/images/output-ios.png)
+
+All chrome is system: `TabView`, `NavigationStack`, `.searchable`, `.refreshable`, inset-grouped lists. Liquid
+Glass consumed, never authored, because glass belongs to the floating navigation layer and not to content. The
+ambition went into the states nobody designs — customs hold, collect-by deadline, no scan in nine days, offline.
+</details>
+
+## Tools
+
+Stdlib Python, no installs. The skill runs these itself; you can run them on any codebase.
+
+| | |
+|---|---|
+| `slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift and Kotlin for slop signatures and prints a grade with the catalog section to read. `--json`, `--strict` for CI. |
+| `contrast.py` | WCAG 2.x and APCA for a pair, a pairs file, or — with `--tokens` — every text role on every surface role, in every mode. Exit 1 on an AA failure. |
+| `build_tokens.py` | Compiles W3C DTCG tokens (aliases, `*.dark.json` modes) to CSS custom properties, Tailwind v4 `@theme`, SwiftUI, Compose, Flutter and flat JSON. `--check` validates and runs a palette sanity check. |
+| `type_scale.py` | Fluid modular type scale with line-height and tracking per step. |
+| `design_log.py` | Cross-project memory. Fingerprints each finished direction and warns before the next one repeats it — the per-project log is always empty exactly when convergence happens. |
+| `audit_repo.py`, `selftest.py` | Maintainer tools, run in CI: the docs, templates and scripts must describe the same skill, and every rule must still fire on its fixture. |
 
 ## Layout
 
 ```
-no-slop-design/
-  SKILL.md                     the router (what to do, when to read what)
-  references/                  22 deep references, loaded per phase
-    discovery.md · existing-design-system.md · mini-user-research.md · moodboard.md · inspiration-sources.md
-    expression-register.md · visual-material.md · anti-slop.md · design-tokens.md · color.md · typography.md · spacing-layout.md · components.md
-    ux-patterns.md · content-microcopy.md · motion.md · accessibility.md · web-frontend.md
-    mobile-ios.md · mobile-android.md · review-checklist.md · handoff.md
-  templates/                   brief, DESIGN.md (direction + art direction + review of record), assets.md,
-                               DTCG token starter set, contrast pairs, design log; Deep mode adds research
-                               synthesis, moodboard.html, component spec, review report
-  scripts/                     slop_lint.py · contrast.py · build_tokens.py · type_scale.py · design_log.py
-                               audit_repo.py · selftest.py (maintainers, run in CI)
-  evals/                       scenarios and rubrics to test the skill against a model
-  .claude-plugin/              plugin and marketplace manifests
+SKILL.md          the router: what to do, and which reference to read at that step
+references/       22 deep references, loaded per phase, never all at once
+  discovery · existing-design-system · mini-user-research · moodboard · inspiration-sources
+  expression-register · visual-material · anti-slop · design-tokens · color · typography
+  spacing-layout · components · ux-patterns · content-microcopy · motion · accessibility
+  web-frontend · mobile-ios · mobile-android · review-checklist · handoff
+templates/        brief · DESIGN.md · assets.md · DTCG token starter set · contrast pairs · design log
+scripts/          the tools above
+evals/            four scenarios with rubrics, plus the fixtures the linter is tested against
 ```
+
+`SKILL.md` stays a router under 500 lines; the depth lives in `references/` and loads only when a phase needs it.
 
 ## How it compares
 
-Existing design skills each cover a slice: taste briefings with no workflow, searchable style databases that still
-recommend glassmorphism, browser-audit monoliths with heavy dependencies, anti-slop catalogs with no research or
-tokens, token pipelines with no aesthetic opinion, UX method libraries with no visual opinion. This skill's bet is
-that slop is a *process* failure, so the fix is a complete, spec-compliant process: research → moodboard → tokens →
-composition → review, with mechanical checks, for web **and** native, inside an existing system **or** from scratch.
-The closest neighbours (project-memory design-engineering skills, craft-scoring detectors) are strong on consistency and
-linting; this skill adds the upstream half they skip: user research, an annotated real-reference moodboard, platform
-HIG/Material rules, and a DTCG token pipeline that compiles to five platforms.
+Other design skills cover a slice: taste briefings with no workflow, style databases that still recommend
+glassmorphism, browser-audit monoliths with heavy dependencies, anti-slop catalogs with no research or tokens,
+token pipelines with no aesthetic opinion, UX method libraries with no visual opinion. The bet here is that slop is
+a **process** failure, so the fix is the whole process — research, direction, tokens, composition, review — with
+mechanical checks, for web and native, inside an existing system or from scratch.
+
+## What the field tests broke
+
+Each version came from running the skill and looking at the screenshots, not from re-reading the documentation.
+
+| | Found by | Fixed |
+|---|---|---|
+| 1.1 | Three briefs (dental, coffee, law) produced the same dark, serif, table-shaped page with no images | `visual-material.md`, market and design-system intake, local references |
+| 1.2 | A competent page that still read as a document | `expression-register.md`, the photograph three-match test, an accent-hue check |
+| 1.3 | A self-audit: the 1.2 rules were in `SKILL.md` but not in the templates | `audit_repo.py`, `selftest.py`, CI, cross-project memory |
+| 1.4 | An existing system, an iOS screen, and eval 04 on a weaker model | OKLCH silently dropped from the native token output, page rules judging component source, the unchecked marquee, register-aware budgets |
+
+Full detail in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing
 
-Issues and pull requests are welcome, especially: new tells for `references/anti-slop.md` (with a source or a
-screenshot), false positives in `scripts/slop_lint.py`, platform updates (HIG, Material), and eval scenarios that
-expose weak spots. Keep additions in the existing style: dense, numeric, tables over prose, no marketing language.
-See `CONTRIBUTING.md`.
+Issues and pull requests are welcome, especially new tells for the catalog (with a source or a screenshot), false
+positives in the linter, platform updates as the HIG and Material change, and eval scenarios that expose weak
+spots. Run `python3 scripts/selftest.py` and `python3 scripts/audit_repo.py` before opening a PR; CI runs both.
+Keep additions in the existing style: dense, numeric, tables over prose, no marketing language.
 
-## License
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-MIT. See `LICENSE`.
+## Licence
+
+MIT. See [LICENSE](LICENSE).
