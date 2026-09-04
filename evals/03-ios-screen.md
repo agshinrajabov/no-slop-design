@@ -2,7 +2,7 @@
 
 ## Prompt
 
-> Design the "Today" screen for Qandil, a prayer-times and reflection app for iOS 26. Brand: dark, warm, a lantern
+> Design the "Today" screen for Sahar, a prayer-times and reflection app for iOS 26. Brand: dark, warm, a lantern
 > motif, display face Marcellus, body Manrope, Arabic support needed. SwiftUI. Show me the screen spec and the
 > SwiftUI token file.
 
