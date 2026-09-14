@@ -118,7 +118,7 @@ trust — how a document is translated and certified, how a parcel moves, how a 
 | Budget | per §2; no library for I2–I3 unless the project already uses one |
 | Numbers | `Intl` formatting in the **market's** locale, not the page language (az-AZ writes `80,00 ₼`, not `AZN 80.00`); dates in working days; assumptions shown; the word "estimate" |
 | Honest deltas | when an option changes nothing (express cannot move a date the apostille decides), say so beside the result; never let a label promise what the result does not show |
-| Mobile | the result stays visible while the visitor changes inputs: a sticky result bar, a bottom sheet, or the result above the inputs. Verify at 375 px by changing the main input — the new result is on screen without scrolling. Targets ≥ 44 px |
+| Mobile | the result stays visible while the visitor changes inputs: a sticky result bar, a bottom sheet, or the result above the inputs. Verify at 375 px by changing the main input — the new result is on screen without scrolling. A dock that appears only after the result has scrolled past does not count when the inputs come first: it is hidden exactly while the visitor is editing. Targets ≥ 44 px |
 | Handoff | name the analytics events: started, result shown, carried into conversion |
 
 ## 8. Interaction slop

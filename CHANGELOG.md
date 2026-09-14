@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.1 — 2026-09-14
+
+- `interaction-result-offscreen` gave the 1.6 page a pass because its CSS contained a `position: fixed` dock. The dock
+  was `hidden` by default and only appeared after the result had scrolled past, so it never showed while the visitor
+  was editing — the exact failure the rule exists for. The rule now ignores sticky headers and elements hidden by
+  default, and the 1.6 page is flagged. Mobile guidance and the review gate name the pattern.
+
 ## 1.7.0 — 2026-09-14
 
 The 1.6 rerun of the translation brief delivered what 1.6 asked for — a working estimator as the hero, graded A− — and

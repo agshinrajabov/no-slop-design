@@ -134,9 +134,16 @@ def main() -> int:
         p = os.path.join(d, "a.html"); open(p, "w", encoding="utf-8").write(page)
         check("no sticky result is flagged", "interaction-result-offscreen" in rules_of(p), sorted(rules_of(p)))
         open(os.path.join(d, "s.css"), "w").write(".result{position:sticky;bottom:0}")
+        linked = page.replace("<body>", "<head><link rel='stylesheet' href='s.css'></head><body>")
         p2 = os.path.join(d, "b.html")
-        open(p2, "w", encoding="utf-8").write(page.replace("<body>", "<head><link rel='stylesheet' href='s.css'></head><body>"))
-        check("a sticky result in the linked stylesheet passes", "interaction-result-offscreen" not in rules_of(p2), sorted(rules_of(p2)))
+        open(p2, "w", encoding="utf-8").write(linked.replace("</main>", "<div class='result'>AZN 1</div></main>"))
+        check("a visible sticky result in the linked stylesheet passes", "interaction-result-offscreen" not in rules_of(p2), sorted(rules_of(p2)))
+        p3 = os.path.join(d, "c.html")
+        open(p3, "w", encoding="utf-8").write(linked.replace("</main>", "<div class='result' hidden>AZN 1</div></main>"))
+        check("a sticky result hidden by default is still flagged", "interaction-result-offscreen" in rules_of(p3), sorted(rules_of(p3)))
+        p4 = os.path.join(d, "e.html")
+        open(p4, "w", encoding="utf-8").write(page.replace("<body>", "<head><style>.site-header{position:sticky;top:0}</style></head><body><header class='site-header'>x</header>"))
+        check("a sticky header alone does not count", "interaction-result-offscreen" in rules_of(p4), sorted(rules_of(p4)))
 
     print("slop_lint — reveal without a no-JS fallback fires, and a guarded one does not")
     with tempfile.TemporaryDirectory() as d:

@@ -187,10 +187,27 @@ def file_rules(path: str, text: str):
             local = os.path.join(os.path.dirname(os.path.abspath(path)), href.split("?")[0])
             if not href.startswith(("http:", "https:", "//")) and os.path.exists(local):
                 css += open(local, encoding="utf-8", errors="ignore").read()
-        if not re.search(r"position\s*:\s*(sticky|fixed)|<dialog\b", css, re.I):
-            out.append(("interaction-result-offscreen", "LOW", "the signature interaction has no sticky result, fixed bar or sheet: on a "
-                                                              "phone the result scrolls out of view while the visitor changes inputs. "
-                                                              "Check at 375 px (interaction-depth.md §7, Mobile)", "Interaction"))
+        # a sticky header does not show the result, and an element hidden by default is only shown conditionally —
+        # the 1.6 run's dock appeared after the result had scrolled past, i.e. never while the visitor was editing
+        persistent = False
+        for rule in re.finditer(r"([^{}]+)\{[^{}]*position\s*:\s*(?:sticky|fixed)[^{}]*\}", re.sub(r"/\*.*?\*/", "", css, flags=re.S), re.I):
+            for sel in rule.group(1).split(","):
+                sel = sel.strip()
+                if not sel or re.search(r"header|nav|head\b|menu|skip|toast|cookie|banner", sel, re.I):
+                    continue
+                names = re.findall(r"[.#]([\w-]+)", sel)
+                if not names:
+                    persistent = True  # tag or attribute selector: cannot resolve statically, give it the benefit of the doubt
+                    continue
+                token = re.escape(names[-1])
+                tags = re.findall(r"<[a-z][^>]*(?:class=[\"'][^\"']*\b" + token + r"\b[^\"']*[\"']|id=[\"']" + token + r"[\"'])[^>]*>", text, re.I)
+                if any(not re.search(r"\shidden(\s|>|=|/)", t, re.I) for t in tags):
+                    persistent = True
+        if not persistent and not re.search(r"<dialog\b", text, re.I):
+            out.append(("interaction-result-offscreen", "LOW", "no result stays on screen while the visitor changes inputs: nothing sticky "
+                                                              "or fixed besides the header, or it is hidden until the result has scrolled past. "
+                                                              "On a phone the visitor edits and sees nothing change. Check at 375 px by changing "
+                                                              "the main input (interaction-depth.md §7, Mobile)", "Interaction"))
 
     # performance and provenance of the imagery that is there
     imgs = re.findall(r"<img\b[^>]*>", text, re.I)

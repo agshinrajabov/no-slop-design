@@ -84,7 +84,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Task can be completed in the minimum sensible number of steps; count them.
 - [ ] Persuade: the signature interaction answers the top job with a visible result in ≤ 2 steps, near the first viewport, and its result carries into the conversion (`interaction-depth.md` §3).
 - [ ] The signature interaction works by keyboard, announces its result, respects reduced motion, and has a static no-JS equivalent on the page.
-- [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs).
+- [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs). A dock that only appears after scrolling past the result fails this.
 - [ ] Every decision point is a "mindless click" (obvious what happens); nothing requires reading instructions.
 - [ ] Back/undo exists for every reversible action; irreversible actions confirm or offer undo.
 - [ ] Error, empty, loading, offline, partial states designed for every region.
