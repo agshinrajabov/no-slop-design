@@ -75,6 +75,10 @@ f.addEventListener('load', () => setTimeout(() => {
     scrollWidth: el.scrollWidth, clientWidth: el.clientWidth, table: !!el.querySelector('table')
   }));
   if (!ACTIONS.length) { report(out); return; }
+  // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
+  // on the page and prefer the ones whose text the edit changed
+  const RESULTS = EXPECT || 'output, [aria-live]';
+  const before = new Map([...d.querySelectorAll(RESULTS)].map(el => [el, el.textContent]));
   let last = null; out.set = [];
   for (const [sel, val] of ACTIONS) {
     const el = d.querySelector(sel);
@@ -87,13 +91,14 @@ f.addEventListener('load', () => setTimeout(() => {
   }
   if (last) { last.scrollIntoView({block: 'center'}); last.focus({preventScroll: true}); }
   setTimeout(() => {
-    const root = d.querySelector('[data-nsd-interaction]') || d;
-    let cands = EXPECT ? [...d.querySelectorAll(EXPECT)] : [...root.querySelectorAll('output, [aria-live]')];
+    const cands = [...d.querySelectorAll(RESULTS)];
     const shown = el => { const r = el.getBoundingClientRect(), s = w.getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && !el.closest('[hidden]')
         && r.bottom > 0 && r.top < VH && (el.textContent || '').trim().length > 0; };
-    const vis = cands.filter(shown);
-    out.result = {candidates: cands.length, visible: vis.length > 0,
+    const changed = cands.filter(el => before.has(el) && before.get(el) !== el.textContent);
+    // when the edit changed some result, only a changed one on screen counts; otherwise any visible result
+    const vis = (changed.length ? changed : cands).filter(shown);
+    out.result = {candidates: cands.length, changed: changed.length, visible: vis.length > 0,
                   text: vis.length ? vis[0].textContent.replace(/\s+/g, ' ').trim().slice(0, 90) : null,
                   edited: last ? (() => { const r = last.getBoundingClientRect(); return r.bottom > 0 && r.top < VH; })() : null};
     report(out);
@@ -131,7 +136,8 @@ def main() -> int:
     ap.add_argument("--width", type=int, default=1280, help="desktop width (default 1280)")
     ap.add_argument("--set", action="append", default=[], metavar="SELECTOR=VALUE",
                     help="an input to change for the 375 px editing test; repeat for several; the last one is kept on screen")
-    ap.add_argument("--expect", help="selector of the result element (default: output/[aria-live] inside [data-nsd-interaction])")
+    ap.add_argument("--expect", help="selector of the result element (default: every output/[aria-live] on the page, "
+                                     "preferring those the edit changed)")
     ap.add_argument("--no-nojs", action="store_true", help="skip the JavaScript-disabled render")
     ap.add_argument("--chrome", help="path to a Chrome/Chromium/Edge binary (or set CHROME)")
     ap.add_argument("--json", action="store_true")
@@ -258,6 +264,8 @@ def main() -> int:
                     print(f"           selectors not found: {', '.join(missing)}")
                 if not r.get("candidates"):
                     print("           no output/[aria-live] result found; pass --expect <selector>")
+                elif not r.get("changed"):
+                    print("           no result changed after the edit — check the selector and value, or pass --expect")
         elif not actions:
             print("  edit     skipped — pass --set '<main input selector>=<value>' to run the 375 px editing test")
         for p in problems:

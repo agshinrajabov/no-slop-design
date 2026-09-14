@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.1 — 2026-09-14
+
+- `shoot.py` reported "result not visible" on the 1.8.0 test page while its sticky bar showed the new price. It looked
+  for results only inside `[data-nsd-interaction]`, and the bar was a sibling. It now watches every `output` and
+  `aria-live` region on the page and counts the ones the edit changed; if nothing changed it says so. Verdicts on
+  the three translation runs: 1.6 not visible, 1.7.1 visible, 1.8.0 visible.
+
 ## 1.8.0 — 2026-09-14
 
 The 1.7.1 rerun of the translation brief passed what 1.7 asked for — the result stayed visible while editing at
