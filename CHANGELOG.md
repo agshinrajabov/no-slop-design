@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.18.0 — 2026-09-15
+
+The 1.17.0 reruns answered every convergence warning in writing, and both changed direction because of one (the
+restaurant's result from a figure to a slot calendar, the ceramics first viewport from poster type to a photograph of
+a signed box lid). Two faults showed.
+
+- **`plan` warned a run against itself.** Re-planning after a change appended a second plan for the same project, so
+  four of the ceramics run's six warnings compared it with its own earlier plans. A plan now replaces the project's
+  earlier plan before the comparison.
+- **An invented promise read as fact.** The ceramics page told buyers every piece ships in a signed paulownia box; the
+  studio had never said so. Services, policies, guarantees, packaging and delivery options the brief did not state are
+  now proposals: listed under "Proposals to confirm" in `DESIGN.md`, marked `data-nsd-proposed` on the page with
+  wording that reads as a proposal. `SKILL.md` non-negotiable 10, `content-microcopy.md` §5, the template, a tell, a
+  review item, and `slop_lint.py` `proposal-unmarked` (MED) when the list outnumbers the marked elements.
+
 ## 1.17.0 — 2026-09-14
 
 The 1.16.0 reruns looked different in every recorded axis — a restaurant floor plan in teal on near-black with

@@ -185,6 +185,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Errors: what happened + what to do; no "Oops".
 - [ ] Empty states: what + why + action.
 - [ ] No fabricated numbers, logos, testimonials, names, avatars; placeholders clearly marked and listed for the user.
+- [ ] Every service, policy, guarantee or option the brief did not state is under "Proposals to confirm" in `DESIGN.md` and marked `data-nsd-proposed` on the page (`proposal-unmarked` clean).
 - [ ] Sentence case; active voice; numbers/dates/currency via locale formatting.
 - [ ] Delete-30% pass done on every paragraph.
 

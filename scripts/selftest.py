@@ -322,6 +322,28 @@ def main() -> int:
             "\n**Convergence overrides**\n- composition: the floor plan is the booking itself, and no other run drew a room\n")
         check("a written answer clears it", "convergence-unanswered" not in rules_of(p), sorted(rules_of(p)))
 
+    print("design_log — a re-plan replaces the project's own plan; slop_lint — proposals are marked")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        log("plan", "--project", "shop", "--composition", "type-poster", "--result-form", "card", "--image-look", "eye-level;hard-sun;paper;warm")
+        second = log("plan", "--project", "shop", "--composition", "graphic-hero", "--result-form", "card", "--image-look", "eye-level;hard-sun;paper;warm")
+        check("re-planning does not warn against its own plan", "result form:" not in second and "image look:" not in second, second[-300:])
+        stored = json.load(open(os.path.join(d, "h.json")))["entries"]
+        check("only one plan per project is kept", sum(1 for e in stored if e.get("project") == "shop") == 1, str(len(stored)))
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write(
+            "Anchor type: product\n\n**Proposals to confirm**\n- Signed paulownia box per piece — answers breakage — studio\n"
+            "- Remake if broken within 7 days — trust — studio\n")
+        page = f"<html lang='en'><body><main><section data-nsd-anchor='colour field'><p>Every piece ships in a signed box.</p>{long_copy}</section></main></body></html>"
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("unmarked proposals are flagged", "proposal-unmarked" in rules_of(p), sorted(rules_of(p)))
+        marked = page.replace("<p>Every piece", "<p data-nsd-proposed>Proposed: every piece").replace("</section>",
+                              "<p data-nsd-proposed>Proposed: a remake if it arrives broken.</p></section>", 1)
+        open(p, "w", encoding="utf-8").write(marked)
+        check("marked proposals pass", "proposal-unmarked" not in rules_of(p), sorted(rules_of(p)))
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"

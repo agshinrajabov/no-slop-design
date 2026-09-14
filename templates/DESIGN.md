@@ -61,6 +61,10 @@ Photographs needed: {yes, n — because … · no — the anchor is …}. `slop_
 result carries}. Declared on the page as `data-nsd-interaction="{type}"`. Without JavaScript: {the static equivalent}.
 Result form: {figure · diagram · calendar · map · card · list · table · media · paper} — because {what the answer is}.
 
+**Proposals to confirm** (every service, policy, guarantee, packaging or delivery option the brief did not state; each
+is marked `data-nsd-proposed` on the page):
+- {proposal} — {why it helps the top job} — {who must confirm}
+
 **Convergence overrides** (one line per warning in `design/convergence-warnings.json` that this direction keeps;
 a warning acted on needs no line — re-run `design_log.py plan … --record` after changing the direction):
 - {warning key, e.g. composition}: {why this page keeps it, in terms of this content — not "deliberate"}

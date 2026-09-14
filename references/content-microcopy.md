@@ -319,6 +319,13 @@ supply; if nothing real exists, remove the section (a testimonial block with no 
 problem, not a copy problem). Scarcity and urgency appear only when generated from live inventory or a real
 deadline, and always with the number and end date shown.
 
+**Proposals are not facts.** Good design work often suggests things the business could offer — a remake promise, a
+signed box, a lunch set, a free first consultation. Those are proposals until the client says yes. List each under
+"Proposals to confirm" in `DESIGN.md`, and on the page mark the element with `data-nsd-proposed` and wording that
+reads as a proposal in the review build ("proposed: …", or a small "to confirm" tag). A 1.17 test told buyers that
+every piece ships in a signed paulownia box; the studio had never said so. `slop_lint.py` flags `proposal-unmarked`
+when the list is longer than the marked elements.
+
 ## 6. Numbers, dates, units
 
 | Rule | Value | Implementation |

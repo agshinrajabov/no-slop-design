@@ -264,6 +264,20 @@ def file_rules(path: str, text: str):
                                                          "re-run plan, or write '- <warning>: <why it stays>' (SKILL.md "
                                                          "non-negotiable 14)", "§10 Process"))
 
+    # promises the client never made, presented as fact: a 1.17 shop told buyers every piece ships in a signed
+    # paulownia box, which the studio had not said
+    design_md = os.path.join(d, "design", "DESIGN.md")
+    if is_page and not in_design and os.path.exists(design_md):
+        body = open(design_md, encoding="utf-8", errors="ignore").read()
+        sec = re.search(r"Proposals to confirm\**:?(.*?)(?:\n\*\*[A-Z]|\n#{1,3} |\Z)", body, re.S)
+        items = [l for l in (sec.group(1).splitlines() if sec else []) if re.match(r"\s*[-*]\s+\S", l) and "{" not in l]
+        marked = len(re.findall(r"data-nsd-proposed", text, re.I))
+        if items and marked < len(items):
+            out.append(("proposal-unmarked", "MED", f"DESIGN.md lists {len(items)} proposal(s) the client has not confirmed, but "
+                                                    f"only {marked} element(s) on the page carry data-nsd-proposed — a service, "
+                                                    "policy, guarantee or option the brief never stated must read as a "
+                                                    "proposal on the page, not as fact (SKILL.md non-negotiable 10)", "§6 Copy"))
+
     # a result the visitor cannot read: bracketed placeholders where the estimate should be
     root = re.search(r"<(section|div|form|article|aside|main)\b[^>]*data-nsd-interaction[^>]*>", text, re.I)
     if is_page and root:

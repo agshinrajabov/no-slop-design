@@ -356,6 +356,9 @@ def main() -> int:
         if args.hue is not None:
             entry["hue"], entry["hue_family"] = args.hue, hue_family(args.hue)
         entry.update(status="planned", planned_at=time.time(), date=date.today().isoformat())
+        # a re-plan replaces this project's earlier plan: a 1.17 run that changed direction twice was warned against
+        # its own previous plans in four of six warnings
+        entries = [e for e in entries if not (e.get("status") == "planned" and e.get("project") == entry.get("project"))]
         warns = analyse(entries + [entry])
         entries.append(entry)
         save(entries)
