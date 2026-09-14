@@ -105,8 +105,8 @@ produces a report and rebuilds nothing.
 
 ## What it refuses
 
-A catalog of roughly 84 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 48 of the mechanical ones are checked by the linter, some of them across files. A few:
+A catalog of roughly 88 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+accessibility and process. 52 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -172,6 +172,7 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 | | |
 |---|---|
 | `slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift and Kotlin for slop signatures and prints a grade with the catalog section to read. `--json`, `--strict` for CI. |
+| `shoot.py <page>` | The review renders in one command with headless Chrome: desktop and 375 px full pages, a JavaScript-disabled page, and the 375 px editing test (`--set "#pages=12"`) that reports whether the result is still on screen. Lists scroll containers, prints the dark share, writes outside your project. |
 | `contrast.py` | WCAG 2.x and APCA for a pair, a pairs file, or — with `--tokens` — every text role on every surface role, in every mode. Exit 1 on an AA failure. |
 | `build_tokens.py` | Compiles W3C DTCG tokens (aliases, `*.dark.json` modes) to CSS custom properties, Tailwind v4 `@theme`, SwiftUI, Compose, Flutter and flat JSON. `--check` validates and runs a palette sanity check. |
 | `type_scale.py` | Fluid modular type scale with line-height and tracking per step. |
@@ -215,6 +216,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.5 | Real use: the skill reached for photographs by reflex, because 1.1 had turned "no images" into an image quota | the direction decides the anchor type; image rules read that decision instead of counting images; photo-stuffing is a tell |
 | 1.6 | A B+ translation-agency page that was all type and no interaction: the register had quietly capped interaction for every service business | `interaction-depth.md` as a separate axis; one signature interaction per persuasive page; explanatory scroll sequences allowed at R2; the cross-project log warns after two same-surface runs |
 | 1.7 | The 1.6 rerun worked but was logged as "light" while 84% of its pixels were dark; its mobile result scrolled out of view; unchecked radios looked checked; a price column was clipped | surface polarity measured from screenshots; a 375 px result-visibility check and lint rule; native-control and narrow-table rules; honest deltas and market-locale numbers |
+| 1.8 | The 1.7 rerun fixed every finding and lost the design: the colour field and the drawn route were gone, a form panel and two tables remained. It also spent a third of its time building a screenshot harness and left it in the project | `shoot.py` (renders, the 375 px editing test and scroll containers in one command, outside the project); the interaction must not replace the direction; reruns compared with the run before; lint for tables-as-sections, scroll tables without a cue, and review scaffolding |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

@@ -56,3 +56,13 @@ The register had quietly capped interaction. A correct run keeps the restrained 
 15. Native radios and checkboxes read correctly on every surface; no table column is clipped at 360 px; no section
     background ends mid-content.
 16. Options that change nothing say so beside the result; prices are formatted in the market's locale.
+
+## Rubric additions (1.8)
+
+17. The direction's anchor carries the first viewport at full weight; the estimator's result has a designed form; no
+    dead half beside the panel; at most one data table outside the interaction (`tables-as-sections` clean).
+18. Not less expressive than the previous run of this eval, judged from first viewports side by side.
+19. `shoot.py` was used for the review renders; its 375 px editing test passed; every scroll container it listed
+    reflows or shows an edge cue.
+20. The deliverable holds no review scaffolding (`review-scaffolding` clean), and the run stayed within budget
+    because no screenshot harness was built.

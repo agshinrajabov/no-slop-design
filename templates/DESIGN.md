@@ -189,7 +189,9 @@ Ten lines from the review gate (`review-checklist.md`); Deep mode writes the ful
 | 13 Slop & originality | | |
 
 Scripts: `slop_lint.py` {grade} · `contrast.py --tokens` {exit} · `build_tokens.py --check` {warnings} ·
-`design_log.py check` {convergence warnings, and which axes this direction broke}.
+`design_log.py check` {convergence warnings, and which axes this direction broke} ·
+`shoot.py --set {input=value}` {375 editing result visible / not; scroll containers and their cue; dark share}.
+Anchor at full weight in the first viewport: {where}. Previous run compared: {none · link — more / less expressive, why}.
 Budget: {mode} target {n} min, actual {n} min; {what was cut, or what overran and why}.
 Studio test: {would a studio sign it; what they would change first}. Open items: {…}.
 

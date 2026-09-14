@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.8.0 — 2026-09-14
+
+The 1.7.1 rerun of the translation brief passed what 1.7 asked for — the result stayed visible while editing at
+375 px, prices used the market's locale, surface polarity was measured — and was a step back as a design. Screenshots
+side by side with 1.6 showed what the checks could not: the bold colour field and the drawn route of working days
+were gone, replaced by a dark form panel, a large heading, an empty half of the first viewport and two data tables.
+The run also took 24 minutes, a third of it spent building its own screenshot harness, which it left in the
+deliverable.
+
+- **New `scripts/shoot.py`.** One command renders desktop and 375 px full pages and a JavaScript-disabled page with
+  headless Chrome, runs the 375 px editing test (`--set "#pages=12"`: set the inputs, keep the edited control on
+  screen, report whether the result is visible), lists every horizontal scroll container, and prints the dark share
+  for `design_log.py`. It writes to a temp folder and refuses to write into the deliverable. Exit 1 on an
+  off-screen result or a page that scrolls sideways. On the 1.6 page it reports the result not visible; on 1.7.1,
+  visible — the verdicts the manual reviews reached.
+- **The interaction does not replace the direction** (`interaction-depth.md` §3b): the anchor keeps full weight in
+  the first viewport, the result gets a designed form, no dead half beside the panel, one data table outside the
+  interaction, and a rerun is compared with the run before it. New gate items, a new over-correction tell, and
+  `slop_lint.py` `tables-as-sections` (MED), which ignores tables drawn inside the interaction and Operate surfaces.
+- **Tables that scroll without a cue.** The 1.7.1 steps table was 8 px wider than its container at 375 px, so the
+  last column simply looked missing. `components.md` gives a CSS-only edge cue; `slop_lint.py` adds
+  `table-scroll-no-cue` (LOW) unless the page has scroll shadows, a mask or a narrow reflow.
+- **Review scaffolding.** `slop_lint.py` adds `review-scaffolding` (MED) for wrapper pages that only frame a local
+  page and for `shots/`-style folders beside it. `SKILL.md` and the checklist say review evidence is not product.
+- **`neon-on-black` false positive.** It fired on `--color-black: #000000`, a primitive in a compiled token file;
+  it now requires a background context.
+- Selftest covers every change; eval 05 gains rubric items 17–20.
+
 ## 1.7.1 — 2026-09-14
 
 - `interaction-result-offscreen` gave the 1.6 page a pass because its CSS contained a `position: fixed` dock. The dock

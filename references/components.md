@@ -163,8 +163,18 @@ the control, keyboard operable (Space/Arrows), grouped with `fieldset/legend`.
 - **Panel/section**: heading + content separated by whitespace and, at most, a hairline.
 - **List**: 40–56px rows, leading icon/avatar, primary + secondary text, trailing meta/chevron; dividers or spacing,
   not cards; swipe actions on mobile with visible alternatives.
-- **Narrow tables:** at 360 px no column is clipped. Reflow rows into label–value pairs, or scroll the table
-  horizontally inside its own container with a visible edge cue; never `overflow: hidden` on a table's wrapper.
+- **Narrow tables:** at 360 px no column is clipped. Reflow rows into label–value pairs (preferred for ≤ 5 columns),
+  or scroll the table horizontally inside its own container **with a visible edge cue**; never `overflow: hidden` on a
+  table's wrapper. A scroll container whose content is a few pixels wider than the screen is invisible: the visitor
+  never learns there is more. The cue in CSS alone — shadows that appear only on the side with hidden content:
+  ```css
+  .table-scroll { overflow-x: auto;
+    background: linear-gradient(to right, var(--surface) 30%, transparent) left / 2rem 100% no-repeat local,
+                linear-gradient(to left, var(--surface) 30%, transparent) right / 2rem 100% no-repeat local,
+                radial-gradient(farthest-side at 0 50%, var(--shadow), transparent) left / .75rem 100% no-repeat scroll,
+                radial-gradient(farthest-side at 100% 50%, var(--shadow), transparent) right / .75rem 100% no-repeat scroll; }
+  ```
+  `scripts/shoot.py` lists every scroll container at 375 px; `slop_lint.py` flags `table-scroll-no-cue`.
 - **Table**: text left, numbers right, `tabular-nums`, header sticky, first column sticky when wide, row hover, row
   height by density, sort indicators on header, filters above, bulk actions appear on selection, empty/loading/error
   rows, responsive by column priority (hide/collapse), never card-ify every row on mobile by default.

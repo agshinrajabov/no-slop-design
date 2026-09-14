@@ -30,9 +30,16 @@ the gate is that they never have to say "this looks AI-generated".
 ## 1. How to run the gate
 
 1. Render the work (browser at 3 widths, or simulator/emulator for native, or the prototype) and **look at it**.
-   Screenshots, not code, are the primary evidence. Take them at 360, 768, 1280 (web) or the target device.
-   Also one full-page screenshot at 1x for `design_log.py`: headless Chrome `--screenshot=page.png
-   --window-size=1280,<page height>`, or Playwright `page.screenshot({ path: 'page.png', fullPage: true })`.
+   Screenshots, not code, are the primary evidence. For a web page, one command takes them all:
+   `python3 scripts/shoot.py index.html --set "<main input selector>=<value>"` renders desktop and 375 px full
+   pages, a JavaScript-disabled page and the 375 px editing frame; it reports whether the result is visible while
+   editing, every horizontal scroll container, and the dark share for `design_log.py add --screenshot`. **Do not
+   build your own screenshot harness** — a field run spent a third of its budget on one. Without Chrome, use
+   Playwright (`page.screenshot({ fullPage: true })`) and say what was not measured.
+   **Review evidence is not product.** Screenshots, wrapper pages, `shots/` folders and harness scripts stay out of
+   the deliverable (shoot.py writes to a temp folder; keep anything worth keeping in `design/review/`).
+   `slop_lint.py` flags `review-scaffolding`.
+   **A rerun or redesign is compared with the version before it**: look at both first viewports side by side.
 2. Run Gate 0 scripts.
 3. Walk Gates 1–13 with the checklists; record every finding with impact (blocker / high / medium / polish),
    evidence (screenshot ref, line, value), and fix.
@@ -59,8 +66,9 @@ Nothing below B ships. C requires a revision pass, not an apology.
 
 ```bash
 python3 scripts/slop_lint.py <src or file>                 # grade A/B required; annotate remaining hits
+python3 scripts/shoot.py index.html --set "#input=value"   # renders + 375 editing test + scroll containers; exit 0 required
 python3 scripts/design_log.py check                        # convergence with recent projects; obey it
-python3 scripts/design_log.py measure full-page.png         # surface polarity from pixels; record with add --screenshot
+python3 scripts/design_log.py measure full-page.png         # surface polarity from pixels (shoot.py prints it); record with add --screenshot
 python3 scripts/contrast.py --pairs design/contrast-pairs.txt   # exit 0 required
 python3 scripts/build_tokens.py tokens/*.json --check      # 0 errors
 grep -rnE "#[0-9a-fA-F]{3,8}\b" src/components | grep -v tokens | head   # literal colors → 0
@@ -84,7 +92,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Task can be completed in the minimum sensible number of steps; count them.
 - [ ] Persuade: the signature interaction answers the top job with a visible result in ≤ 2 steps, near the first viewport, and its result carries into the conversion (`interaction-depth.md` §3).
 - [ ] The signature interaction works by keyboard, announces its result, respects reduced motion, and has a static no-JS equivalent on the page.
-- [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs). A dock that only appears after scrolling past the result fails this.
+- [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs). A dock that only appears after scrolling past the result fails this. `shoot.py --set` measures it.
 - [ ] Every decision point is a "mindless click" (obvious what happens); nothing requires reading instructions.
 - [ ] Back/undo exists for every reversible action; irreversible actions confirm or offer undo.
 - [ ] Error, empty, loading, offline, partial states designed for every region.
@@ -98,6 +106,9 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
       technique match its row in `expression-register.md` §7; anything off-row is justified in writing.
 - [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
 - [ ] Persuade: the first viewport shows the anchor the direction chose (`Anchor type:` in `DESIGN.md`); photographs appear only if that anchor is photographic, none were added to fill space, no grey placeholder boxes.
+- [ ] The anchor is executed at full weight, not implied: "type as image" is type that is the image (scale, crop or arrangement a heading would never get), a colour field fills its field, a diagram is drawn. A large heading beside a form is not an anchor.
+- [ ] The signature interaction did not become the whole design: its result has a designed form (a drawn route, a composed figure), no half of the first viewport is dead space, and at most one data table appears outside the interaction (`tables-as-sections` clean; `interaction-depth.md` §3b).
+- [ ] Rerun or redesign: the previous version's first viewport is beside this one, and this one is not less expressive. A fix that loses the expression is a regression.
 - [ ] If photographs are used, each passes the three-match test (subject, light, material) and was actually looked at.
 - [ ] Every image is recorded in `design/assets.md` with source, licence and the three-match note (`asset-unrecorded` clean).
 - [ ] The LCP image loads eagerly; every image carries width/height or aspect-ratio (`lcp-lazy`, `img-no-dimensions` clean).
@@ -139,7 +150,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Grid consistent; deliberate break-outs; one page container.
 - [ ] 320–1920 tested; no horizontal scroll; mobile is a redesign, not a stack.
 - [ ] Section backgrounds contain their content at 1280 and 360: no colour band ending mid-control, no card spilling into the next section unless the overlap is drawn on purpose.
-- [ ] At 360 px no table column is clipped (reflow, or a scroll container with a visible edge cue).
+- [ ] At 360 px no table column is clipped (reflow, or a scroll container with a visible edge cue). Every container `shoot.py` lists as scrolling at 375 px either reflows or shows the cue (`table-scroll-no-cue` clean).
 - [ ] Touch targets ≥ 44/48 with 8px spacing on touch surfaces; ≥ 24 everywhere.
 - [ ] `env(safe-area-inset-*)`, `dvh`, `scrollbar-gutter: stable` where relevant.
 
@@ -198,6 +209,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] `DESIGN.md` updated (decisions, changelog); `design-log.json` updated.
 - [ ] Existing design system respected (if any): no new fonts/primaries/radius scales; additions documented upstream.
 - [ ] Generated `build/` not edited by hand; fonts licensed; assets exported in required densities.
+- [ ] The deliverable holds only the product: no wrapper pages, screenshot folders or harness scripts (`review-scaffolding` clean).
 
 ## 16. Gate 13 — slop and originality
 

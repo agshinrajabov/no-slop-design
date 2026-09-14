@@ -145,6 +145,60 @@ def main() -> int:
         open(p4, "w", encoding="utf-8").write(page.replace("<body>", "<head><style>.site-header{position:sticky;top:0}</style></head><body><header class='site-header'>x</header>"))
         check("a sticky header alone does not count", "interaction-result-offscreen" in rules_of(p4), sorted(rules_of(p4)))
 
+    print("slop_lint — neon-on-black means a black background, not a token primitive")
+    with tempfile.TemporaryDirectory() as d:
+        tok = os.path.join(d, "tokens.css"); open(tok, "w").write(":root{--color-black:#000000;--color-white:#fff}")
+        check("a black primitive in a token file is not a black page", "neon-on-black" not in rules_of(tok), sorted(rules_of(tok)))
+        bg = os.path.join(d, "page.css"); open(bg, "w").write("body{background:#000000;color:#39ff14}")
+        check("a black page background still fires", "neon-on-black" in rules_of(bg), sorted(rules_of(bg)))
+
+    print("slop_lint — tables on phones, and tables as the page")
+    with tempfile.TemporaryDirectory() as d:
+        tbl = "<table><tr><th>a</th><th>b</th></tr><tr><td>1</td><td>2</td></tr></table>"
+        base = (f"<html><head><style>.scroll{{overflow-x:auto}}</style></head><body><main>"
+                f"<section data-nsd-interaction='estimator'><input type='number'><output aria-live='polite'>1</output>{tbl}</section>"
+                f"<section>{long_copy}<div class='scroll'>{tbl}</div></section></main></body></html>")
+        p = os.path.join(d, "a.html"); open(p, "w", encoding="utf-8").write(base)
+        check("a scrolling table with no cue is flagged", "table-scroll-no-cue" in rules_of(p), sorted(rules_of(p)))
+        check("one table outside the interaction is not tables-as-sections", "tables-as-sections" not in rules_of(p), sorted(rules_of(p)))
+        cued = base.replace(".scroll{overflow-x:auto}", ".scroll{overflow-x:auto;background:linear-gradient(#fff,#fff) left/2rem 100% no-repeat local}")
+        p2 = os.path.join(d, "b.html"); open(p2, "w", encoding="utf-8").write(cued)
+        check("scroll shadows count as a cue", "table-scroll-no-cue" not in rules_of(p2), sorted(rules_of(p2)))
+        reflow = base.replace(".scroll{overflow-x:auto}", ".scroll{overflow-x:auto}@media (max-width:480px){.scroll tr{display:grid}}")
+        p3 = os.path.join(d, "c.html"); open(p3, "w", encoding="utf-8").write(reflow)
+        check("a narrow reflow counts as a cue", "table-scroll-no-cue" not in rules_of(p3), sorted(rules_of(p3)))
+        two = base.replace("</main>", f"<section>{tbl}</section></main>")
+        p4 = os.path.join(d, "d.html"); open(p4, "w", encoding="utf-8").write(two)
+        check("two tables outside the interaction are flagged", "tables-as-sections" in rules_of(p4), sorted(rules_of(p4)))
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("| Surface mode | Operate |\n")
+        check("an Operate surface may be tables", "tables-as-sections" not in rules_of(p4), sorted(rules_of(p4)))
+
+    print("slop_lint — review scaffolding stays out of the deliverable")
+    with tempfile.TemporaryDirectory() as d:
+        page = f"<html><body><main><section data-nsd-anchor='colour field'>{long_copy}</section></main></body></html>"
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("a clean project has no scaffolding finding", "review-scaffolding" not in rules_of(p), sorted(rules_of(p)))
+        frame = os.path.join(d, "frame-375.html")
+        open(frame, "w").write("<html><body style='margin:0'><iframe src='index.html' style='width:375px;height:812px'></iframe></body></html>")
+        check("a wrapper page framing the product is flagged", "review-scaffolding" in rules_of(frame), sorted(rules_of(frame)))
+        os.makedirs(os.path.join(d, "shots")); open(os.path.join(d, "shots", "desktop.png"), "wb").write(b"x")
+        check("a shots/ folder beside the page is flagged", "review-scaffolding" in rules_of(p), sorted(rules_of(p)))
+
+    print("shoot — parses its arguments without a browser")
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    import shoot
+    check("--set splits selector and value", shoot.parse_set("#pages=12") == ("#pages", "12"), str(shoot.parse_set("#pages=12")))
+    check("--set keeps '=' inside an attribute selector", shoot.parse_set("[name=pages]=3") == ("[name=pages]", "3"),
+          str(shoot.parse_set("[name=pages]=3")))
+    h = run("scripts/shoot.py", "--help")
+    check("shoot.py --help", h.returncode == 0 and "--set" in h.stdout, h.stderr[-200:])
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "index.html"); open(p, "w").write("<html><body>x</body></html>")
+        inside = run("scripts/shoot.py", p, "--out", os.path.join(d, "shots"), "--chrome", PY)
+        check("shoot.py refuses to write screenshots into the deliverable", inside.returncode == 2 and "inside the deliverable" in inside.stdout,
+              inside.stdout.strip()[-200:])
+
     print("slop_lint — reveal without a no-JS fallback fires, and a guarded one does not")
     with tempfile.TemporaryDirectory() as d:
         bad = os.path.join(d, "reveal-bad.html")

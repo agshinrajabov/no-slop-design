@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.7.1"
+  version: "1.8.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -31,7 +31,9 @@ Read the sections the step names; skim the rest by its table of contents.
    visitor can do) in the brief, each with a one-sentence reason. R2 is a choice, not a default, and it never means
    "no interaction": every Persuade page ships **one signature interaction that performs the top job** — an
    estimator, an availability picker, a live demo — with a visible result in ≤ 2 steps that carries into the
-   conversion (`references/interaction-depth.md`). A hotel, a festival and a clinic must not come out alike.
+   conversion (`references/interaction-depth.md`). The interaction answers the question; it does not replace the
+   direction — the anchor still carries the first viewport and the result gets a designed form (§3b there). A hotel,
+   a festival and a clinic must not come out alike.
 4. **Local + global.** Research and inspiration always combine the audience's own market (its leading products,
    conventions, script, trust signals, payment and legal norms) with worldwide references.
 5. **Detect before you design.** If a design system, brand, or token file exists, adopt it (`references/existing-design-system.md`). Never introduce a second visual language.
@@ -49,7 +51,9 @@ Read the sections the step names; skim the rest by its table of contents.
 10. **Honest content.** Never fabricate metrics, testimonials, logos, names, avatars, or urgency. Use `[bracketed placeholders]` and list what must be supplied.
 11. **Platform first on native.** iOS follows HIG (`references/mobile-ios.md`); Android follows Material 3 (`references/mobile-android.md`).
 12. **Accessibility is a floor at every register.** WCAG 2.2 AA, verified with `scripts/contrast.py`; keyboard, focus, target sizes, reduced motion. Ambition is bought with craft, never with accessibility.
-13. **Nothing ships on the first pass.** Render it, look at it, run the review gate (`references/review-checklist.md`) and `scripts/slop_lint.py`; grade B or better.
+13. **Nothing ships on the first pass.** Render it with `scripts/shoot.py` (never a home-made harness), look at it,
+    run the review gate (`references/review-checklist.md`) and `scripts/slop_lint.py`; grade B or better. Review
+    evidence stays out of the deliverable. A rerun is judged beside the run before it: less expressive is a regression.
 14. **Anti-convergence.** Run `scripts/design_log.py check` before choosing a direction and obey what it reports;
     record the finished one with `design_log.py add --screenshot <full-page.png>`, which measures surface polarity from the
     pixels instead of trusting a label: a light hero on a mostly dark page is a dark page. The per-project log is empty on a new project, so the
@@ -104,9 +108,9 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | Standard: the research summary inside `design/DESIGN.md`. Deep: `design/research.md` |
 | **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
-| **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states, not a widget bolted on. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
+| **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states and a designed result, not a widget bolted on — and not the whole composition: the anchor keeps its weight, no dead half beside the panel. Vary the device per section; at most one data table outside the interaction, a label/value table at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3, §8; `interaction-depth.md` §3b | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, the signature interaction working (keyboard, announced result, reduced motion, no-JS fallback, `data-nsd-interaction`), 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
-| **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; at 375 px change the signature interaction's main input and confirm the result stays on screen; take a 1x full-page screenshot for `design_log.py add --screenshot`; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
+| **7 Review** | `python3 scripts/shoot.py index.html --set "<main input>=<value>"` — one command for desktop and 375 px full pages, the JavaScript-disabled render, the 375 px editing test, scroll containers and the dark share. Then **look** at every PNG it wrote (and, on a rerun, beside the previous run's); Gate 0 scripts; gates per mode; studio test; fix; re-run. Nothing from the review lands in the deliverable | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
 **Scope shortcuts.** Single component: 0 → 1 (short) → 5 → 6 → 7. Critique only: 0 → 7, report without rebuilding.
@@ -145,6 +149,7 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 | Script | Use |
 |---|---|
 | `python3 scripts/slop_lint.py <path> [--json] [--strict]` | scan HTML/CSS/JSX/TSX/Vue/Svelte/Dart/Swift/Kotlin for slop signatures, including missing imagery and placeholder boxes; grade A–F |
+| `python3 scripts/shoot.py index.html [--set "#input=value"] [--expect sel]` | headless Chrome review renders written outside the project: desktop + 375 px full pages, no-JS, the 375 px editing frame with a visible/not-visible verdict, scroll containers, dark share. Exit 1 on an off-screen result or sideways page scroll |
 | `python3 scripts/contrast.py fg bg` · `--tokens build/tokens.flat.json` · `--pairs file` | WCAG 2.x + APCA; `--tokens` checks every text role on every surface per mode |
 | `python3 scripts/build_tokens.py tokens/*.json --out build/ [--check]` | DTCG → CSS vars (light/dark), Tailwind v4 `@theme`, Swift, Kotlin, Dart, flat JSON |
 | `python3 scripts/type_scale.py` | fluid modular type scale with line-height and tracking |
@@ -164,6 +169,9 @@ design/   Standard: brief.md · DESIGN.md (direction + review) · assets.md · d
 tokens/   primitives.json · semantic.json · semantic.dark.json · components.json
 build/    (generated)
 ```
+
+The project holds the product and its design record only. Screenshots and any review scratch go to `shoot.py`'s temp
+folder, or `design/review/` if the user wants them kept.
 
 ## Working with the user
 

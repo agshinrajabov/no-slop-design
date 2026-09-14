@@ -10,7 +10,7 @@ rule: **every Persuade page ships one signature interaction that performs the vi
 
 1. The two axes
 2. The four depths
-3. The rule: one signature interaction
+3. The rule: one signature interaction (3b: it does not replace the direction)
 4. Choosing the depth
 5. Catalogue by category
 6. Motion with a job: explanatory sequences
@@ -51,7 +51,31 @@ job story in the brief. It is:
 - **close** — in or directly after the first viewport, a result in ≤ 2 steps;
 - **connected** — its result carries into the next action: it prefills the form, the WhatsApp message, the booking;
 - **honest** — estimates say "estimate", assumptions are visible, fees are not hidden, nothing asks for sign-up
-  before showing the result.
+  before showing the result;
+- **not the whole design** — the interaction answers the question; the direction's anchor still carries the page. A
+  form panel beside a heading is not a composition, and a page where the estimator is the only idea reads as a
+  booking tool. See §3b.
+
+### 3b. The interaction does not replace the direction
+
+The 1.7 run of a translation brief fixed everything the review asked for — the result stayed on screen on phones,
+the prices used the market's locale — and lost what the 1.6 run had: a bold colour field and a drawn route of the
+document's working days. What remained was a dark panel of form controls, a large heading, an empty half of the
+first viewport, and two data tables for the rest of the page. Fixing the interaction is not permission to drop the
+expression.
+
+- **The anchor is executed at full weight in the first viewport.** "Type as image" means type that *is* the
+  image — set at a scale, crop or arrangement a heading would never get, occupying a real share of the viewport —
+  not a large `h1` beside a form. A colour field fills its field. A diagram is drawn.
+- **The result is designed, not printed.** Give the result a visual form that explains it: the route of working
+  days drawn as a timeline, the document redrawn in both languages, the price as a composed figure. A sticky bar
+  on phones is the minimum, not the design.
+- **No dead half.** An empty column next to the interaction is a composition failure unless the emptiness is the
+  stated idea.
+- **One table.** Beyond the no-JS fallback or a price list, the page's other sections use other devices: a sequence,
+  a worked example, a diagram (`slop_lint.py` flags `tables-as-sections`).
+- **A rerun is compared with the run before it.** Put the previous screenshots beside the new ones; a fix that loses
+  the previous version's expression is a regression, whatever the gate grades say.
 
 Operate surfaces are already interactions. Read surfaces rarely need one beyond search or a tracking table of
 contents. Say which applies in the brief.
@@ -130,12 +154,18 @@ quote" as the only path; a language switch counted as the interaction; an FAQ ac
 before any information; fake live counters ("12 people are viewing this"); estimates that hide fees; results behind
 sign-up; scroll-jacking; custom cursors on service sites; three competing interactions where one would do.
 
+**Interaction as the whole design:** the estimator panel is the only visual idea; the anchor shrank to a heading;
+half the first viewport is empty; the sections after it are data tables (§3b).
+
 ## 9. Checks
 
 - The brief names the top job, the interaction depth with a reason, and the signature interaction.
 - The signature interaction answers the top job with a visible result in ≤ 2 steps, in or right after the first
   viewport, and its result carries into the conversion.
 - Keyboard, announced result, reduced motion and the no-JS fallback are verified, not assumed.
-- At 375 px, changing the main input shows the new result without scrolling.
+- At 375 px, changing the main input shows the new result without scrolling:
+  `scripts/shoot.py index.html --set "#main-input=value"` measures it and saves the frame.
+- The anchor is visible at full weight in the first viewport, the result has a designed form, and no more than one
+  data table appears outside the interaction (§3b).
 - `data-nsd-interaction` is on the page; `slop_lint.py` reports no `no-signature-interaction`.
 - Nothing from §8 is on the page.

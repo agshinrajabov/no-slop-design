@@ -38,7 +38,8 @@ RULES = [
      "gradient text on headline", "§1 Color"),
     ("glow-blob", "HIGH", r"blur-(2xl|3xl)|filter:\s*blur\((6|7|8|9)\d px\)|filter:\s*blur\(1\d\dpx\)",
      "giant blurred glow blob / background orb", "§1 Color"),
-    ("neon-on-black", "MED", r"#0a0a0a|#000000\b|bg-black\b|#0b0b0f|#09090b",
+    # background context only: a token file that defines `--color-black: #000000` as a primitive is not a black page
+    ("neon-on-black", "MED", r"background(?:-color)?\s*:[^;{}]*(?:#0a0a0a|#000000\b|#000\b|#0b0b0f|#09090b|\bblack\b)|\bbg-black\b",
      "pure black background — check it isn't the 'AI dark mode' with neon accents", "§1 Color"),
     ("tailwind-default-primary", "MED", r"\b(bg|text|border|ring)-(blue|indigo|violet)-(500|600)\b",
      "Tailwind default blue/indigo as brand color — define a real brand token", "§1 Color"),
@@ -119,10 +120,10 @@ RULES = [
 PHOTO_ANCHOR_WORDS = ("photo", "product", "video", "film", "footage")
 
 
-def declared_anchor(path: str, text: str) -> str | None:
-    """The anchor type the direction chose: data-nsd-anchor on the page, else the nearest design/DESIGN.md
-    'Anchor type:' line. Unfilled template text ({...}) counts as undeclared."""
-    m = re.search(r"data-nsd-anchor\s*=\s*[\"']([^\"']+)", text, re.I)
+def declared(path: str, text: str, attr: str, pattern: str) -> str | None:
+    """A decision the direction wrote down: the data-nsd-* attribute on the page, else the nearest design/DESIGN.md
+    line matching `pattern`. Unfilled template text ({...}) counts as undeclared."""
+    m = re.search(attr + r"\s*=\s*[\"']([^\"']+)", text, re.I)
     if m:
         return m.group(1).strip().lower()
     d = os.path.dirname(os.path.abspath(path))
@@ -130,12 +131,33 @@ def declared_anchor(path: str, text: str) -> str | None:
         cand = os.path.join(d, "design", "DESIGN.md")
         if os.path.exists(cand):
             body = open(cand, encoding="utf-8", errors="ignore").read()
-            m = re.search(r"Anchor type:\**\s*([^\n]+)", body, re.I)
+            m = re.search(pattern, body, re.I)
             if m and "{" not in m.group(1):
                 return m.group(1).strip().strip("*.").lower()
             return None
         d = os.path.dirname(d)
     return None
+
+
+def declared_anchor(path: str, text: str) -> str | None:
+    return declared(path, text, "data-nsd-anchor", r"Anchor type:\**\s*([^\n]+)")
+
+
+def declared_surface(path: str, text: str) -> str | None:
+    return declared(path, text, "data-nsd-surface", r"Surface mode\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
+
+
+def page_css(path: str, text: str) -> str:
+    """CSS only — <style> blocks plus linked local stylesheets. The HTML around them has no rules, and reading it as
+    CSS once made a whole document look like one selector."""
+    css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", text, re.I | re.S))
+    hrefs = re.findall(r"<link[^>]+rel=[\"']?stylesheet[^>]*href=[\"']([^\"']+)", text, re.I)
+    hrefs += re.findall(r"<link[^>]+href=[\"']([^\"']+\.css)[\"'][^>]*rel=[\"']?stylesheet", text, re.I)
+    for href in hrefs:
+        local = os.path.join(os.path.dirname(os.path.abspath(path)), href.split("?")[0])
+        if not href.startswith(("http:", "https:", "//")) and os.path.exists(local):
+            css += "\n" + open(local, encoding="utf-8", errors="ignore").read()
+    return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
 
 
 def file_rules(path: str, text: str):
@@ -145,9 +167,25 @@ def file_rules(path: str, text: str):
     if not path.lower().endswith((".html", ".htm", ".astro")):
         return out
     base = os.path.basename(path).lower()
+    in_design = os.sep + "design" + os.sep in os.path.abspath(path)
+    is_page = re.search(r"<(main|section|header)\b", text, re.I) and len(text) > 3000
+    # review scaffolding left beside the product: a page that only frames another local page, or a screenshot folder
+    if not in_design and not is_page and re.search(r"<iframe\b[^>]*\bsrc=[\"'](?!https?:|//)[^\"']*\.html?\b", text, re.I):
+        out.append(("review-scaffolding", "MED", "a wrapper page that only frames another local page — screenshot "
+                                                 "scaffolding in the deliverable. Use scripts/shoot.py, which writes outside the "
+                                                 "project, and delete wrappers, shots/ folders and harness scripts before hand-off "
+                                                 "(review-checklist.md §1)", "§10 Process"))
+        return out
+    if not in_design and is_page:
+        for folder in ("shots", "screenshots", "frames", "harness"):
+            fp = os.path.join(os.path.dirname(os.path.abspath(path)), folder)
+            if os.path.isdir(fp) and any(f.lower().endswith((".png", ".jpg", ".py", ".js", ".html")) for f in os.listdir(fp)):
+                out.append(("review-scaffolding", "MED", f"'{folder}/' beside the page holds review captures or harness files — "
+                                                         "review evidence is not product; keep it outside the deliverable or in "
+                                                         "design/review/ (review-checklist.md §1)", "§10 Process"))
+                break
     if any(k in base for k in ("moodboard", "review", "spec", "storybook", "handoff")) or "data-nsd-doc" in text:
         return out  # working documents, not product pages
-    is_page = re.search(r"<(main|section|header)\b", text, re.I) and len(text) > 3000
     has_media = re.search(r"<(img|picture|video|canvas)\b|<svg[^>]*(viewBox=\"0 0 (?!2[04] 2[04])[^\"]+\"|width=\"(?!1[0-9]|2[0-9]|3[0-2])\d{3,})", text, re.I)
     anchor = declared_anchor(path, text)
     photographic = bool(anchor) and any(w in anchor for w in PHOTO_ANCHOR_WORDS)
@@ -179,18 +217,12 @@ def file_rules(path: str, text: str):
                                                           "data-nsd-interaction (interaction-depth.md §3)", "Interaction"))
 
     # the interaction's result must stay on screen on a phone while inputs change (interaction-depth.md §7)
+    css = page_css(path, text) if is_page else ""
     if is_page and re.search(r"data-nsd-interaction", text, re.I):
-        css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", text, re.I | re.S))  # CSS only: the HTML around it has no rules
-        hrefs = re.findall(r"<link[^>]+rel=[\"']?stylesheet[^>]*href=[\"']([^\"']+)", text, re.I)
-        hrefs += re.findall(r"<link[^>]+href=[\"']([^\"']+\.css)[\"'][^>]*rel=[\"']?stylesheet", text, re.I)
-        for href in hrefs:
-            local = os.path.join(os.path.dirname(os.path.abspath(path)), href.split("?")[0])
-            if not href.startswith(("http:", "https:", "//")) and os.path.exists(local):
-                css += "\n" + open(local, encoding="utf-8", errors="ignore").read()
         # a sticky header does not show the result, and an element hidden by default is only shown conditionally —
         # the 1.6 run's dock appeared after the result had scrolled past, i.e. never while the visitor was editing
         persistent = False
-        for rule in re.finditer(r"([^{}]+)\{[^{}]*position\s*:\s*(?:sticky|fixed)[^{}]*\}", re.sub(r"/\*.*?\*/", "", css, flags=re.S), re.I):
+        for rule in re.finditer(r"([^{}]+)\{[^{}]*position\s*:\s*(?:sticky|fixed)[^{}]*\}", css, re.I):
             for sel in rule.group(1).split(","):
                 sel = sel.strip()
                 if not sel or re.search(r"header|nav|head\b|menu|skip|toast|cookie|banner", sel, re.I):
@@ -208,6 +240,36 @@ def file_rules(path: str, text: str):
                                                               "or fixed besides the header, or it is hidden until the result has scrolled past. "
                                                               "On a phone the visitor edits and sees nothing change. Check at 375 px by changing "
                                                               "the main input (interaction-depth.md §7, Mobile)", "Interaction"))
+
+    tables = len(re.findall(r"<table\b", text, re.I))
+    # a table that scrolls sideways on a phone with nothing showing that it does: the visitor never sees the last column
+    if is_page and tables and re.search(r"overflow(?:-x)?\s*:\s*(?:auto|scroll)", css, re.I):
+        cue = re.search(r"background(?:-attachment)?\s*:[^;{}]*\blocal\b|mask-image|scroll-(?:cue|hint|shadow)|edge-fade|"
+                        r"animation-timeline\s*:\s*scroll|scroll-timeline", css + text, re.I)
+        reflow = re.search(r"@media[^{]*\{(?:[^{}]*\{[^{}]*\})*?[^{}]*\b(?:table|thead|tbody|tr|td|th)\b[^{}]*\{[^{}]*display\s*:\s*(?:block|grid|flex)", css, re.I)
+        if not (cue or reflow or "data-nsd-scroll-cue" in text):
+            out.append(("table-scroll-no-cue", "LOW", "a table scrolls horizontally with no visible edge cue and no narrow "
+                                                      "reflow — on a phone the last columns look like they do not exist. Reflow "
+                                                      "rows to label–value pairs below ~480 px, or add scroll shadows "
+                                                      "(background-attachment: local) (components.md §8)", "§3 Layout"))
+    # the interaction answered the top job, and every other section became a spreadsheet
+    surface = declared_surface(path, text) or ""
+    persuasive = surface.startswith("persuade") or (not surface and re.search(r"data-nsd-interaction", text, re.I))
+    outside = text
+    root = re.search(r"<(section|div|form|article|aside)\b[^>]*data-nsd-interaction[^>]*>", text, re.I)
+    if root:  # tables drawn inside the interaction (a route, a result breakdown) are part of it, not page sections
+        end = text.find(f"</{root.group(1).lower()}>", root.end())
+        nested = len(re.findall(rf"<{root.group(1)}\b", text[root.end():end if end > 0 else len(text)], re.I))
+        for _ in range(nested):  # skip past same-name children so the cut ends at the root's own close tag
+            nxt = text.find(f"</{root.group(1).lower()}>", end + 1)
+            end = nxt if nxt > 0 else end
+        outside = text[:root.start()] + text[end if end > 0 else len(text):]
+    tables = len(re.findall(r"<table\b", outside, re.I))
+    if is_page and persuasive and tables >= 2:
+        out.append(("tables-as-sections", "MED", f"{tables} data tables on a persuasive page — beside the signature interaction "
+                                                  "the other sections turned into a spreadsheet. Keep one table (the price list or "
+                                                  "the no-JS fallback) and give the rest a different device: a diagram, a "
+                                                  "sequence, a worked example (interaction-depth.md §8, anti-slop.md §8)", "§3 Layout"))
 
     # performance and provenance of the imagery that is there
     imgs = re.findall(r"<img\b[^>]*>", text, re.I)

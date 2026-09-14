@@ -151,6 +151,8 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | Gray placeholder boxes with "[Photo: …]" captions in a delivered prototype | Never; use real licensed placeholders or designed placeholders mapped to a shot list |
 | Serif chosen by reflex for "warm / craft / heritage" | Only after testing a sans and a slab against the same attribute |
 | **Brochure page**: a service whose price or availability is the question, answered only in prose, with no signature interaction | Never on a Persuade page; see `interaction-depth.md` |
+| **Interaction as the whole design**: a panel of form controls beside a big heading, half the first viewport empty, data tables for every later section; the anchor the direction chose is missing | Never; the interaction answers the question, the direction still carries the page (`interaction-depth.md` §3b) |
+| **Horizontal-scroll table with no cue**: the last columns sit a few pixels off-screen on a phone and nothing says so | Never; reflow or show an edge cue (`components.md` §8) |
 
 Rule: **a style must be traceable to a brand attribute or a content type.** Never stack more than two trend
 signals. And a second rule: **the absence of material is also a style choice**, and usually the wrong one; see
@@ -180,6 +182,10 @@ Generated UI fails accessibility in predictable ways. Treat these as tells too:
 - **One pass.** Generated, not revised. Every professional design is a fourth draft. → `review-checklist.md`
 - **Raw values.** `#7c3aed`, `24px`, `Inter` typed inline. → `design-tokens.md`
 - **Cloning one reference.** Yields a knock-off. → remix two unrelated references (e.g. Linear's type discipline × a magazine's color)
+- **Building the review tooling instead of reviewing.** Wrapper pages, screenshot scripts and `shots/` folders written
+  from scratch, then left in the deliverable. → `scripts/shoot.py`, which writes outside the project
+- **Fixing the checklist, losing the design.** A rerun that clears every finding and is less expressive than the run
+  before it. → compare first viewports side by side before calling it better
 
 ---
 
