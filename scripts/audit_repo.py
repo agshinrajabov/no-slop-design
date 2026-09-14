@@ -113,6 +113,7 @@ def audit() -> tuple[list[str], list[str], dict]:
         ("Imagery art direction", "Phase 3 writes the art direction here in Standard mode"),
         ("Alternative considered", "Standard mode records the alternative one register away"),
         ("Review of record", "Standard mode writes the review here instead of a separate file"),
+        ("Signature interaction", "every Persuade page ships one; Standard mode records it here"),
     ]:
         if needed not in design_tpl:
             errors.append(f"templates/DESIGN.md has no '{needed}' section — {why}")

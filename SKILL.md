@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -27,9 +27,11 @@ Read the sections the step names; skim the rest by its table of contents.
    thing a first-time viewer should remember; **(d)** how much visual ambition the piece should carry — the
    **expression register** R1 Utility / R2 Composed / R3 Expressive / R4 Experimental, with your recommendation and
    what each costs (`references/expression-register.md`). If the user is unavailable, decide all four, state them.
-3. **Register before composition.** Name R1–R4 in the brief and the moodboard with a one-sentence reason tied to the
-   audience's decision type and the category norm. R2 is a choice, not a default. A hotel, a festival, a fashion
-   label and a clinic must not come out at the same register.
+3. **Register and interaction depth before composition.** Name R1–R4 (how loud it looks) and I1–I4 (how much the
+   visitor can do) in the brief, each with a one-sentence reason. R2 is a choice, not a default, and it never means
+   "no interaction": every Persuade page ships **one signature interaction that performs the top job** — an
+   estimator, an availability picker, a live demo — with a visible result in ≤ 2 steps that carries into the
+   conversion (`references/interaction-depth.md`). A hotel, a festival and a clinic must not come out alike.
 4. **Local + global.** Research and inspiration always combine the audience's own market (its leading products,
    conventions, script, trust signals, payment and legal norms) with worldwide references.
 5. **Detect before you design.** If a design system, brand, or token file exists, adopt it (`references/existing-design-system.md`). Never introduce a second visual language.
@@ -64,7 +66,7 @@ a defect, and the fix is fewer artefacts, not faster typing.
 
 | | Standard (default) | Deep |
 |---|---|---|
-| Target wall time | R1–R2: 10–15 min · R3: 20–25 min (sourcing and checking real photography is most of the difference) | 30–60 min |
+| Target wall time | R1–R2: 10–15 min · R3: 20–25 min (sourcing and checking real photography is most of the difference) · add ~5 min for an I3 signature interaction | 30–60 min |
 | Research | ≤ 6 min, ≤ 8 web fetches: 3 job stories, 3 competitor first-screens (1 local), 1 review-mining pass | full `mini-user-research.md` menu |
 | Direction | 1 recommended, fully specified, **written inside `DESIGN.md`** + 1 alternative in five lines, one register away. No separate `research.md` or `moodboard.html` | 2–3 full directions in `moodboard.html`, specimens |
 | References | 5–6, annotated, ≥ 2 local | 8–12 per direction |
@@ -82,7 +84,8 @@ out beyond a single line, review gates 0 and 13 only.
 
 **Stop conditions for Standard.** When any of these hit, finish what is on screen and list the rest as next steps:
 the register's time target passed, 8 web fetches used, 6 page sections written, 6 images placed. Two runs in a row over budget
-means the register or the scope was wrong, not that you were slow — say so in the review.
+means the register or the scope was wrong, not that you were slow — say so in the review. Before you stop, record
+the run with `scripts/design_log.py add`: an unrecorded run cannot stop the next one from repeating it.
 
 **Compile only what the target consumes.** `build_tokens.py` emits five platforms; a web page needs two.
 Web: `--format css,tailwind` (or `css`). iOS: `--format swift`. Android: `--format kotlin`. Flutter: `--format dart`.
@@ -95,12 +98,12 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | Phase | Do | Read (Standard: named sections) | Output |
 |---|---|---|---|
 | **0 Detect** | Classify the request; scan repo, brand assets, live product, `design/design-log.json`; run `scripts/design_log.py check` for what recent projects already looked like; baseline existing UI with `scripts/slop_lint.py` | `discovery.md` §1–2; `existing-design-system.md` §1–2 | findings |
-| **1 Brief** | One intake message with the four questions from non-negotiable 2 plus product, user, top job, anti-attributes, constraints, done-criteria. Decide the **surface mode** (Persuade / Operate / Read / Play) and the **expression register** (R1–R4) | `discovery.md` §3–5; `expression-register.md` §1–2 | `design/brief.md` |
+| **1 Brief** | One intake message with the four questions from non-negotiable 2 plus product, user, top job, anti-attributes, constraints, done-criteria. Decide the **surface mode** (Persuade / Operate / Read / Play), the **expression register** (R1–R4), the **interaction depth** (I1–I4) and the **signature interaction** from the top job | `discovery.md` §3–5; `expression-register.md` §1–2; `interaction-depth.md` §1–5 | `design/brief.md` |
 | **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | Standard: the research summary inside `design/DESIGN.md`. Deep: `design/research.md` |
 | **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
-| **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
-| **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
+| **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states, not a widget bolted on. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
+| **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, the signature interaction working (keyboard, announced result, reduced motion, no-JS fallback, `data-nsd-interaction`), 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
 | **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
@@ -111,6 +114,9 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 
 - **Register:** decided in Phase 1 from the audience's decision type, the category norm, and the asset budget; every
   technique used is on that register's row in `expression-register.md` §7 or justified in writing.
+- **Interaction:** decided in Phase 1 from the top job. The signature interaction answers it with a result the visitor
+  produces, carries that result into the conversion, and degrades to a static equivalent. Carousels, hover effects,
+  language switchers and FAQ accordions do not count.
 - **Audience and market:** the brief names country, language(s), script, device mix, and local conventions; research
   includes the market's leading products; the moodboard includes local references; copy and formats follow the locale.
 - **Design system:** existing system → adopt and extend only; a named external system (Material, HIG, a Figma
@@ -174,6 +180,7 @@ build/    (generated)
 | `references/existing-design-system.md` | any prior UI or a named preferred system; extraction, adoption, drift audit |
 | `references/mini-user-research.md` | Phase 2; methods by time box, local + global, synthesis to decisions |
 | `references/expression-register.md` | Phase 1 and 3; R1–R4, how to choose, technique catalogue, R4 conditions |
+| `references/interaction-depth.md` | Phase 1, 5, 6; I1–I4, the signature-interaction rule, a catalogue by category, explanatory sequences, build guardrails |
 | `references/moodboard.md` · `references/inspiration-sources.md` | Phase 3; method, local and global sources, remix rule |
 | `references/visual-material.md` | Phase 3, 5, 6; anchors, art direction, placeholders, sourcing, industry starting points |
 | `references/anti-slop.md` | Phase 3 and 7; full catalog incl. over-correction; the studio test |

@@ -69,15 +69,16 @@ def analyse(entries: list[dict]) -> list[str]:
     if len(recent) < 2:
         return warns
 
-    def streak(key, label, fmt=lambda v: v):
+    def streak(key, label, n=STREAK, fmt=lambda v: v):
         vals = [e.get(key) for e in recent if e.get(key)]
-        if len(vals) < STREAK:
+        if len(vals) < n:
             return
-        tail = vals[-STREAK:]
+        tail = vals[-n:]
         if len(set(tail)) == 1:
-            warns.append(f"{label}: the last {STREAK} directions were all {fmt(tail[0])} — vary this one or write down why not")
+            warns.append(f"{label}: the last {n} directions were all {fmt(tail[0])} — vary this one or write down why not")
 
-    streak("surface", "surface polarity")
+    # surface polarity is the first thing anyone sees, so two in a row already count
+    streak("surface", "surface polarity", n=2)
     streak("register", "expression register")
     streak("display", "display typeface")
     hues = [hue_family(e.get("hue")) for e in recent if e.get("hue") is not None]
@@ -100,7 +101,7 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     a = sub.add_parser("add", help="record a finished direction")
-    for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor"):
+    for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
         a.add_argument(f"--{f}", default=None)
     a.add_argument("--hue", type=float, default=None)
 
@@ -115,7 +116,7 @@ def main() -> int:
 
     if args.cmd == "add":
         entry = {k: getattr(args, k) for k in ("project", "register", "surface", "display", "text", "structure",
-                                               "industry", "market", "anchor") if getattr(args, k)}
+                                               "industry", "market", "anchor", "interaction") if getattr(args, k)}
         if args.hue is not None:
             entry["hue"] = args.hue
             entry["hue_family"] = hue_family(args.hue)

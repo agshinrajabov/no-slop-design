@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.6.0 — 2026-09-14
+
+The 1.5 test page (a translation agency) earned a B+ and was still a brochure: one load-time stagger, a language
+toggle, a contact form. The register table coupled interaction to visual ambition, so any business correctly placed
+at R2 was also capped at "standard components + one custom affordance". For services, what sells is the visitor
+answering their own question — price, date, availability — with a result they produced.
+
+- New `references/interaction-depth.md`: I1 Static, I2 Functional, I3 Demonstrative, I4 Immersive, independent of
+  the register; the rule that every Persuade page ships one signature interaction that performs the top job; a
+  catalogue of conversion interactions for sixteen categories; explanatory scroll sequences; build guardrails
+  (declared with `data-nsd-interaction`, native controls, announced results, reduced motion, no-JS equivalent).
+- `SKILL.md`: non-negotiable 3 covers both axes; Phase 1 decides interaction depth and the signature interaction;
+  Phases 5–6 build and verify it; budgets add ~5 minutes for I3; every run ends with `design_log.py add`.
+- `expression-register.md`: interaction is a separate axis; R2 may use one explanatory sequence; the signature
+  interaction is required at every register.
+- `slop_lint.py`: `no-signature-interaction` (LOW) when nothing outside the contact form produces an announced
+  result. The 1.5 translation page now receives it.
+- `design_log.py`: surface polarity warns after two runs in a row instead of three; runs can record interaction depth.
+- Review gate, anti-slop (the brochure page), ux-patterns, the brief / DESIGN.md / log templates, `audit_repo.py`,
+  and a new `evals/05-signature-interaction.md` built from the B+ page.
+
 ## 1.5.0 — 2026-09-14
 
 In real use the skill reached for photographs whether the design needed them or not. The cause was ours: fixing the

@@ -167,6 +167,17 @@ def file_rules(path: str, text: str):
     if is_page and dl_count + rowish >= 3:
         out.append(("ledger-site", "MED", f"label/value tables used as the layout device in {dl_count + rowish} places — vary the device per section; this is the skill's own tell (expression-register.md §10)", "§3 Layout"))
 
+    # a persuasive page needs one signature interaction that performs the top job (interaction-depth.md)
+    if is_page and not re.search(r"data-nsd-interaction", text, re.I):
+        outside_forms = re.sub(r"<form\b.*?</form>", "", text, flags=re.I | re.S)
+        controls = re.search(r"<(button|input|select|textarea)\b|role=\"(slider|switch|tab|listbox|spinbutton)\"", outside_forms, re.I)
+        result = re.search(r"<output\b|aria-live\s*=", outside_forms, re.I)
+        if not (controls and result):
+            out.append(("no-signature-interaction", "LOW", "no signature interaction: nothing outside the contact form lets the visitor "
+                                                          "do the top job (price, availability, fit) and see a result. A language switch "
+                                                          "or an accordion does not count. If one exists, mark its root with "
+                                                          "data-nsd-interaction (interaction-depth.md §3)", "Interaction"))
+
     # performance and provenance of the imagery that is there
     imgs = re.findall(r"<img\b[^>]*>", text, re.I)
     if imgs:

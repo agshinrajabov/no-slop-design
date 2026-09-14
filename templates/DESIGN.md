@@ -15,6 +15,7 @@
 | Market & audience | {country/region · language(s) & script · local conventions honoured} |
 | Surface mode | {Persuade · Operate · Read · Play} |
 | **Expression register** | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {decision type + category norm + asset budget} |
+| **Interaction depth** | {I1 Static · I2 Functional · I3 Demonstrative · I4 Immersive} — because {top job + whether its answer depends on the visitor's inputs} |
 | Mode | {Standard · Deep} |
 | Token source | `tokens/primitives.json`, `tokens/semantic.json`, `tokens/semantic.dark.json`, `tokens/components.json` |
 | Build | `python3 scripts/build_tokens.py tokens/*.json --out build/` |
@@ -54,6 +55,9 @@ Anchor type: {full-bleed photograph · product-first · type as image · colour 
 Photographs needed: {yes, n — because … · no — the anchor is …}. `slop_lint.py` reads the `Anchor type:` line.
 
 **Register techniques used** (from `expression-register.md` §7, anything off-row justified): {…}
+
+**Signature interaction** (`interaction-depth.md` §3, §5): {what the visitor does} → {the result they see} → {where the
+result carries}. Declared on the page as `data-nsd-interaction="{type}"`. Without JavaScript: {the static equivalent}.
 
 **Design principles (max 5, each with a tie-breaker rule):**
 1. *{Principle}* — when in conflict with {other}, {this} wins because {…}.

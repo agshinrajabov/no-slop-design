@@ -80,12 +80,17 @@ Registers are not quality levels: R1 done well beats R4 done badly. But choosing
 answer, not a safe one. Techniques are gated per register, and four things never move with it — accessibility,
 tokens, honest content, and the performance budget.
 
+The register decides how loud a page looks, not how much the visitor can do. That is a second axis, interaction
+depth, and every persuasive page gets one signature interaction that performs the visitor's real job — a price and
+date estimator for a translation agency, an availability picker for a hotel, a live sandbox for software — with a
+result that carries straight into the quote or the booking.
+
 ## What it actually does
 
 | Phase | What happens | Artefact |
 |---|---|---|
 | 0 Detect | Classifies the request; finds any existing design system, brand or tokens; checks what recent projects already looked like; baselines the current UI with the linter | findings |
-| 1 Brief | The four intake questions plus product, user, top job, anti-attributes, constraints; picks a surface mode and the register | `design/brief.md` |
+| 1 Brief | The four intake questions plus product, user, top job, anti-attributes, constraints; picks a surface mode, the register, the interaction depth and the signature interaction | `design/brief.md` |
 | 2 Research | Local **and** global: job stories, competitor first screens, review mining, a heuristic pass; every insight ends in a decision | in `DESIGN.md` · Deep: `research.md` |
 | 3 Direction | Attributes → annotated real references (≥ 30% non-UI, ≥ 2 local) → a remix thesis → imagery art direction → one direction plus an alternative one register away | in `DESIGN.md` · Deep: `moodboard.html` |
 | 4 System | OKLCH scales, fluid type scale, spacing, radius, elevation, motion; semantic roles for light and dark; compiled for the target platform; every role contrast-checked | `tokens/`, `build/`, `DESIGN.md` |
@@ -101,7 +106,7 @@ produces a report and rebuilds nothing.
 ## What it refuses
 
 A catalog of roughly 84 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 46 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 47 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -177,9 +182,9 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 
 ```
 SKILL.md          the router: what to do, and which reference to read at that step
-references/       22 deep references, loaded per phase, never all at once
+references/       23 deep references, loaded per phase, never all at once
   discovery · existing-design-system · mini-user-research · moodboard · inspiration-sources
-  expression-register · visual-material · anti-slop · design-tokens · color · typography
+  expression-register · interaction-depth · visual-material · anti-slop · design-tokens · color · typography
   spacing-layout · components · ux-patterns · content-microcopy · motion · accessibility
   web-frontend · mobile-ios · mobile-android · review-checklist · handoff
 templates/        brief · DESIGN.md · assets.md · DTCG token starter set · contrast pairs · design log
@@ -208,6 +213,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.3 | A self-audit: the 1.2 rules were in `SKILL.md` but not in the templates | `audit_repo.py`, `selftest.py`, CI, cross-project memory |
 | 1.4 | An existing system, an iOS screen, and eval 04 on a weaker model | OKLCH silently dropped from the native token output, page rules judging component source, the unchecked marquee, register-aware budgets |
 | 1.5 | Real use: the skill reached for photographs by reflex, because 1.1 had turned "no images" into an image quota | the direction decides the anchor type; image rules read that decision instead of counting images; photo-stuffing is a tell |
+| 1.6 | A B+ translation-agency page that was all type and no interaction: the register had quietly capped interaction for every service business | `interaction-depth.md` as a separate axis; one signature interaction per persuasive page; explanatory scroll sequences allowed at R2; the cross-project log warns after two same-surface runs |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

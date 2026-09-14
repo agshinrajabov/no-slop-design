@@ -150,6 +150,7 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | Dark surface by default on a marketing page | Night-time or screen-native contexts (cinema, music, dev tools) |
 | Gray placeholder boxes with "[Photo: …]" captions in a delivered prototype | Never; use real licensed placeholders or designed placeholders mapped to a shot list |
 | Serif chosen by reflex for "warm / craft / heritage" | Only after testing a sans and a slab against the same attribute |
+| **Brochure page**: a service whose price or availability is the question, answered only in prose, with no signature interaction | Never on a Persuade page; see `interaction-depth.md` |
 
 Rule: **a style must be traceable to a brand attribute or a content type.** Never stack more than two trend
 signals. And a second rule: **the absence of material is also a style choice**, and usually the wrong one; see

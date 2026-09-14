@@ -88,6 +88,27 @@ def main() -> int:
         p = os.path.join(d, "index.html"); open(p, "w").write(f"<html><body><main>{secs}{long_copy}</main></body></html>")
         check("photo-stuffing on an image in every section", "photo-stuffing" in rules_of(p), sorted(rules_of(p)))
 
+    print("slop_lint — a persuasive page needs a signature interaction")
+    with tempfile.TemporaryDirectory() as d:
+        brochure = (f"<html><body><header><nav><button type='button'>AZ</button></nav></header><main><section>{long_copy}</section>"
+                    "<form><input name='n'><output aria-live='polite'></output><button type='submit'>Send</button></form></main></body></html>")
+        p = os.path.join(d, "brochure.html"); open(p, "w", encoding="utf-8").write(brochure)
+        check("brochure page (switcher + contact form only) is flagged", "no-signature-interaction" in rules_of(p), sorted(rules_of(p)))
+        est = brochure.replace("</section>", "</section><section><label>Pages <input type='number' value='1'></label><output aria-live='polite'>20 AZN</output></section>", 1)
+        p2 = os.path.join(d, "estimator.html"); open(p2, "w", encoding="utf-8").write(est)
+        check("an estimator with an announced result passes", "no-signature-interaction" not in rules_of(p2), sorted(rules_of(p2)))
+        p3 = os.path.join(d, "declared.html"); open(p3, "w", encoding="utf-8").write(brochure.replace("<main>", "<main data-nsd-interaction='availability'>"))
+        check("data-nsd-interaction is honoured", "no-signature-interaction" not in rules_of(p3), sorted(rules_of(p3)))
+
+    print("design_log — two same-surface runs in a row already count")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        for proj in ("x", "y"):
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--surface", "dark", "--register", "R2",
+                            "--hue", "30", "--interaction", "I1"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("surface streak warns after two runs", "surface polarity" in out, out.strip()[-160:])
+
     print("slop_lint — reveal without a no-JS fallback fires, and a guarded one does not")
     with tempfile.TemporaryDirectory() as d:
         bad = os.path.join(d, "reveal-bad.html")

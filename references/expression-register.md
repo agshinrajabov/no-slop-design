@@ -39,6 +39,11 @@ motion ambition the page carries, which techniques are on the table, and what "g
 Registers are not quality levels. R1 done well beats R4 done badly, always. But choosing R1 for a music festival is
 a wrong answer, not a safe one.
 
+**Interaction is a separate axis.** The register sets visual scale, imagery and *decorative* motion. It does not set
+how much the visitor can do: that is interaction depth (I1–I4, `interaction-depth.md`), and every Persuade page has
+one signature interaction whatever its register. An R2 translation agency with a live price estimator is right; an
+R2 agency with none is a brochure.
+
 ## 2. Choosing the register
 
 Ask, in the brief, and write the answer down. If the user is unavailable, decide from this table and state it.
@@ -165,9 +170,10 @@ next within 10 seconds, the register was used as decoration and the page fails G
 | Overlapping type and image | no | no | yes | yes |
 | Asymmetric / broken grid | no | one breakout | yes | the grid is bespoke |
 | Horizontal scroll section | no | no | one, with a reason | yes |
-| Sticky / pinned sequence | no | no | one per page | multiple, narrative |
-| Scroll-linked animation | no | entrance only | reveals, parallax ≤ 20 % | scroll drives the scene |
+| Sticky / pinned sequence | no | one, only to explain a process (`interaction-depth.md` §6) | one per page | multiple, narrative |
+| Scroll-linked animation | no | entrance, plus one explanatory sequence | reveals, parallax ≤ 20 % | scroll drives the scene |
 | Custom cursor | no | no | subtle state only | yes |
+| Signature interaction (`interaction-depth.md` §3) | on Persuade surfaces | required | required | required |
 | WebGL / 3D / shaders | no | no | one contained moment | yes |
 | Page transitions | no | no | optional | yes |
 | Sound | no | no | opt-in | opt-in, designed |

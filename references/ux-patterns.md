@@ -232,6 +232,9 @@ Checks:
 
 ## 9. Commerce and conversion
 
+The conversion interaction for each category — estimator, availability picker, configurator, live demo — is
+catalogued in `interaction-depth.md` §5, and one is required on every Persuade page.
+
 Pricing page: ≤4 plans; one plan marked recommended only when data shows most buyers pick it; monthly/annual toggle with the annual saving stated as a number; price per unit stated with the unit; a collapsed full comparison table below the cards; FAQ of the real objections (cancellation, tax, seat changes); enterprise contact as text link, not a fourth card with "Custom".
 
 Checkout: guest checkout as the most prominent path (Baymard: 18–19% of US shoppers abandon when account creation is required; 62% of sites still bury guest checkout); account offer after payment. Progress indicator for ≥3 steps; address autocomplete with manual fallback; express pay (Apple Pay, Google Pay, PayPal) above the form when available; order summary visible on every step; errors fixed in place without reloading the form; total including tax and shipping visible before the payment step. Trust signals only when they are real and verifiable (actual security badges, real return policy link); no invented "trusted by" logos.

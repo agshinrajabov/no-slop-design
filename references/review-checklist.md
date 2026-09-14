@@ -79,6 +79,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 
 - [ ] Trunk test passes on every screen (what app, what page, sections, local options, where am I, search).
 - [ ] Task can be completed in the minimum sensible number of steps; count them.
+- [ ] Persuade: the signature interaction answers the top job with a visible result in ≤ 2 steps, near the first viewport, and its result carries into the conversion (`interaction-depth.md` §3).
+- [ ] The signature interaction works by keyboard, announces its result, respects reduced motion, and has a static no-JS equivalent on the page.
 - [ ] Every decision point is a "mindless click" (obvious what happens); nothing requires reading instructions.
 - [ ] Back/undo exists for every reversible action; irreversible actions confirm or offer undo.
 - [ ] Error, empty, loading, offline, partial states designed for every region.
