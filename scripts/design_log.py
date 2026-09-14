@@ -224,6 +224,17 @@ def analyse(entries: list[dict]) -> list[str]:
         warns.append(f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — the paper-artefact "
                      "result is becoming a house style" if top == "paper" else
                      f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — vary it")
+    # the cheapest bold move repeated: poster-scale type on every first viewport (1.14 tests: 166, 400, 176, 158, 384 px)
+    ratios = [float(e["display_ratio"]) for e in recent if e.get("display_ratio") is not None]
+    if len(ratios) >= 3 and all(r >= 8 for r in ratios[-3:]):
+        warns.append(f"type scale: the last 3 first viewports set display type at {', '.join(f'{r:g}×' for r in ratios[-3:])} "
+                     "body size — oversized type is becoming the default bold move; make this one a photograph, a drawing, "
+                     "a colour field or the product itself, and keep the type in proportion")
+    # generated or stock imagery sharing one look: wooden table, soft window light, warm browns
+    looks = [set(t.strip() for t in (e.get("image_look") or "").split(";") if t.strip()) for e in recent if e.get("image_look")]
+    if len(looks) >= 2 and len(looks[-1] & looks[-2]) >= 2:
+        warns.append(f"image look: the last two pages' imagery shared {', '.join(sorted(looks[-1] & looks[-2]))} — "
+                     "derive light, surface and palette from this direction, not from the image tool's default")
     # the opening and closing formula: hero then interaction, contact form last
     if len(skels) >= 2 and skels[-1][0][:2] == skels[-2][0][:2] and len(skels[-1][0]) >= 2:
         warns.append(f"opening: the last two pages opened the same way ({' > '.join(skels[-1][0][:2])}) — the interaction "
@@ -248,6 +259,10 @@ def main() -> int:
             p.add_argument(f"--{f}", default=None)
         p.add_argument("--result-form", dest="result_form", default=None, choices=RESULT_FORMS,
                        help="the physical form of the interaction's answer: " + ", ".join(RESULT_FORMS))
+        p.add_argument("--display-ratio", dest="display_ratio", type=float, default=None,
+                       help="first-viewport display type ÷ body size, from shoot.py's 'first' line (planned: the intended ratio)")
+        p.add_argument("--image-look", dest="image_look", default=None,
+                       help="imagery tags as light;surface;palette, e.g. 'dusk-street;stone;blue-amber' or 'none'")
     pl.add_argument("--composition", default=None)
     pl.add_argument("--skeleton", default=None)
     pl.add_argument("--hue", type=float, default=None)
@@ -278,9 +293,15 @@ def main() -> int:
         return 0
 
     keys = ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor",
-            "interaction", "composition", "skeleton", "result_form")
+            "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look")
     if args.cmd == "plan":
         import time
+        missing = [f"--{n.replace('_', '-')}" for n in ("project", "composition", "result_form") if not getattr(args, n, None)]
+        if missing:
+            print(f"plan needs {', '.join(missing)}: a plan without the composition and result form cannot warn the run "
+                  "beside it (1.14: two parallel runs both opened on poster type). Compositions: graphic-hero, "
+                  "result-poster, type-poster, field-and-heading, heading-and-panel")
+            return 2
         entry = {k: getattr(args, k) for k in keys if getattr(args, k, None)}
         if args.hue is not None:
             entry["hue"], entry["hue_family"] = args.hue, hue_family(args.hue)

@@ -152,6 +152,8 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | Serif chosen by reflex for "warm / craft / heritage" | Only after testing a sans and a slab against the same attribute |
 | **Brochure page**: a service whose price or availability is the question, answered only in prose, with no signature interaction | Never on a Persuade page; see `interaction-depth.md` |
 | **Interaction as the whole design**: a panel of form controls beside a big heading, half the first viewport empty, data tables for every later section; the anchor the direction chose is missing | Never; the interaction answers the question, the direction still carries the page (`interaction-depth.md` §3b) |
+| **Poster type on every page**: the first viewport's claim or name at 150–400 px, whatever the business — the cheapest way to pass "bold" | The name or claim is the memorable thing and the previous pages did not do the same |
+| **The image model's house photo**: rustic wooden table, soft window light, shallow focus, warm browns — for a restaurant, a bakery and a ceramics studio alike | The direction really is that light and that surface, written before the prompt |
 | **Paper artefact result**: every interaction answers as a receipt, a letter, a ticket or a calendar leaf | The business really hands that paper over, and the previous page did not do the same |
 | **Opening and closing formula**: big hero → interaction directly under it → … → contact form last | The content genuinely asks for it; otherwise open on what the business shows first and end on its next real step |
 | **Portrait slabs**: people shown as flat brand-colour boxes with a label | Never; stand-in portrait marked as such, or a silhouette or monogram placeholder (`visual-material.md` §8) |

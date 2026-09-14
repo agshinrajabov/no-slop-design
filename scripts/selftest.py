@@ -251,12 +251,30 @@ def main() -> int:
         out = log("check")
         check("two paper results in a row warn", "result form:" in out, out.strip()[-300:])
         check("the same opening twice warns", "opening:" in out, out.strip()[-300:])
+        refused = subprocess.run([PY, "scripts/design_log.py", "plan", "--project", "x", "--result-form", "map"],
+                                 cwd=ROOT, capture_output=True, text=True, env=env)
+        check("plan refuses without a composition", refused.returncode == 2 and "--composition" in refused.stdout, refused.stdout[-160:])
         planned = log("plan", "--project", "hotel", "--result-form", "paper", "--composition", "graphic-hero")
         check("plan warns before building", "result form:" in planned, planned.strip()[-300:])
         check("a planned run is visible to check", "[planned]" in log("check"), "not listed")
         log("add", "--project", "hotel", "--result-form", "calendar", "--skeleton", "media>text>interaction>map")
         after = log("check")
         check("finishing a run replaces its plan", "[planned]" not in after, after.strip()[-300:])
+
+    print("design_log — poster type as a habit, and the image model's house look")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        for proj, ratio, look in [("law", "9.2", "none"), ("bakery", "33.3", "window;wood;warm-brown"),
+                                  ("restaurant", "8.8", "window;wood;warm-brown")]:
+            log("add", "--project", proj, "--display-ratio", ratio, "--image-look", look)
+        out = log("check")
+        check("three oversized-type openings warn", "type scale:" in out, out.strip()[-300:])
+        check("two pages with the same image look warn", "image look:" in out, out.strip()[-300:])
+        log("add", "--project", "hotel", "--display-ratio", "4.5", "--image-look", "dusk;stone;blue-amber")
+        out2 = log("check")
+        check("a proportionate type and a different look clear both", "type scale:" not in out2 and "image look:" not in out2,
+              out2.strip()[-300:])
 
     print("slop_lint — brand-fixed fonts are the brief's choice, portraits are not colour slabs")
     with tempfile.TemporaryDirectory() as d:

@@ -111,6 +111,9 @@ translation agency and a paediatric clinic in a row both set their interaction's
 saturated field. `shoot.py` names the first viewport's composition — `graphic-hero`, `result-poster`, `type-poster`,
 `field-and-heading`, `heading-and-panel` — and `design_log.py` warns when the last two match. Pick the move from the
 content: a clinic might own its first viewport with a drawn body map, a hotel with a photograph, a law firm with type.
+Poster-scale type is the cheapest move and was the last five pages' move (166 to 400 px display type): record the
+measured ratio with `design_log.py add --display-ratio`, and when the log reports three oversized-type openings in a
+row, carry this page with a photograph, a drawing, a colour field or the product, and keep the type in proportion.
 
 A dark or near-white band is a surface, not a colour field. A graphic under 64 px on either side is an icon. A route
 drawn as a 4 px line across the page is a divider, however meaningful: draw the route as the graphic — thick,

@@ -105,7 +105,7 @@ produces a report and rebuilds nothing.
 
 ## What it refuses
 
-A catalog of roughly 96 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+A catalog of roughly 98 tells across colour, type, layout, components, iconography, copy, motion, imagery,
 accessibility and process. 57 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
@@ -223,6 +223,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.12 | The first clinic run was good and looked like the last translation run: an answer set huge on a colour field | `shoot.py` names the first-viewport composition, the history log warns when two runs share it across industries; a result above the inputs no longer trips the offscreen rule |
 | 1.13 | Six pages, one skeleton: interaction → steps → price table → form, no image, R2 by the same sentence — the rules had become a template | the section skeleton and image count are measured and compared across runs; the template is named as a tell; "no assets" no longer means no images; feeling-led services argue R3 |
 | 1.14 | Four varied prompts came out different but shared habits: results as receipts and letters, the interaction always under the hero, portraits as colour boxes, and parallel runs blind to each other; a client-mandated Inter graded B | named result forms and opening/closing checks in the history log; `design_log.py plan` for parallel runs; people placeholders that read as people; brand-fixed fonts respected by the linter |
+| 1.15 | The next habit: five first viewports in a row on poster-scale type, generated photos in the image model's wooden-table look, and parallel plans registered without a composition | plans require composition and result form; type scale and image look are recorded and compared across runs |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

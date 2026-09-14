@@ -432,7 +432,7 @@ def main() -> int:
         print(f"  first375 {phone_facts}" + ("" if phone_ok else "  ← NO BOLD MOVE ON THE PHONE"))
         print(f"  compose  {comp} — {COMPOSITIONS[comp]}; record with design_log.py add ... --composition {comp}")
         print(f"  skeleton {skeleton or '(no top-level sections found)'} · {desk.get('media', 0)} image(s); record with "
-              f"--skeleton {skeleton} --media {desk.get('media', 0)}")
+              f"--skeleton {skeleton} --media {desk.get('media', 0)} --display-ratio {(desk.get('firstView') or {}).get('ratio', 0)}")
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"

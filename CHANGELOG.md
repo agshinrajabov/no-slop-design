@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.15.0 — 2026-09-14
+
+Two parallel runs on 1.14.0 — a restaurant in İçərişəhər and a Kyoto ceramics shop — fixed what 1.14 targeted (the
+interaction placed after the menu and the batch, pages ending on a map and a waiting list, a figure and a calendar as
+results) and exposed the next habit: the last five pages all opened on poster-scale type (166, 400, 176, 158, 384 px).
+The composition warning existed, but both runs registered their plans without a composition, so neither saw the
+other. Their generated photographs also shared the image model's own look: wooden table, soft side light, warm browns.
+
+- **`design_log.py plan` requires `--composition` and `--result-form`** and exits 2 without them.
+- **Type scale is recorded and compared.** `--display-ratio` (from `shoot.py`'s "first" line, which now prints the
+  record flag) is stored per run; `check` warns when the last three first viewports set display type at ≥ 8× body.
+  `expression-register.md` §4b names poster type as the cheapest bold move and asks for a photograph, a drawing, a
+  colour field or the product when the streak is reported. Recorded for the recent runs, it fires.
+- **The image model's house look.** `visual-material.md` §7 adds: write light, surface and palette into every prompt
+  from the direction, and record them as `--image-look light;surface;palette`; `check` warns when two pages in a row
+  share two of the three.
+- Two catalog tells, a review item, selftest.
+
 ## 1.14.0 — 2026-09-14
 
 Four varied prompts on 1.13.0 — a Lisbon hotel, an Istanbul bakery, a Berlin SaaS pricing page, a Manchester family

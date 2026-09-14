@@ -144,6 +144,12 @@ If the session has an image-generation tool (an MCP image generator, Figma image
 3. Match the grade to the tokens (warm/cool) in post: a CSS `filter` or the tool's own color controls.
 4. Label generated images as such in the handoff; they are placeholders for a real shoot unless the client accepts them.
 5. Generate the full ratio set for the hero (3:2 and 4:5) so mobile art direction works with `<picture>`.
+6. **Refuse the tool's default look.** Left to itself an image model returns one photograph: a rustic wooden table,
+   soft side light from a window, shallow depth of field, warm browns. A restaurant, a bakery and a ceramics studio in
+   a row all came back that way. Write light, surface and palette into every prompt from the direction — Alfama at
+   dusk on stone, a steel counter under shop fluorescents, a white plaster wall at noon, a tiled floor from above —
+   and record them as `--image-look light;surface;palette` in `design_log.py`; it warns when two pages in a row share
+   two of the three.
 
 ## 8. Placeholders that are still designed
 
