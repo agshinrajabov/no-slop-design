@@ -264,6 +264,13 @@ def file_rules(path: str, text: str):
         # a sticky header does not show the result, and an element hidden by default is only shown conditionally —
         # the 1.6 run's dock appeared after the result had scrolled past, i.e. never while the visitor was editing
         persistent = False
+        # a result placed above the inputs in source order stays on screen while they change — no sticky element needed
+        iroot = re.search(r"<[a-z]+\b[^>]*data-nsd-interaction[^>]*>", text, re.I)
+        scope = text[iroot.end():] if iroot else text
+        first_result = re.search(r"<output\b|aria-live\s*=", scope, re.I)
+        first_input = re.search(r"<select\b|<textarea\b|<input\b(?![^>]*type\s*=\s*[\"']?(?:hidden|submit|button))", scope, re.I)
+        if first_result and first_input and first_result.start() < first_input.start():
+            persistent = True
         for rule in re.finditer(r"([^{}]+)\{[^{}]*position\s*:\s*(?:sticky|fixed)[^{}]*\}", css, re.I):
             for sel in rule.group(1).split(","):
                 sel = sel.strip()

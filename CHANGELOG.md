@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.12.0 — 2026-09-14
+
+The first test outside translation — "Design a website for a clinic." — produced a good paediatric clinic page
+(the earliest free time set huge on a sunflower field, sample prices, a 103 emergency block, Azerbaijani, lint A)
+that looked like the translation page before it: an interaction answer set as a poster on a saturated field. A new
+house style was forming, and the history log only compared free-text structure notes.
+
+- **Composition is measured and named.** `shoot.py` classifies the first viewport — `graphic-hero`, `result-poster`,
+  `type-poster`, `field-and-heading`, `heading-and-panel` — from the same measurements as the bold move, and prints a
+  "compose" line. `design_log.py add --composition` records it (and says when it is missing); `check` warns when the
+  last two runs share a composition, naming both industries, or when one composition fills three of the last five.
+  On the seven test pages: 1.6 field-and-heading, 1.7.1 and 1.9.0 heading-and-panel, 1.8.0 type-poster, 1.10.0
+  graphic-hero, 1.11.0 and the clinic result-poster — the repeat the review caught by eye.
+- **`interaction-result-offscreen` false positive.** The clinic put its result above the inputs, which keeps it on
+  screen while they change, but the rule only looked for sticky or fixed CSS. A result that precedes the first
+  input in source order now counts.
+- `SKILL.md` non-negotiable 14 names composition as an axis; `expression-register.md` §4b asks for a different kind
+  of bold move across projects; review gate 13; selftest.
+
 ## 1.11.0 — 2026-09-14
 
 The 1.10.0 run found the best idea of the series — the certification seals a document needs, drawn as overlapping

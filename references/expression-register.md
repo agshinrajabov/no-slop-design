@@ -105,6 +105,12 @@ of the screen (35%), or a colour field ≥ 40% with type ≥ 2.5× (55%). A 1.10
 inputs on desktop and let it fall below them on phones, so the phone's first screen was a heading and two selects.
 Reorder for the phone: the move first, or the move made of the type.
 
+**Vary the kind of move across projects.** The bold move becomes a house style as fast as the dark ledger did: a
+translation agency and a paediatric clinic in a row both set their interaction's answer (a date, a time) huge on a
+saturated field. `shoot.py` names the first viewport's composition — `graphic-hero`, `result-poster`, `type-poster`,
+`field-and-heading`, `heading-and-panel` — and `design_log.py` warns when the last two match. Pick the move from the
+content: a clinic might own its first viewport with a drawn body map, a hotel with a photograph, a law firm with type.
+
 A dark or near-white band is a surface, not a colour field. A graphic under 64 px on either side is an icon. A route
 drawn as a 4 px line across the page is a divider, however meaningful: draw the route as the graphic — thick,
 tall, with the stops as objects — or set the price or the date as the type. `scripts/shoot.py` measures all three in

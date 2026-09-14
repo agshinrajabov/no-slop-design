@@ -215,6 +215,31 @@ def main() -> int:
             open(os.path.join(d, n), "w").write("{}")
         check("a complete design record passes", "design-record-incomplete" not in rules_of(p), sorted(rules_of(p)))
 
+    print("design_log — the same first-viewport composition in two industries is a house style")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        for proj, ind, hue, surf in [("t", "translation", 25, "light"), ("c", "clinic", 90, "dark")]:
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--industry", ind, "--hue", str(hue),
+                            "--surface", surf, "--composition", "result-poster"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("two result-posters in a row warn across industries", "composition" in out and "result-poster" in out, out.strip()[-240:])
+        subprocess.run([PY, "scripts/design_log.py", "add", "--project", "h", "--industry", "hotel", "--hue", "200",
+                        "--surface", "light", "--composition", "graphic-hero"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out2 = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("a different composition clears it", "composition:" not in out2, out2.strip()[-240:])
+
+    print("slop_lint — a result above the inputs is on screen without a sticky bar")
+    with tempfile.TemporaryDirectory() as d:
+        above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"
+                 f"<output aria-live='polite'>Bu gün 16:40</output><select id='x'></select></section>"
+                 f"<section>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(above)
+        check("result before the inputs passes interaction-result-offscreen", "interaction-result-offscreen" not in rules_of(p), sorted(rules_of(p)))
+        below = above.replace("<output aria-live='polite'>Bu gün 16:40</output><select id='x'></select>",
+                              "<select id='x'></select><output aria-live='polite'>Bu gün 16:40</output>")
+        open(p, "w", encoding="utf-8").write(below)
+        check("result after the inputs with nothing sticky still fires", "interaction-result-offscreen" in rules_of(p), sorted(rules_of(p)))
+
     print("design_log — the register is never an axis to break")
     with tempfile.TemporaryDirectory() as d:
         env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
@@ -245,6 +270,10 @@ def main() -> int:
     check("a phone first screen owned by a colour field passes R2",
           shoot.bold_move({"ratio": 2.9, "graphic": 0, "field": 0.92}, "R2", phone=True)[0], "phone field failed")
     check("4.6× type on a phone passes R3", shoot.bold_move({"ratio": 4.6, "graphic": 0.02, "field": 0}, "R3", phone=True)[0], "phone type failed")
+    check("a time set huge on a colour field is a result-poster",
+          shoot.composition({"displayInResult": True, "ratio": 8.5, "graphic": 0, "field": 1.0}) == "result-poster", "result")
+    check("a 43% drawing is a graphic-hero", shoot.composition({"ratio": 5.9, "graphic": 0.43, "field": 0}) == "graphic-hero", "graphic")
+    check("a heading beside controls is heading-and-panel", shoot.composition({"ratio": 5, "graphic": 0, "field": 0}) == "heading-and-panel", "panel")
     with tempfile.TemporaryDirectory() as d:
         os.makedirs(os.path.join(d, "design"))
         open(os.path.join(d, "design", "DESIGN.md"), "w").write("| **Expression register** | R2 Composed — because facts |\n")

@@ -220,6 +220,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.9 | The best run yet was in English for a Baku agency, and moved to R3 because the history log counted the register as an axis to break. Its rerun then exposed that every screenshot followed the Mac's dark mode | pages are written in the market's primary language (declared, linted); the register comes from the brief only, never from the log; renders use an explicit colour scheme, and the 1.7 "84% dark" finding is withdrawn |
 | 1.10 | The 1.9 rerun was right on every rule and forgettable: R2 had been read as "nothing loud" | every first viewport above R1 carries one bold move — poster-scale type, a dominant graphic or a saturated colour field — measured by `shoot.py` against the register's floor |
 | 1.11 | The seal-diagram run: best idea yet, but its estimator showed `[n]` days and no price, its graphic fell below the inputs on phones, and it skipped the brief | estimates use labelled sample rates; the phone's first screen needs its own bold move; the Standard design record is enforced |
+| 1.12 | The first clinic run was good and looked like the last translation run: an answer set huge on a colour field | `shoot.py` names the first-viewport composition, the history log warns when two runs share it across industries; a result above the inputs no longer trips the offscreen rule |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

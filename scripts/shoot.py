@@ -78,7 +78,7 @@ f.addEventListener('load', () => setTimeout(() => {
   {
     const vw = w.innerWidth, vh = Math.min(w.innerHeight, VH), area = vw * vh;
     const clip = r => Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
-    const sizes = new Map(); let display = 0;
+    const sizes = new Map(); let display = 0, displayInResult = false;
     for (const el of d.body.querySelectorAll('*')) {
       const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join('');
       if (!own) continue;
@@ -86,7 +86,7 @@ f.addEventListener('load', () => setTimeout(() => {
       if (r.width === 0 || s.visibility === 'hidden' || s.display === 'none') continue;
       const fs = parseFloat(s.fontSize);
       sizes.set(fs, (sizes.get(fs) || 0) + own.length);
-      if (r.top < vh && r.bottom > 0) display = Math.max(display, fs);
+      if (r.top < vh && r.bottom > 0 && fs > display) { display = fs; displayInResult = !!el.closest('output, [aria-live]'); }
     }
     const body = [...sizes].sort((a, b) => b[1] - a[1])[0]?.[0] || 16;
     let graphic = 0, field = 0, graphicEl = null, fieldEl = null;
@@ -123,7 +123,7 @@ f.addEventListener('load', () => setTimeout(() => {
       const share = clip(el.getBoundingClientRect()) / area;
       if (share > field) { field = share; fieldEl = name(el); }
     }
-    out.firstView = {display, body, ratio: +(display / body).toFixed(1), graphic: +graphic.toFixed(2), graphicEl,
+    out.firstView = {display, displayInResult, body, ratio: +(display / body).toFixed(1), graphic: +graphic.toFixed(2), graphicEl,
                      field: +field.toFixed(2), fieldEl};
   }
   if (!ACTIONS.length) { report(out); return; }
@@ -205,6 +205,31 @@ def bold_move(first_view: dict, register: str | None, phone: bool = False) -> tu
     need = (f"{key}{' on a phone' if phone else ''} needs one of: type ≥ {t[0]:g}× body, a graphic ≥ {t[1]:.0%} of the "
             f"viewport, or a colour field ≥ {t[2]:.0%} with type ≥ {field_type:g}×")
     return ok, facts + ("" if ok else f" — {need}")
+
+
+COMPOSITIONS = {
+    "graphic-hero": "a drawn graphic or photograph owns the first viewport",
+    "result-poster": "the interaction's answer (a time, a date, a price) set as the poster, usually on a colour field",
+    "type-poster": "a claim or name set at poster scale",
+    "field-and-heading": "a saturated colour field with a heading and the controls on it",
+    "heading-and-panel": "a heading beside or above a panel of controls or facts",
+}
+
+
+def composition(first_view: dict | None) -> str:
+    """Name the first viewport's structure from the measurements, so the history log records what the page is, not
+    what the agent says it is. Two different industries came out as 'result-poster' in a row (1.11 translation, 1.11
+    clinic) and the word-overlap check on free-text structure notes did not notice."""
+    fv = first_view or {}
+    if fv.get("graphic", 0) >= 0.30:
+        return "graphic-hero"
+    if fv.get("displayInResult") and (fv.get("field", 0) >= 0.40 or fv.get("ratio", 0) >= 6):
+        return "result-poster"
+    if fv.get("ratio", 0) >= 6:
+        return "type-poster"
+    if fv.get("field", 0) >= 0.40:
+        return "field-and-heading"
+    return "heading-and-panel"
 
 
 def register_from(page_dir: str | None) -> str | None:
@@ -350,7 +375,9 @@ def main() -> int:
     problems = []
     register = args.register or register_from(page_dir)
     bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
-    report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts}
+    comp = composition(desk.get("firstView"))
+    report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts,
+                            "composition": comp}
     phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True)
     report["phone"]["first_view"] = {**(phone.get("firstView") or {}), "bold_move": phone_ok, "summary": phone_facts}
     if not phone_ok:
@@ -379,6 +406,7 @@ def main() -> int:
         print(f"  first    {report['first_view']['register'] or 'register unknown'}: {bold_facts}"
               + ("" if bold_ok else "  ← NO BOLD MOVE"))
         print(f"  first375 {phone_facts}" + ("" if phone_ok else "  ← NO BOLD MOVE ON THE PHONE"))
+        print(f"  compose  {comp} — {COMPOSITIONS[comp]}; record with design_log.py add ... --composition {comp}")
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"

@@ -31,6 +31,7 @@ import os
 import struct
 import sys
 import zlib
+from collections import Counter
 from datetime import date
 
 STORE = os.environ.get("NSD_HISTORY") or os.path.expanduser("~/.no-slop-design/history.json")
@@ -159,6 +160,17 @@ def analyse(entries: list[dict]) -> list[str]:
     hues = [hue_family(e.get("hue")) for e in recent if e.get("hue") is not None]
     if len(hues) >= STREAK and len(set(hues[-STREAK:])) == 1 and hues[-1] != "unknown":
         warns.append(f"brand hue family: the last {STREAK} were all {hues[-1]} — a different family is the cheapest way to look different")
+    # the first-viewport composition measured by shoot.py — a named structure, not free text, so a repeat is exact
+    comps = [(e.get("composition"), e.get("industry")) for e in recent if e.get("composition")]
+    if len(comps) >= 2 and comps[-1][0] == comps[-2][0]:
+        inds = sorted({i for _, i in comps[-2:] if i})
+        warns.append(f"composition: the last two first viewports were both '{comps[-1][0]}'"
+                     + (f" ({' and '.join(inds)})" if len(inds) > 1 else "")
+                     + " — a different industry with the same first viewport is a house style forming; choose another composition")
+    elif len(comps) >= 3:
+        top, n = Counter(c for c, _ in comps).most_common(1)[0]
+        if n >= 3:
+            warns.append(f"composition: '{top}' in {n} of the last {len(comps)} runs — choose another first-viewport composition")
     structures = [(e.get("structure") or "").lower() for e in recent if e.get("structure")]
     if len(structures) >= 2:
         words = [set(s.split()) for s in structures[-2:]]
@@ -178,6 +190,9 @@ def main() -> int:
     a = sub.add_parser("add", help="record a finished direction")
     for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
         a.add_argument(f"--{f}", default=None)
+    a.add_argument("--composition", default=None,
+                   help="first-viewport composition as printed by shoot.py: graphic-hero, result-poster, type-poster, "
+                        "field-and-heading, heading-and-panel")
     a.add_argument("--hue", type=float, default=None)
     a.add_argument("--screenshot", nargs="+", default=None,
                    help="full-page PNG(s); surface polarity is measured from the pixels and overrides --surface")
@@ -201,7 +216,10 @@ def main() -> int:
 
     if args.cmd == "add":
         entry = {k: getattr(args, k) for k in ("project", "register", "surface", "display", "text", "structure",
-                                               "industry", "market", "anchor", "interaction") if getattr(args, k)}
+                                               "industry", "market", "anchor", "interaction", "composition") if getattr(args, k)}
+        if not args.composition:
+            print("note: no --composition recorded; shoot.py prints it ('compose' line) — without it a repeated first "
+                  "viewport across industries goes unnoticed")
         if args.hue is not None:
             entry["hue"] = args.hue
             entry["hue_family"] = hue_family(args.hue)
@@ -242,12 +260,13 @@ def main() -> int:
     print(f"design history: {len(entries)} entries, looking at the last {min(len(entries), WINDOW)}")
     for e in entries[-WINDOW:]:
         print(f"  {e.get('date','?')}  {e.get('project','?')}: {e.get('register','?')} · {e.get('surface','?')} · "
-              f"{e.get('hue_family','?')} · {e.get('display','?')} · {e.get('structure','')[:40]}")
+              f"{e.get('hue_family','?')} · {e.get('display','?')} · {e.get('composition', 'composition ?')} · "
+              f"{e.get('structure','')[:40]}")
     if warns:
         print()
         for w in warns:
             print("CONVERGENCE:", w)
-        print("\nBreak at least two axes: surface polarity, hue family, typeface class, structural idea. "
+        print("\nBreak at least two axes: surface polarity, hue family, typeface class, first-viewport composition. "
               "Never the register — it comes from the brief.")
     else:
         print("\nno convergence warnings")
