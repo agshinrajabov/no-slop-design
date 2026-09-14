@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.1 — 2026-09-14
+
+The 1.9.0 rerun (Azerbaijani, R2 from the brief, a route diagram as the anchor, 11 minutes, lint A) reported its page
+as 79% dark. It is 20% dark. Headless Chrome follows the operating system's colour scheme, the machine was in dark
+mode, and every page in these tests ships a `prefers-color-scheme: dark` palette.
+
+- **Correction to 1.7.0.** The finding that the 1.6 page was "logged as light while 84% of its pixels were dark" came
+  from the same artefact: rendered in the light scheme its audience sees by default, that page is 8% dark. The agent's
+  "light" label was right. Measuring polarity from pixels is still correct; the example was not. README amended.
+- **`shoot.py --scheme light|dark`** (default light) pins `prefers-color-scheme` on every render, prints it, and puts
+  dark renders in their own folder. The machine's own mode is never used.
+- **The editing test missed a mobile dock** that repeats the result with `aria-hidden` (correctly, to avoid a double
+  announcement) instead of being a live region. When no live region is on screen, the test now accepts visible text the
+  edit changed that repeats a number from the result, and says so. Verdicts across the four runs: 1.6 not visible,
+  1.7.1, 1.8.0 and 1.9.0 visible.
+
 ## 1.9.0 — 2026-09-14
 
 The 1.8.0 rerun of the translation brief was the best of the three — a raspberry colour field with the headline

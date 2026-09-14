@@ -79,6 +79,11 @@ f.addEventListener('load', () => setTimeout(() => {
   // on the page and prefer the ones whose text the edit changed
   const RESULTS = EXPECT || 'output, [aria-live]';
   const before = new Map([...d.querySelectorAll(RESULTS)].map(el => [el, el.textContent]));
+  // a mobile dock often repeats the result without being a live region (aria-hidden, to avoid a double announcement)
+  const leaves = () => [...d.body.querySelectorAll('*')].filter(el => el.children.length === 0
+    && !/^(SCRIPT|STYLE|INPUT|SELECT|OPTION|TEXTAREA|BUTTON)$/.test(el.tagName));
+  const beforeLeaf = new Map(leaves().map(el => [el, el.textContent]));
+  const numbers = el => (el.textContent.match(/\d[\d\s.,  ]*\d|\d/g) || []).map(s => s.replace(/[\s  ]/g, ''));
   let last = null; out.set = [];
   for (const [sel, val] of ACTIONS) {
     const el = d.querySelector(sel);
@@ -97,8 +102,15 @@ f.addEventListener('load', () => setTimeout(() => {
         && r.bottom > 0 && r.top < VH && (el.textContent || '').trim().length > 0; };
     const changed = cands.filter(el => before.has(el) && before.get(el) !== el.textContent);
     // when the edit changed some result, only a changed one on screen counts; otherwise any visible result
-    const vis = (changed.length ? changed : cands).filter(shown);
-    out.result = {candidates: cands.length, changed: changed.length, visible: vis.length > 0,
+    let vis = (changed.length ? changed : cands).filter(shown), via = vis.length ? 'live region' : null;
+    if (!vis.length && !EXPECT) {
+      // no live region on screen: accept any visible text the edit changed that repeats a number from the result
+      const nums = new Set(changed.flatMap(numbers));
+      vis = [...beforeLeaf].filter(([el, t]) => el.isConnected && el.textContent !== t && !(last && last.contains(el)))
+        .map(([el]) => el).filter(el => shown(el) && (!nums.size || numbers(el).some(n => nums.has(n))));
+      via = vis.length ? 'a copy of the result outside the live region (e.g. a sticky dock)' : null;
+    }
+    out.result = {candidates: cands.length, changed: changed.length, visible: vis.length > 0, via,
                   text: vis.length ? vis[0].textContent.replace(/\s+/g, ' ').trim().slice(0, 90) : null,
                   edited: last ? (() => { const r = last.getBoundingClientRect(); return r.bottom > 0 && r.top < VH; })() : null};
     report(out);
@@ -116,11 +128,16 @@ def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False) ->
     return f'<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;overflow:hidden">{body}</body></html>'
 
 
+SCHEME = "light"      # set from --scheme; headless Chrome otherwise inherits the machine's dark mode
+
+
 def chrome(binary: str, url: str, args: list[str], timeout: int = 40) -> subprocess.CompletedProcess | None:
     """One headless call, retried once: a headless Chrome occasionally stalls on start-up, and a second launch
-    is cheaper than a stuck review."""
+    is cheaper than a stuck review. The colour scheme is always explicit: a 1.9 run measured a light page as 79%
+    dark because the Mac it ran on was in dark mode."""
     cmd = [binary, "--headless", "--disable-gpu", "--no-sandbox", "--hide-scrollbars", "--no-first-run",
-           "--allow-file-access-from-files", "--virtual-time-budget=6000", *args, url]
+           "--allow-file-access-from-files", "--virtual-time-budget=6000",
+           f"--blink-settings=preferredColorScheme={0 if SCHEME == 'dark' else 1}", *args, url]
     for _ in range(2):
         try:
             return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
@@ -138,10 +155,15 @@ def main() -> int:
                     help="an input to change for the 375 px editing test; repeat for several; the last one is kept on screen")
     ap.add_argument("--expect", help="selector of the result element (default: every output/[aria-live] on the page, "
                                      "preferring those the edit changed)")
+    ap.add_argument("--scheme", choices=("light", "dark"), default="light",
+                    help="prefers-color-scheme for every render (default light — the machine's own mode is never used). "
+                         "Render the scheme the audience will see; run twice for pages that support both")
     ap.add_argument("--no-nojs", action="store_true", help="skip the JavaScript-disabled render")
     ap.add_argument("--chrome", help="path to a Chrome/Chromium/Edge binary (or set CHROME)")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
+    global SCHEME
+    SCHEME = args.scheme
 
     binary = find_chrome(args.chrome)
     if not binary:
@@ -160,7 +182,7 @@ def main() -> int:
             return 2
         src, page_dir = "file://" + path, os.path.dirname(path)
         project = os.path.basename(page_dir) or "page"
-    out = os.path.abspath(args.out or os.path.join(tempfile.gettempdir(), "nsd-shots", project))
+    out = os.path.abspath(args.out or os.path.join(tempfile.gettempdir(), "nsd-shots", project + ("-dark" if args.scheme == "dark" else "")))
     if page_dir and (out + os.sep).startswith(page_dir + os.sep) and os.sep + "design" + os.sep not in out + os.sep:
         print(f"shoot.py: {out} is inside the deliverable. Screenshots are review evidence, not product — "
               "use the default temp folder or design/review/")
@@ -197,7 +219,7 @@ def main() -> int:
         chrome(binary, url, [f"--window-size={w},{h}", f"--screenshot={png}", f"--force-device-scale-factor={scale}", *extra])
         return png if os.path.exists(png) else None
 
-    report: dict = {"out": out, "chrome": binary}
+    report: dict = {"out": out, "chrome": binary, "scheme": args.scheme}
     desk = probe(args.width, 900)
     phone = probe(PHONE_W, PHONE_H)
     for label, p in (("desktop", desk), ("phone", phone)):
@@ -235,7 +257,7 @@ def main() -> int:
     if args.json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
     else:
-        print(f"screenshots in {out}")
+        print(f"screenshots in {out}  (prefers-color-scheme: {args.scheme})")
         print(f"  desktop  {args.width}×{desk['height']}  {report['desktop']['png']}")
         print(f"  phone    {PHONE_W}×{phone['height']}  {report['phone']['png']}")
         if "nojs" in report:
@@ -260,6 +282,8 @@ def main() -> int:
                 print(f"  edit     {' '.join(a[0] + '=' + a[1] for a in actions)} at 375×812 → result "
                       f"{'VISIBLE' if r.get('visible') else 'NOT VISIBLE'}"
                       + (f" (“{r['text']}”)" if r.get("text") else "") + f"  {e.get('png')}")
+                if r.get("visible") and r.get("via") and r["via"] != "live region":
+                    print(f"           seen via {r['via']}")
                 if missing:
                     print(f"           selectors not found: {', '.join(missing)}")
                 if not r.get("candidates"):
