@@ -197,6 +197,24 @@ def main() -> int:
         nolang = os.path.join(d, "nolang.html"); open(nolang, "w", encoding="utf-8").write("<html>" + body)
         check("a page without lang is flagged", "page-language" in rules_of(nolang), sorted(rules_of(nolang)))
 
+    print("slop_lint — the estimate is a number, and the design record is complete")
+    with tempfile.TemporaryDirectory() as d:
+        page = (f"<html lang='az'><body><main><section data-nsd-interaction='estimator' data-nsd-anchor='diagram'>"
+                f"<select id='doc'></select><output aria-live='polite'>müddət: [n] iş günü</output></section>"
+                f"<section>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("[n] in the estimator's result is flagged", "placeholder-result" in rules_of(p), sorted(rules_of(p)))
+        open(p, "w", encoding="utf-8").write(page.replace("[n] iş günü", "5 iş günü (nümunə tarif)"))
+        check("a labelled sample number passes", "placeholder-result" not in rules_of(p), sorted(rules_of(p)))
+        os.makedirs(os.path.join(d, "design")); open(os.path.join(d, "design", "DESIGN.md"), "w").write("x")
+        check("a design/ folder without the brief is incomplete", "design-record-incomplete" in rules_of(p), sorted(rules_of(p)))
+        for n in ("design/brief.md", "design/assets.md", "design/design-log.json", "design/contrast-pairs.txt"):
+            open(os.path.join(d, n), "w").write("x")
+        os.makedirs(os.path.join(d, "tokens"))
+        for n in ("tokens/primitives.json", "tokens/semantic.json"):
+            open(os.path.join(d, n), "w").write("{}")
+        check("a complete design record passes", "design-record-incomplete" not in rules_of(p), sorted(rules_of(p)))
+
     print("design_log — the register is never an axis to break")
     with tempfile.TemporaryDirectory() as d:
         env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
@@ -222,6 +240,11 @@ def main() -> int:
     check("poster type passes R3", shoot.bold_move({"display": 195, "ratio": 13.9, "graphic": 0.06, "field": 1.0}, "R3")[0], "type failed")
     check("a 35% graphic passes R2 but not R3", shoot.bold_move({"ratio": 3, "graphic": 0.35, "field": 0}, "R2")[0]
           and not shoot.bold_move({"ratio": 3, "graphic": 0.35, "field": 0}, "R3")[0], "graphic thresholds")
+    check("a phone first screen with 2.4× type and its graphic below the fold fails R2",
+          not shoot.bold_move({"ratio": 2.4, "graphic": 0, "field": 0}, "R2", phone=True)[0], "phone passed")
+    check("a phone first screen owned by a colour field passes R2",
+          shoot.bold_move({"ratio": 2.9, "graphic": 0, "field": 0.92}, "R2", phone=True)[0], "phone field failed")
+    check("4.6× type on a phone passes R3", shoot.bold_move({"ratio": 4.6, "graphic": 0.02, "field": 0}, "R3", phone=True)[0], "phone type failed")
     with tempfile.TemporaryDirectory() as d:
         os.makedirs(os.path.join(d, "design"))
         open(os.path.join(d, "design", "DESIGN.md"), "w").write("| **Expression register** | R2 Composed — because facts |\n")

@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.10.0"
+  version: "1.11.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -50,6 +50,8 @@ Read the sections the step names; skim the rest by its table of contents.
 9. **Real-world references, annotated.** ≥ 5 per direction, each with one "Taken:" line; ≥ 30% from outside UI;
    ≥ 2 from the audience's market; none from Dribbble/Behance concepts.
 10. **Honest content.** Never fabricate metrics, testimonials, logos, names, avatars, or urgency. Use `[bracketed placeholders]` and list what must be supplied.
+    The one exception is the signature interaction's answer: when price or time is the question it shows **sample
+    rates labelled as samples**, never `[n]` — an estimator without an estimate answers nothing.
 11. **Platform first on native.** iOS follows HIG (`references/mobile-ios.md`); Android follows Material 3 (`references/mobile-android.md`).
 12. **Accessibility is a floor at every register.** WCAG 2.2 AA, verified with `scripts/contrast.py`; keyboard, focus, target sizes, reduced motion. Ambition is bought with craft, never with accessibility.
 13. **Nothing ships on the first pass.** Render it with `scripts/shoot.py` (never a home-made harness), look at it,
@@ -177,7 +179,9 @@ tokens/   primitives.json · semantic.json · semantic.dark.json · components.j
 build/    (generated)
 ```
 
-The project holds the product and its design record only. Screenshots and any review scratch go to `shoot.py`'s temp
+Every file on the Standard line is required: a run without `brief.md` or `contrast-pairs.txt` has no written reason
+for its decisions and no AA evidence (`slop_lint.py` flags `design-record-incomplete`). The project holds the product
+and its design record only. Screenshots and any review scratch go to `shoot.py`'s temp
 folder, or `design/review/` if the user wants them kept.
 
 ## Working with the user

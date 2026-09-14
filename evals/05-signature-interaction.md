@@ -78,3 +78,9 @@ The register had quietly capped interaction. A correct run keeps the restrained 
 23. The first viewport has one bold move at the register's floor (`shoot.py` exits 0 and its "first" line passes),
     and the move is the direction's idea — the route, the document or the price made big — not a large word added to
     pass the measurement.
+
+## Rubric additions (1.11)
+
+24. The estimate shows a number and a date (sample rates labelled as samples if needed); no `[n]` in the result.
+25. The phone's first screen has its own bold move (`shoot.py` "first375" passes).
+26. The Standard design record is complete: brief, DESIGN.md, assets, design log, contrast pairs, tokens.

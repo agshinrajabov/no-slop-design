@@ -105,8 +105,8 @@ produces a report and rebuilds nothing.
 
 ## What it refuses
 
-A catalog of roughly 91 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 54 of the mechanical ones are checked by the linter, some of them across files. A few:
+A catalog of roughly 92 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+accessibility and process. 56 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -219,6 +219,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.8 | The 1.7 rerun fixed every finding and lost the design: the colour field and the drawn route were gone, a form panel and two tables remained. It also spent a third of its time building a screenshot harness and left it in the project | `shoot.py` (renders, the 375 px editing test and scroll containers in one command, outside the project); the interaction must not replace the direction; reruns compared with the run before; lint for tables-as-sections, scroll tables without a cue, and review scaffolding |
 | 1.9 | The best run yet was in English for a Baku agency, and moved to R3 because the history log counted the register as an axis to break. Its rerun then exposed that every screenshot followed the Mac's dark mode | pages are written in the market's primary language (declared, linted); the register comes from the brief only, never from the log; renders use an explicit colour scheme, and the 1.7 "84% dark" finding is withdrawn |
 | 1.10 | The 1.9 rerun was right on every rule and forgettable: R2 had been read as "nothing loud" | every first viewport above R1 carries one bold move — poster-scale type, a dominant graphic or a saturated colour field — measured by `shoot.py` against the register's floor |
+| 1.11 | The seal-diagram run: best idea yet, but its estimator showed `[n]` days and no price, its graphic fell below the inputs on phones, and it skipped the brief | estimates use labelled sample rates; the phone's first screen needs its own bold move; the Standard design record is enforced |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

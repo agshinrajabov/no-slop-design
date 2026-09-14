@@ -179,9 +179,21 @@ BOLD = {  # register: (display type ÷ body type, largest graphic share, saturat
 }
 
 
-def bold_move(first_view: dict, register: str | None) -> tuple[bool, str]:
+# A phone's 375×812 first screen: type scales down harder than the body, so the type floor is lower, and a colour field
+# needs less type on it. Calibrated on five translation runs: 1.6 (field 92%) and 1.8 (type 4.6×) pass; 1.7.1 (2×),
+# 1.9 (3.5×) and 1.10 (2.4×, its seal graphic pushed below the inputs) fail.
+BOLD_PHONE = {
+    "R2": (4.0, 0.25, 0.40, 2.5),
+    "R3": (4.5, 0.35, 0.55, 2.5),
+    "R4": (4.5, 0.35, 0.55, 2.5),
+}
+
+
+def bold_move(first_view: dict, register: str | None, phone: bool = False) -> tuple[bool, str]:
     """Judge the first viewport against the register's bold-move thresholds. R1 (or unknown) always passes."""
-    t = BOLD.get((register or "").upper()[:2])
+    key = (register or "").upper()[:2]
+    t = BOLD_PHONE.get(key) if phone else BOLD.get(key)
+    field_type = t[3] if t and len(t) > 3 else 3
     fv = first_view or {}
     ratio, graphic, field = fv.get("ratio", 0), fv.get("graphic", 0), fv.get("field", 0)
     facts = (f"display type {fv.get('display', 0):.0f}px = {ratio}× body · largest graphic {graphic:.0%}"
@@ -189,8 +201,9 @@ def bold_move(first_view: dict, register: str | None) -> tuple[bool, str]:
              + f" · saturated colour field {field:.0%}" + (f" ({fv['fieldEl']})" if fv.get("fieldEl") else ""))
     if not t:
         return True, facts
-    ok = ratio >= t[0] or graphic >= t[1] or (field >= t[2] and ratio >= 3)
-    need = f"{register.upper()[:2]} needs one of: type ≥ {t[0]:g}× body, a graphic ≥ {t[1]:.0%} of the viewport, or a colour field ≥ {t[2]:.0%} with type ≥ 3×"
+    ok = ratio >= t[0] or graphic >= t[1] or (field >= t[2] and ratio >= field_type)
+    need = (f"{key}{' on a phone' if phone else ''} needs one of: type ≥ {t[0]:g}× body, a graphic ≥ {t[1]:.0%} of the "
+            f"viewport, or a colour field ≥ {t[2]:.0%} with type ≥ {field_type:g}×")
     return ok, facts + ("" if ok else f" — {need}")
 
 
@@ -338,6 +351,11 @@ def main() -> int:
     register = args.register or register_from(page_dir)
     bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
     report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts}
+    phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True)
+    report["phone"]["first_view"] = {**(phone.get("firstView") or {}), "bold_move": phone_ok, "summary": phone_facts}
+    if not phone_ok:
+        problems.append(f"the phone's first screen (375×812) has no bold move for {register} ({phone_facts.split(' — ')[0]}) "
+                        "— a graphic that falls below the inputs on a phone does not count; expression-register.md §4b")
     if not bold_ok:
         problems.append(f"the first viewport at {args.width}×800 has no bold move for {register} ({bold_facts.split(' — ')[0]}) "
                         "— expression-register.md §4b")
@@ -360,6 +378,7 @@ def main() -> int:
             print(f"  note: the page is taller than {MAX_H}px; renders are cut there")
         print(f"  first    {report['first_view']['register'] or 'register unknown'}: {bold_facts}"
               + ("" if bold_ok else "  ← NO BOLD MOVE"))
+        print(f"  first375 {phone_facts}" + ("" if phone_ok else "  ← NO BOLD MOVE ON THE PHONE"))
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"

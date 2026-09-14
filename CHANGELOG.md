@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.11.0 — 2026-09-14
+
+The 1.10.0 run found the best idea of the series — the certification seals a document needs, drawn as overlapping
+stamps with the ministry names around them, redrawn by the visitor's choice — and left three gaps.
+
+- **The estimator had no estimate.** Duration read `[n] iş günü` and no price appeared, because the agent treated the
+  missing rates as content it must not invent. `interaction-depth.md` §7 now requires a real answer: sample rates
+  labelled as samples, real rates listed as an open item. `SKILL.md` non-negotiable 10 names the exception, and
+  `slop_lint.py` adds `placeholder-result` (MED) for `[n]`-style placeholders in the interaction's result.
+- **The phone had no bold move.** The seal graphic sat beside the inputs on desktop and fell below them at 375 px.
+  `shoot.py` now judges the phone's first screen too ("first375"), with phone floors (R2: type ≥ 4×, graphic ≥ 25%,
+  field ≥ 40% with type ≥ 2.5×). On the five runs: 1.6 and 1.8.0 pass, 1.7.1, 1.9.0 and 1.10.0 fail.
+- **The design record was incomplete** (no `brief.md`, no `contrast-pairs.txt`). Every file on the Standard layout
+  line is now required, and `slop_lint.py` adds `design-record-incomplete` (MED).
+- Selftest, review gate, catalog and eval 05 items 24–26.
+
 ## 1.10.0 — 2026-09-14
 
 The 1.9.0 run was correct on every rule — Azerbaijani, R2 argued from the brief, a working estimator — and its first

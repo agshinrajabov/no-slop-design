@@ -212,6 +212,30 @@ def file_rules(path: str, text: str):
     if is_page and dl_count + rowish >= 3:
         out.append(("ledger-site", "MED", f"label/value tables used as the layout device in {dl_count + rowish} places — vary the device per section; this is the skill's own tell (expression-register.md §10)", "§3 Layout"))
 
+    # the design record Standard mode promises: a run that skips the brief has no written reason for its decisions
+    d = os.path.dirname(os.path.abspath(path))
+    if is_page and not in_design and os.path.isdir(os.path.join(d, "design")) and base in ("index.html", "index.htm"):
+        need = ["design/brief.md", "design/DESIGN.md", "design/assets.md", "design/design-log.json",
+                "design/contrast-pairs.txt", "tokens/primitives.json", "tokens/semantic.json"]
+        missing = [n for n in need if not os.path.exists(os.path.join(d, n))]
+        if missing:
+            out.append(("design-record-incomplete", "MED", f"the design record is missing {', '.join(missing)} — Standard mode "
+                                                           "writes these (SKILL.md, project layout); the brief and contrast pairs "
+                                                           "are where the decisions and the AA evidence live", "§10 Process"))
+
+    # a result the visitor cannot read: bracketed placeholders where the estimate should be
+    root = re.search(r"<(section|div|form|article|aside|main)\b[^>]*data-nsd-interaction[^>]*>", text, re.I)
+    if is_page and root:
+        end = text.find(f"</{root.group(1).lower()}>", root.end())
+        region = text[root.end():end if end > 0 else len(text)]
+        region += "".join(re.findall(r"<(?:output|[a-z]+[^>]*aria-live)[^>]*>.*?</(?:output|[a-z]+)>", text, re.I | re.S))
+        blanks = re.findall(r"\[(?:n|x|nn|xx|\?|price|qiymət|date|tarix|days|gün|amount|N)\]|\[\s*n\s*\]|—\s*₼|\?\?", region, re.I)
+        if blanks:
+            out.append(("placeholder-result", "MED", f"the signature interaction shows placeholders where its answer should be "
+                                                     f"({', '.join(sorted(set(blanks))[:3])}). A price or date the visitor cannot "
+                                                     "read answers nothing: use sample rates labelled as samples, and list the real "
+                                                     "rates as an open item (interaction-depth.md §7, Numbers)", "Interaction"))
+
     # a persuasive page needs one signature interaction that performs the top job (interaction-depth.md)
     if is_page and not re.search(r"data-nsd-interaction", text, re.I):
         outside_forms = re.sub(r"<form\b.*?</form>", "", text, flags=re.I | re.S)

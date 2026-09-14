@@ -100,6 +100,11 @@ direction's anchor:
 | **A drawn graphic** | the diagram, product, illustration or photograph at a size that dominates | ≥ 30% of the 1280×800 viewport | ≥ 45% |
 | **A colour field** | a saturated brand colour that owns the viewport, with type on it | ≥ 40% of the viewport, type ≥ 3× | ≥ 60% |
 
+**The phone's first screen owes one too.** At 375×812 the floors are type ≥ 4× body (R3–R4: 4.5×), a graphic ≥ 25%
+of the screen (35%), or a colour field ≥ 40% with type ≥ 2.5× (55%). A 1.10 run drew its bold graphic beside the
+inputs on desktop and let it fall below them on phones, so the phone's first screen was a heading and two selects.
+Reorder for the phone: the move first, or the move made of the type.
+
 A dark or near-white band is a surface, not a colour field. A graphic under 64 px on either side is an icon. A route
 drawn as a 4 px line across the page is a divider, however meaningful: draw the route as the graphic — thick,
 tall, with the stops as objects — or set the price or the date as the type. `scripts/shoot.py` measures all three in

@@ -92,6 +92,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Trunk test passes on every screen (what app, what page, sections, local options, where am I, search).
 - [ ] Task can be completed in the minimum sensible number of steps; count them.
 - [ ] Persuade: the signature interaction answers the top job with a visible result in ≤ 2 steps, near the first viewport, and its result carries into the conversion (`interaction-depth.md` §3).
+- [ ] The result answers the top job with readable values: a price and a date for a cost/time question (sample rates labelled as samples when the real ones are missing), never `[n]` (`placeholder-result` clean).
 - [ ] The signature interaction works by keyboard, announces its result, respects reduced motion, and has a static no-JS equivalent on the page.
 - [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs). A dock that only appears after scrolling past the result fails this. `shoot.py --set` measures it.
 - [ ] Every decision point is a "mindless click" (obvious what happens); nothing requires reading instructions.
@@ -107,6 +108,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
       technique match its row in `expression-register.md` §7; anything off-row is justified in writing.
 - [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
 - [ ] Persuade: the first viewport shows the anchor the direction chose (`Anchor type:` in `DESIGN.md`); photographs appear only if that anchor is photographic, none were added to fill space, no grey placeholder boxes.
+- [ ] The phone's first screen (375×812) has its own bold move at the phone floor — the desktop graphic falling below the inputs does not count (`shoot.py` "first375" line).
 - [ ] Above R1, the first viewport has one bold move at the register's floor — type ≥ 6× body (R3: 8×), a graphic ≥ 30% of the viewport (R3: 45%), or a saturated colour field ≥ 40% (R3: 60%) — and it is the direction's idea (`shoot.py` "first" line; `expression-register.md` §4b).
 - [ ] The anchor is executed at full weight, not implied: "type as image" is type that is the image (scale, crop or arrangement a heading would never get), a colour field fills its field, a diagram is drawn. A large heading beside a form is not an anchor.
 - [ ] The signature interaction did not become the whole design: its result has a designed form (a drawn route, a composed figure), no half of the first viewport is dead space, and at most one data table appears outside the interaction (`tables-as-sections` clean; `interaction-depth.md` §3b).
@@ -211,6 +213,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] `DESIGN.md` updated (decisions, changelog); `design-log.json` updated.
 - [ ] Existing design system respected (if any): no new fonts/primaries/radius scales; additions documented upstream.
 - [ ] Generated `build/` not edited by hand; fonts licensed; assets exported in required densities.
+- [ ] The design record is complete for the mode — Standard: `design/brief.md`, `DESIGN.md`, `assets.md`, `design-log.json`, `contrast-pairs.txt`, `tokens/*.json` (`design-record-incomplete` clean).
 - [ ] The deliverable holds only the product: no wrapper pages, screenshot folders or harness scripts (`review-scaffolding` clean).
 
 ## 16. Gate 13 — slop and originality
