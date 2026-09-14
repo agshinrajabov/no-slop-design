@@ -148,8 +148,12 @@ If the session has an image-generation tool (an MCP image generator, Figma image
    soft side light from a window, shallow depth of field, warm browns. A restaurant, a bakery and a ceramics studio in
    a row all came back that way. Write light, surface and palette into every prompt from the direction — Alfama at
    dusk on stone, a steel counter under shop fluorescents, a white plaster wall at noon, a tiled floor from above —
-   and record them as `--image-look light;surface;palette` in `design_log.py`; it warns when two pages in a row share
-   two of the three.
+   and record them in `design_log.py` as `--image-look angle;light;surface;palette` from a fixed vocabulary
+   (angle: top-down, eye-level, low-angle, close-up, wide · light: side-window, overcast, hard-sun, dusk-night,
+   studio, artificial · surface: wood, stone, metal, fabric, paper, tile, glass, plant, street, seamless · palette:
+   warm, cool, neutral, saturated, mono). Free words hid a repeat: a restaurant on "limestone" and a ceramics studio on
+   "kiln-shelf alumina" were both top-down on pale stone. The log warns when two pages in a row share three facets,
+   or the same angle and surface.
 
 ## 8. Placeholders that are still designed
 

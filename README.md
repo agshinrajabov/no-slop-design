@@ -224,6 +224,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.13 | Six pages, one skeleton: interaction → steps → price table → form, no image, R2 by the same sentence — the rules had become a template | the section skeleton and image count are measured and compared across runs; the template is named as a tell; "no assets" no longer means no images; feeling-led services argue R3 |
 | 1.14 | Four varied prompts came out different but shared habits: results as receipts and letters, the interaction always under the hero, portraits as colour boxes, and parallel runs blind to each other; a client-mandated Inter graded B | named result forms and opening/closing checks in the history log; `design_log.py plan` for parallel runs; people placeholders that read as people; brand-fixed fonts respected by the linter |
 | 1.15 | The next habit: five first viewports in a row on poster-scale type, generated photos in the image model's wooden-table look, and parallel plans registered without a composition | plans require composition and result form; type scale and image look are recorded and compared across runs |
+| 1.16 | Two reruns broke the type streak but both photographed top-down on pale stone, described as "limestone" and "kiln-shelf alumina", so the check never matched | image look is recorded from a fixed vocabulary (angle, light, surface, palette) and compared facet by facet |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

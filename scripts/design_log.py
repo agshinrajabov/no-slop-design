@@ -39,6 +39,28 @@ WINDOW = 5          # how many recent entries count as "lately"
 STREAK = 3          # this many in a row on one axis is a streak worth breaking
 PLAN_HOURS = 6      # a planned direction counts in `check` for this long, so parallel runs can see each other
 RESULT_FORMS = ("figure", "paper", "diagram", "card", "list", "table", "calendar", "map", "media")
+# image look, recorded as angle;light;surface;palette from these words only (or "none" for a page without imagery)
+LOOK = {
+    "angle": ("top-down", "eye-level", "low-angle", "close-up", "wide"),
+    "light": ("side-window", "overcast", "hard-sun", "dusk-night", "studio", "artificial"),
+    "surface": ("wood", "stone", "metal", "fabric", "paper", "tile", "glass", "plant", "street", "seamless"),
+    "palette": ("warm", "cool", "neutral", "saturated", "mono"),
+}
+
+
+def parse_look(value: str) -> str:
+    """Validate an --image-look value against LOOK; raises ValueError with the allowed words."""
+    v = value.strip().lower()
+    if v == "none":
+        return v
+    parts = [p.strip() for p in v.split(";")]
+    if len(parts) != 4:
+        raise ValueError("--image-look takes angle;light;surface;palette, e.g. top-down;overcast;stone;neutral")
+    for (facet, words), p in zip(LOOK.items(), parts):
+        if p not in words:
+            raise ValueError(f"--image-look {facet} '{p}' is not one of: {', '.join(words)} (pick the nearest; "
+                             "free words hide repeats — limestone and kiln shelf are both stone)")
+    return ";".join(parts)
 
 
 def load() -> list[dict]:
@@ -230,11 +252,16 @@ def analyse(entries: list[dict]) -> list[str]:
         warns.append(f"type scale: the last 3 first viewports set display type at {', '.join(f'{r:g}×' for r in ratios[-3:])} "
                      "body size — oversized type is becoming the default bold move; make this one a photograph, a drawing, "
                      "a colour field or the product itself, and keep the type in proportion")
-    # generated or stock imagery sharing one look: wooden table, soft window light, warm browns
-    looks = [set(t.strip() for t in (e.get("image_look") or "").split(";") if t.strip()) for e in recent if e.get("image_look")]
-    if len(looks) >= 2 and len(looks[-1] & looks[-2]) >= 2:
-        warns.append(f"image look: the last two pages' imagery shared {', '.join(sorted(looks[-1] & looks[-2]))} — "
-                     "derive light, surface and palette from this direction, not from the image tool's default")
+    # generated or stock imagery sharing one look: wooden table, soft window light, warm browns — or two top-down shots
+    # on pale stone. Facets come from a fixed vocabulary so "limestone" and "kiln-shelf-alumina" both read as stone.
+    looks = [e["image_look"].split(";") for e in recent
+             if e.get("image_look") and e["image_look"] != "none" and len(e["image_look"].split(";")) == 4]
+    if len(looks) >= 2:
+        a, b = looks[-2], looks[-1]
+        same = [f"{facet} {a[i]}" for i, facet in enumerate(LOOK) if a[i] == b[i]]
+        if len(same) >= 3 or (a[0] == b[0] and a[2] == b[2]):
+            warns.append(f"image look: the last two pages' imagery shared {', '.join(same)} — change the camera angle or "
+                         "the surface at least; derive both from this direction, not from the image tool's default")
     # the opening and closing formula: hero then interaction, contact form last
     if len(skels) >= 2 and skels[-1][0][:2] == skels[-2][0][:2] and len(skels[-1][0]) >= 2:
         warns.append(f"opening: the last two pages opened the same way ({' > '.join(skels[-1][0][:2])}) — the interaction "
@@ -262,7 +289,9 @@ def main() -> int:
         p.add_argument("--display-ratio", dest="display_ratio", type=float, default=None,
                        help="first-viewport display type ÷ body size, from shoot.py's 'first' line (planned: the intended ratio)")
         p.add_argument("--image-look", dest="image_look", default=None,
-                       help="imagery tags as light;surface;palette, e.g. 'dusk-street;stone;blue-amber' or 'none'")
+                       help="angle;light;surface;palette from a fixed vocabulary, e.g. top-down;overcast;stone;neutral, "
+                            "or none. Angles: " + ", ".join(LOOK["angle"]) + ". Light: " + ", ".join(LOOK["light"])
+                            + ". Surface: " + ", ".join(LOOK["surface"]) + ". Palette: " + ", ".join(LOOK["palette"]))
     pl.add_argument("--composition", default=None)
     pl.add_argument("--skeleton", default=None)
     pl.add_argument("--hue", type=float, default=None)
@@ -286,6 +315,12 @@ def main() -> int:
 
     args = ap.parse_args()
     entries = load()
+    if getattr(args, "image_look", None):
+        try:
+            args.image_look = parse_look(args.image_look)
+        except ValueError as err:
+            print(err)
+            return 2
 
     if args.cmd == "measure":
         share = dark_share(args.png)

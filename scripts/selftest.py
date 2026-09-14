@@ -265,13 +265,19 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as d:
         env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
         log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
-        for proj, ratio, look in [("law", "9.2", "none"), ("bakery", "33.3", "window;wood;warm-brown"),
-                                  ("restaurant", "8.8", "window;wood;warm-brown")]:
+        for proj, ratio, look in [("law", "9.2", "none"), ("bakery", "33.3", "eye-level;side-window;wood;warm"),
+                                  ("restaurant", "8.8", "close-up;side-window;wood;warm")]:
             log("add", "--project", proj, "--display-ratio", ratio, "--image-look", look)
         out = log("check")
         check("three oversized-type openings warn", "type scale:" in out, out.strip()[-300:])
         check("two pages with the same image look warn", "image look:" in out, out.strip()[-300:])
-        log("add", "--project", "hotel", "--display-ratio", "4.5", "--image-look", "dusk;stone;blue-amber")
+        bad = subprocess.run([PY, "scripts/design_log.py", "add", "--project", "y", "--image-look", "top-down;overcast;limestone;neutral"],
+                             cwd=ROOT, capture_output=True, text=True, env=env)
+        check("free words outside the look vocabulary are refused", bad.returncode == 2 and "stone" in bad.stdout, bad.stdout[-200:])
+        log("add", "--project", "rest2", "--display-ratio", "4.7", "--image-look", "top-down;overcast;stone;warm")
+        log("add", "--project", "ceram2", "--display-ratio", "3.5", "--image-look", "top-down;overcast;stone;neutral")
+        check("two top-down shots on stone warn even with different palettes", "image look:" in log("check"), "not warned")
+        log("add", "--project", "hotel", "--display-ratio", "4.5", "--image-look", "wide;dusk-night;street;cool")
         out2 = log("check")
         check("a proportionate type and a different look clear both", "type scale:" not in out2 and "image look:" not in out2,
               out2.strip()[-300:])

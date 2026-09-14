@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.16.0 — 2026-09-14
+
+The 1.15.0 reruns broke the poster-type streak (display type at 4.7× and 3.5× body, down from 8.8× and 22.6×) and the
+parallel plan worked — the restaurant run reports replacing a near-copy of the ceramics direction. But both pages'
+generated photographs were top-down shots on pale stone under flat light, and the image-look check stayed silent:
+the agents described them in free words ("limestone", "kiln-shelf alumina") that never matched.
+
+- **`--image-look` is a fixed vocabulary**: `angle;light;surface;palette` — angle top-down, eye-level, low-angle,
+  close-up, wide · light side-window, overcast, hard-sun, dusk-night, studio, artificial · surface wood, stone, metal,
+  fabric, paper, tile, glass, plant, street, seamless · palette warm, cool, neutral, saturated, mono — or `none`.
+  `design_log.py` refuses other words (exit 2) and names the nearest facet list.
+- **The warning compares facets**: two pages in a row sharing three of the four, or the same angle and surface. Mapped
+  onto the vocabulary, the two 1.15.0 pages share top-down, overcast and stone, and `check` now says so.
+- `visual-material.md` §7 and the review gate list the vocabulary; selftest covers refusal and the stone case.
+
 ## 1.15.0 — 2026-09-14
 
 Two parallel runs on 1.14.0 — a restaurant in İçərişəhər and a Kyoto ceramics shop — fixed what 1.14 targeted (the
