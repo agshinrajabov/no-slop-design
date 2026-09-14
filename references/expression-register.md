@@ -29,7 +29,7 @@ motion ambition the page carries, which techniques are on the table, and what "g
 | Typical surface | app UI, dashboards, admin, docs | most marketing sites, B2B, services, e-commerce | brand sites, hospitality, fashion, agencies, launches, culture | festivals, portfolios, campaigns, art, games, product theatre |
 | First viewport | workspace or facts | poster: one image, one claim, one action | full-bleed image/video/type, brand at full volume | a scene, a moment, or an interaction that has no equivalent elsewhere |
 | Type scale ratio | 1.125–1.2 | 1.25–1.333 | 1.4–1.6, display 72–140px | display 120–400px, type as image |
-| Imagery | functional only | 1 anchor + supporting photos | large photography or video throughout, art-directed | media is the interface: video, 3D, generative, sequenced stills |
+| Imagery | functional only | one anchor; supporting images only if the content needs them | an art-directed anchor at full scale — photography, film, type as image or illustration, whichever the direction chose | media is the interface: video, 3D, generative, sequenced stills |
 | Motion budget | state changes only, 80–250 ms | 1 orchestrated entrance + hover/press | entrance choreography, scroll-linked reveals, 1–2 signature moments | motion is the narrative: scroll-driven scenes, physics, transitions between routes |
 | Interaction | standard components | standard + one custom affordance | custom sliders, galleries, sticky sequences, drag | bespoke navigation, cursor states, spatial scenes, sound (opt-in) |
 | Build cost | 1× | 1.5× | 3–5× | 8–20× |
@@ -52,9 +52,9 @@ Ask, in the brief, and write the answer down. If the user is unavailable, decide
 | Audience is time-poor or in a hurry (support, booking under stress, emergency) | R1–R2 |
 | Audience is browsing for pleasure, on a big screen, in the evening | R3–R4 |
 | Category is saturated with identical sites and the brief says "stand out" | one register above the category norm |
-| Brand is new and unknown, needs credibility fast | R2 (R3 only with real photography) |
+| Brand is new and unknown, needs credibility fast | R2 (R3 only with real assets: photography, film, or a type or illustration system that can carry the page) |
 | Brand is established and known for craft | R3–R4 |
-| Budget: one page, two days, no assets | R2, or R3 with licensed photography |
+| Budget: one page, two days, no assets | R2, or R3 with licensed photography or a typographic direction |
 | Budget: real shoot, motion designer, 3–6 weeks | R3–R4 |
 | Low-end Android, 3G, or accessibility-critical audience | cap at R2, or R3 with a static fallback |
 | Content is dense data or long text | R1–R2 regardless of taste |
@@ -88,7 +88,7 @@ being applied by reflex. Choose it, don't default to it.
 
 - **Scale.** Display type 72–140 px at desktop; images full-bleed or breaking the grid; sections 100 vh where the
   content earns it. Whitespace becomes a compositional element, not padding.
-- **Art direction leads.** The photograph or film is chosen first; type is set around it. Overlap type and image,
+- **Art direction leads.** The anchor (photograph, film, type as image, illustration) is chosen first; the rest is set around it. Overlap type and image,
   crop hard, let a caption sit in the margin. See `visual-material.md`.
 - **Layout devices:** asymmetric grids, editorial columns of unequal width, a sticky left column against a scrolling
   right column, an image that persists while text changes, pull quotes, oversized numerals, a horizontal section
@@ -99,7 +99,7 @@ being applied by reflex. Choose it, don't default to it.
 - **Still ships:** `prefers-reduced-motion` path, keyboard operability, LCP under 2.5 s, real content.
 
 **Cost signals to warn the user about:** photography or film is the budget, not the code. Without real assets, R3
-becomes stock-photo theatre, which is worse than a good R2.
+becomes stock-photo theatre, which is worse than a good R2, or than a typographic R3, which needs a typeface and a writer rather than a shoot.
 
 **Study (real sites and studios, as of 2026):** Apple product pages (scroll-driven storytelling at scale), Aesop,
 Kinfolk, Ace Hotel, Aman, Six Senses (hospitality R3), Stripe Sessions and Linear launch pages (R2 pushed to R3 with
@@ -199,7 +199,7 @@ Rules for the seam:
 **Too timid** (this skill's own recent failure mode):
 
 - Spec/definition tables as the primary layout device on every section, in every industry.
-- One small photograph on a 9,000 px page; imagery treated as an obligation rather than the argument.
+- A direction that chose photography, then shipped one small photograph on a 9,000 px page.
 - Display type capped at 44 px on a brand site; the page reads as a document.
 - No motion anywhere, described as "restraint", on a surface whose job is to excite.
 - The same composition (headline left, facts right) applied to a clinic, a café, a hotel and a festival.
@@ -210,6 +210,7 @@ Rules for the seam:
 - WebGL on a page whose job is a phone number.
 - Motion that delays content; 6-second logo loaders.
 - Register above the client's asset budget, producing stock-photo theatre.
+- Photographs in every section because R3 "has imagery". The register sets the scale of the anchor, not the number of images.
 - Trend stacking (grain + mono + brutalist borders + custom cursor) with no attribute behind any of it.
 
 ## 11. Checks

@@ -90,7 +90,7 @@ tokens, honest content, and the performance budget.
 | 3 Direction | Attributes → annotated real references (≥ 30% non-UI, ≥ 2 local) → a remix thesis → imagery art direction → one direction plus an alternative one register away | in `DESIGN.md` · Deep: `moodboard.html` |
 | 4 System | OKLCH scales, fluid type scale, spacing, radius, elevation, motion; semantic roles for light and dark; compiled for the target platform; every role contrast-checked | `tokens/`, `build/`, `DESIGN.md` |
 | 5 Compose | Content by priority, a visual anchor, one focal point, a structure that fits the content and the register; full component state matrix; copy last | screen composition |
-| 6 Build | A prototype with real content, real images and every state at three widths — or your framework, or SwiftUI/Compose | working UI |
+| 6 Build | A prototype with real content, the anchor the direction chose and every state at three widths — or your framework, or SwiftUI/Compose | working UI |
 | 7 Review | Render it and look; the scripts; the gates; a JavaScript-disabled pass; the studio test. Grade B or better, or it goes back | review of record |
 | 8 Hand off | Deliverables, specs, shot list, QA checks, decision records | handoff package |
 
@@ -101,7 +101,7 @@ produces a report and rebuilds nothing.
 ## What it refuses
 
 A catalog of roughly 84 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 44 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 46 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -110,7 +110,7 @@ accessibility and process. 44 of the mechanical ones are checked by the linter, 
 - auto-scrolling marquees, fade-up on every section, `transition: all`, removed focus outlines
 - reveals that leave the page blank when the script fails
 - **and the over-corrections**: text-only "honest" pages, the label-value ledger used as a layout device, grey
-  placeholder boxes where a photograph belongs
+  placeholder boxes, and photo-stuffing — images added to sections the direction never asked for
 
 Your brief always beats the catalog. If your brand uses Inter and purple, the skill uses them well and writes down
 the tension.
@@ -207,6 +207,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.2 | A competent page that still read as a document | `expression-register.md`, the photograph three-match test, an accent-hue check |
 | 1.3 | A self-audit: the 1.2 rules were in `SKILL.md` but not in the templates | `audit_repo.py`, `selftest.py`, CI, cross-project memory |
 | 1.4 | An existing system, an iOS screen, and eval 04 on a weaker model | OKLCH silently dropped from the native token output, page rules judging component source, the unchecked marquee, register-aware budgets |
+| 1.5 | Real use: the skill reached for photographs by reflex, because 1.1 had turned "no images" into an image quota | the direction decides the anchor type; image rules read that decision instead of counting images; photo-stuffing is a tell |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

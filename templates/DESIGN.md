@@ -50,7 +50,8 @@ not chosen}. Recorded so the ambition can be traded without redoing the research
 
 **Imagery art direction** (drives `design/assets.md` and the shot list): subject {…} · people {none / hands only /
 candid} · light {…} · treatment {…} · crop {…} · ratios {hero 3:2, portrait 4:5, detail 1:1} · banned {…}.
-Anchor type: {full-bleed photograph · product-first · type as image · colour field · illustration · video · scene}.
+Anchor type: {full-bleed photograph · product-first · type as image · colour field · diagram · illustration · video · scene}.
+Photographs needed: {yes, n — because … · no — the anchor is …}. `slop_lint.py` reads the `Anchor type:` line.
 
 **Register techniques used** (from `expression-register.md` §7, anything off-row justified): {…}
 

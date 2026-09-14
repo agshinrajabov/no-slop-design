@@ -116,6 +116,28 @@ RULES = [
 ]
 
 # File-level rules: evaluated once per HTML document
+PHOTO_ANCHOR_WORDS = ("photo", "product", "video", "film", "footage")
+
+
+def declared_anchor(path: str, text: str) -> str | None:
+    """The anchor type the direction chose: data-nsd-anchor on the page, else the nearest design/DESIGN.md
+    'Anchor type:' line. Unfilled template text ({...}) counts as undeclared."""
+    m = re.search(r"data-nsd-anchor\s*=\s*[\"']([^\"']+)", text, re.I)
+    if m:
+        return m.group(1).strip().lower()
+    d = os.path.dirname(os.path.abspath(path))
+    for _ in range(3):
+        cand = os.path.join(d, "design", "DESIGN.md")
+        if os.path.exists(cand):
+            body = open(cand, encoding="utf-8", errors="ignore").read()
+            m = re.search(r"Anchor type:\**\s*([^\n]+)", body, re.I)
+            if m and "{" not in m.group(1):
+                return m.group(1).strip().strip("*.").lower()
+            return None
+        d = os.path.dirname(d)
+    return None
+
+
 def file_rules(path: str, text: str):
     """Page-level checks. Only rendered documents can be judged for imagery: a .tsx page that composes
     <Panel> and <Chart> components has no <img> in its own source and is not a text-only page."""
@@ -127,10 +149,16 @@ def file_rules(path: str, text: str):
         return out  # working documents, not product pages
     is_page = re.search(r"<(main|section|header)\b", text, re.I) and len(text) > 3000
     has_media = re.search(r"<(img|picture|video|canvas)\b|<svg[^>]*(viewBox=\"0 0 (?!2[04] 2[04])[^\"]+\"|width=\"(?!1[0-9]|2[0-9]|3[0-2])\d{3,})", text, re.I)
-    if is_page and not has_media:
-        out.append(("no-imagery", "HIGH", "page-level document with no image, picture, video, or illustration element — text-only pages read as unfinished (visual-material.md §1)", "§8 Imagery"))
+    anchor = declared_anchor(path, text)
+    photographic = bool(anchor) and any(w in anchor for w in PHOTO_ANCHOR_WORDS)
+    non_photo = bool(anchor) and not photographic
+    if is_page and not has_media and not non_photo:
+        out.append(("no-imagery", "HIGH", "no visual anchor on the page and none declared — decide one in the direction "
+                                          "(photograph, type as image, colour field, diagram, illustration). If it is not an "
+                                          "image, write 'Anchor type:' in design/DESIGN.md or add data-nsd-anchor; do not add "
+                                          "photographs just to pass this (visual-material.md §1–2)", "§8 Imagery"))
     dl_hero = re.search(r"<(header|section)[^>]*>(?:(?!</(header|section)>).){0,4000}<dl\b", text, re.I | re.S)
-    if dl_hero and not has_media:
+    if dl_hero and not has_media and not non_photo:
         out.append(("ledger-hero", "MED", "definition-list / fact table as the first-viewport composition with no visual anchor — the 'honest ledger' over-correction (anti-slop.md §8)", "§3 Layout"))
 
     # the "ledger site": label/value rows as the layout device across the page
@@ -170,8 +198,20 @@ def file_rules(path: str, text: str):
 
     if is_page:
         img_count = len(re.findall(r"<img\b|<picture\b|<video\b", text, re.I))
-        if 0 < img_count < 2 and len(text) > 12000:
-            out.append(("thin-imagery", "MED", f"long page ({len(text) // 1000} kB of markup) carrying only {img_count} image element — imagery is treated as an obligation, not the argument (visual-material.md §1)", "§8 Imagery"))
+        if photographic and 0 < img_count < 2 and len(text) > 12000:
+            out.append(("thin-imagery", "MED", f"the direction chose a photographic anchor ({anchor}) but this long page carries "
+                                               f"only {img_count} image — the page owes the imagery it promised, or the direction "
+                                               "should change (visual-material.md §1)", "§8 Imagery"))
+        content_imgs = [i for i in imgs if not re.search(r"\.svg\b|logo|avatar|icon|favicon", i, re.I)]
+        if non_photo and len(content_imgs) >= 3:
+            out.append(("images-contradict-direction", "MED", f"the direction chose '{anchor}' as the anchor, yet the page "
+                                                              f"carries {len(content_imgs)} photographs — images the direction "
+                                                              "never asked for (anti-slop.md §5, photo-stuffing)", "§8 Imagery"))
+        sections = len(re.findall(r"<section\b", text, re.I))
+        if sections >= 4 and len(content_imgs) >= 6 and len(content_imgs) >= sections:
+            out.append(("photo-stuffing", "LOW", f"{len(content_imgs)} photographs across {sections} sections — an image in "
+                                                 "nearly every section; unless this is a gallery or catalogue, check each one "
+                                                 "earns its place (anti-slop.md §5)", "§8 Imagery"))
     return out
 
 COMPILED = [(i, s, re.compile(p, re.IGNORECASE if i not in ("emoji-ui", "mobile-emoji-tab") else 0), m, sec) for i, s, p, m, sec in RULES]

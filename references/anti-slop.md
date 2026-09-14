@@ -100,6 +100,7 @@ The catalog is organised by category. `scripts/slop_lint.py` catches the mechani
 | Stock avatars (randomuser, pravatar) in testimonials; "Acme / Globex" logos | Fake proof | Real or none |
 | Shape-assembled SVG mascots; hand-coded illustration by an agent | Amateur | Skip illustration until a real illustrator or a real style is available |
 | Raster hero under 80% dark wash with white text | Hides a weak image | Choose an image that works, or drop the image |
+| Photo-stuffing: an image in every section, stock that repeats the headline, photos added where the direction chose type or colour | Filling space instead of deciding; the over-correction to the text-only page | Images only where the direction's anchor type calls for them; each earns its place or goes |
 
 ## §6 Copy & microcopy
 

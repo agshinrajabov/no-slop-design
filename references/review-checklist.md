@@ -91,8 +91,8 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] The expression register (R1–R4) is named in the brief and honoured on screen: scale, imagery, motion and
       technique match its row in `expression-register.md` §7; anything off-row is justified in writing.
 - [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
-- [ ] Persuade: a designed visual anchor is present in the first viewport and the prototype contains real image elements (no gray placeholder boxes).
-- [ ] Every photograph passes the three-match test (subject, light, material) and was actually looked at.
+- [ ] Persuade: the first viewport shows the anchor the direction chose (`Anchor type:` in `DESIGN.md`); photographs appear only if that anchor is photographic, none were added to fill space, no grey placeholder boxes.
+- [ ] If photographs are used, each passes the three-match test (subject, light, material) and was actually looked at.
 - [ ] Every image is recorded in `design/assets.md` with source, licence and the three-match note (`asset-unrecorded` clean).
 - [ ] The LCP image loads eagerly; every image carries width/height or aspect-ratio (`lcp-lazy`, `img-no-dimensions` clean).
 - [ ] Exactly one focal point per viewport; scale contrast ≥ 2× between tiers.

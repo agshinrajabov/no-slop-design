@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.5.0 — 2026-09-14
+
+In real use the skill reached for photographs whether the design needed them or not. The cause was ours: fixing the
+text-only pages in 1.1 had turned into a quota.
+
+- The Standard budget said "3–6 photographs", the fallback floor said "three photographs", and agents read both as
+  minimums. The budget now says "what the anchor type needs, 0–6 images; photographs only if the anchor is
+  photographic".
+- The linter only recognised `<img>`, `<picture>`, `<video>` and large SVG as a visual anchor, so the cheapest way to
+  pass `no-imagery` and `thin-imagery` was to add photographs. The rules now read the direction's decision
+  (`Anchor type:` in `DESIGN.md`, or `data-nsd-anchor` on the page): a typographic, colour-field or diagram anchor
+  needs no photographs, `thin-imagery` only fires when the direction chose photography, and an undecided text-only
+  page is still flagged.
+- New rules: `images-contradict-direction` (photographs on a page whose direction chose type or colour) and
+  `photo-stuffing` (an image in nearly every section).
+- Non-negotiable 8 is now "a visual decision is required; photographs are one possible answer". Matching changes in
+  `visual-material.md`, `expression-register.md`, `anti-slop.md`, the review gate and the `DESIGN.md` template.
+
 ## 1.4.0 — 2026-09-03
 
 Three field tests of the paths that had never been run — an existing design system, an iOS screen, and eval 04 on

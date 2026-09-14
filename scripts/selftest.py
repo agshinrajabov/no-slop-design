@@ -54,7 +54,39 @@ def main() -> int:
     ledger = lint_json("evals/fixtures/ledger-site.html")
     lrules = {f["rule"] for f in ledger["findings"]}
     check("ledger-site", "ledger-site" in lrules, f"rules found: {sorted(lrules)}")
-    check("thin-imagery", "thin-imagery" in lrules, f"rules found: {sorted(lrules)}")
+
+    print("slop_lint — imagery follows the direction, not a quota")
+    rules_of = lambda p: {f["rule"] for f in lint_json(p)["findings"]}
+    check("no thin-imagery when no photographic anchor was declared", "thin-imagery" not in lrules,
+          "the linter still demands images from an undeclared page")
+    fixture = open(os.path.join(ROOT, "evals/fixtures/ledger-site.html"), encoding="utf-8").read()
+    long_copy = "<p>" + "Real body copy for a real page. " * 400 + "</p>"
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("Anchor type: full-bleed photograph.\n")
+        p = os.path.join(d, "index.html"); open(p, "w").write(fixture)
+        check("thin-imagery when the direction chose photography", "thin-imagery" in rules_of(p), sorted(rules_of(p)))
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("**Anchor type:** type as image.\n")
+        typo = f"<html><body><header><h1>Brød</h1></header><main><section>{long_copy}</section></main></body></html>"
+        p = os.path.join(d, "index.html"); open(p, "w").write(typo)
+        check("typographic anchor needs no photographs", "no-imagery" not in rules_of(p), sorted(rules_of(p)))
+        photos = "".join(f"<img src='https://images.unsplash.com/photo-{i}' width='800' height='600' alt='x'>" for i in range(4))
+        p2 = os.path.join(d, "stuffed.html"); open(p2, "w").write(typo.replace("</main>", photos + "</main>"))
+        check("photographs against a typographic direction are flagged", "images-contradict-direction" in rules_of(p2),
+              sorted(rules_of(p2)))
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "index.html")
+        open(p, "w").write(f"<html><body><header data-nsd-anchor='colour field'><h1>x</h1></header><main><section>{long_copy}</section></main></body></html>")
+        check("data-nsd-anchor on the page is honoured", "no-imagery" not in rules_of(p), sorted(rules_of(p)))
+        q = os.path.join(d, "undecided.html")
+        open(q, "w").write(f"<html><body><header><h1>x</h1></header><main><section>{long_copy}</section></main></body></html>")
+        check("an undecided text-only page is still flagged", "no-imagery" in rules_of(q), sorted(rules_of(q)))
+    with tempfile.TemporaryDirectory() as d:
+        secs = "".join(f"<section><h2>s{i}</h2><img src='https://images.unsplash.com/photo-{i}' width='800' height='600' alt='x'><p>copy</p></section>" for i in range(6))
+        p = os.path.join(d, "index.html"); open(p, "w").write(f"<html><body><main>{secs}{long_copy}</main></body></html>")
+        check("photo-stuffing on an image in every section", "photo-stuffing" in rules_of(p), sorted(rules_of(p)))
 
     print("slop_lint — reveal without a no-JS fallback fires, and a guarded one does not")
     with tempfile.TemporaryDirectory() as d:

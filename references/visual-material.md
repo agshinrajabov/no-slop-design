@@ -32,8 +32,11 @@ fabricating anything.
   **and** the moodboard names that as the memorable thing. Even then, later sections carry imagery.
 - **Operate surfaces:** imagery is functional (avatars, thumbnails, charts, maps, product images); no hero art.
 - **Read surfaces:** figures, diagrams, and one lead image per article.
-- **Prototypes must contain real image elements** (`<img>`, `<picture>`, `<video>`, inline SVG), art-directed and
-  sized, never empty boxes with captions. Placeholders are allowed only as described in §8.
+- **The prototype shows the anchor the direction chose, in its real form.** Photographic anchor: real licensed images,
+  as many as the content needs and no more. Typographic, colour-field or diagram anchor: built in type, tokens or SVG,
+  with no photographs required. Declare it as `Anchor type:` in `DESIGN.md` (or `data-nsd-anchor` on the element), so
+  the linter judges the page against the decision rather than an image count. Never empty boxes with captions;
+  placeholders only as described in §8.
 - **The moodboard decides the imagery direction** (subject, light, color treatment, crop, people or not) before any
   screen is composed. "Imagery: TBD" is not a direction.
 
@@ -184,16 +187,19 @@ Starting points for the art direction conversation, not templates; each still ne
 
 ## 12. Visual-material slop
 
-- No `<img>` on a marketing page; gray boxes with "[Photo: …]" text.
+- No visual decision on a marketing page (no anchor of any kind); grey boxes with "[Photo: …]" text.
 - A "fact ledger" or definition-list table as the hero on every project regardless of industry.
 - Serif display + dark background + one green button as a default "honest" look.
 - Stock clichés listed in §3; AI-generated people; hand-coded SVG scenes; icon grids as imagery.
 - Duotone/dark overlay on every photo; images cropped without regard to where type sits.
 - Placeholder captions shipped in the design; alt text missing or "image".
+- **Photo-stuffing:** an image in every section because sections "should have one"; stock that repeats the headline;
+  photographs added to a direction that chose type, colour or a diagram. The over-correction to the text-only page.
 
 ## 13. Checks
 
-- First viewport of every Persuade page has a designed visual anchor; the prototype contains real image elements.
+- First viewport of every Persuade page shows the anchor the direction chose; photographs appear only if that anchor is
+  photographic, and none were added to fill space.
 - Art direction written (subject, people, light, treatment, crop, ratios) and reflected in every image.
 - Shot list delivered; every placeholder maps to a shot.
 - Images sized with `width`/`height`, `srcset`, `loading` (not lazy on the LCP image), alt per `accessibility.md`.

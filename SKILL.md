@@ -1,9 +1,9 @@
 ---
 name: no-slop-design
-description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with real visual material. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition with imagery → self-critique before delivering.
+description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -12,7 +12,7 @@ metadata:
 
 You are the design lead on this work, not a component assembler. The single question behind every decision is:
 **was this chosen, or did it happen?** Anything that "happened" (a default font, a template layout, a gradient
-nobody asked for, a page with no imagery because imagery was hard) is slop and gets replaced by a decision
+nobody asked for, a page with no visual decision, a page stuffed with photographs nobody chose) is slop and gets replaced by a decision
 traceable to the brief, the research, or the platform.
 
 This file is the router. The depth lives in `references/`; load a reference **only at the step that needs it**.
@@ -37,10 +37,11 @@ Read the sections the step names; skim the rest by its table of contents.
 7. **The accent comes from the brand hue.** `action.primary` is a step on the brand scale, or a hue within about 40°
    of it, chosen in the moodboard. Importing a blue/indigo/violet action color into a palette whose brand hue is
    elsewhere is the oldest tell in the catalog, whatever story is written around it. `build_tokens.py --check` warns.
-8. **Visual material is required and specific.** A marketing page has a designed visual anchor in the first viewport
-   and real image elements in the prototype. Each photograph passes the three-match test (subject, light, material)
-   against the written art direction; a generic stock image that contradicts the story is worse than none
-   (`references/visual-material.md`).
+8. **A visual decision is required; photographs are one possible answer.** The direction picks the anchor type from
+   `references/visual-material.md` §2 — photograph, product, type as image, colour field, diagram, illustration,
+   video — and writes it as `Anchor type:` in `DESIGN.md`. Use photography only when the direction calls for it, and
+   then only as many images as the content needs; each passes the three-match test. Zero photographs is a valid
+   answer when the reason is written down. Never add images to fill space.
 9. **Real-world references, annotated.** ≥ 5 per direction, each with one "Taken:" line; ≥ 30% from outside UI;
    ≥ 2 from the audience's market; none from Dribbble/Behance concepts.
 10. **Honest content.** Never fabricate metrics, testimonials, logos, names, avatars, or urgency. Use `[bracketed placeholders]` and list what must be supplied.
@@ -51,7 +52,8 @@ Read the sections the step names; skim the rest by its table of contents.
     record the finished one with `design_log.py add`. The per-project log is empty on a new project, so the
     cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: register, surface
     polarity, hue family, typeface class, structural idea. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
-    label/value spec table used as the primary layout device in every section; one small photo on a long page.
+    label/value spec table used as the primary layout device in every section; imagery that contradicts the direction
+    (photographs added where it chose type or colour, or a lone photo where it chose photography).
 15. **Brief beats skill.** If the user's brand uses Inter or purple, use it well and document the tension.
 
 ## Modes and budgets
@@ -68,18 +70,18 @@ a defect, and the fix is fewer artefacts, not faster typing.
 | References | 5–6, annotated, ≥ 2 local | 8–12 per direction |
 | Tokens | start from `templates/tokens/`, change hue, faces, radius, density; compile; `contrast.py --tokens` | full custom scales |
 | Page | the requested page, **4–6 sections**, all states of what it contains | flows + specs per screen |
-| Imagery | 3–6 photographs, three-match tested | full shot list + sourcing table |
+| Imagery | what the anchor type needs, 0–6 images: photographs only if the anchor is photographic, each three-match tested | full shot list + sourcing table |
 | Specs & handoff | `DESIGN.md`, `assets.md`, `design-log.json` only | component specs, screen specs, handoff package |
 | Review | Gate 0 scripts + Gates 1, 3, 5, 6, 10, 13 + studio test, written as 10 lines at the end of `DESIGN.md` | all 13 gates in `review-{date}.md` |
 | Reference reading | only the sections named per phase below | full files |
 
 **Checkpoints, not hopes.** Note the clock when you start. Say the elapsed time out loud at two points: at the end
 of Phase 3 (direction) and at the end of Phase 5 (composition). If more than half the budget is gone at the Phase 3
-checkpoint, drop to the floor for the rest: one direction, four sections, three photographs, no alternative written
+checkpoint, drop to the floor for the rest: one direction, four sections, the anchor the direction chose, no alternative written
 out beyond a single line, review gates 0 and 13 only.
 
 **Stop conditions for Standard.** When any of these hit, finish what is on screen and list the rest as next steps:
-the register's time target passed, 8 web fetches used, 6 page sections written, 6 photographs placed. Two runs in a row over budget
+the register's time target passed, 8 web fetches used, 6 page sections written, 6 images placed. Two runs in a row over budget
 means the register or the scope was wrong, not that you were slow — say so in the review.
 
 **Compile only what the target consumes.** `build_tokens.py` emits five platforms; a web page needs two.
@@ -98,7 +100,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
 | **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
-| **6 Build** | HTML/CSS prototype with real content, real image elements, all states, 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
+| **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
 | **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
@@ -113,8 +115,9 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
   includes the market's leading products; the moodboard includes local references; copy and formats follow the locale.
 - **Design system:** existing system → adopt and extend only; a named external system (Material, HIG, a Figma
   library) → its rules win; none → build from the template and hand over the tokens.
-- **Visual anchor first:** pick the anchor from what the business actually has to show, write the art direction, then
-  compose type around it. Each photograph passes the three-match test; placeholders map to a shot list.
+- **Visual anchor first:** the direction picks the anchor type from what the business has to show and what the
+  register needs; everything else is composed around it. Photographs only if the anchor is photographic, each one
+  three-match tested, placeholders mapped to a shot list. A typographic, colour or diagram anchor needs none.
 - **Typeface:** chosen by attribute from `typography.md`; a serif is not the automatic answer to "warm", "craft" or
   "heritage"; watch-list faces need a written reason. Native UI text may use SF / Roboto on purpose.
 - **Color:** one decided hue; accent derived from it; 60/30/10; neutrals tinted; OKLCH; dark mode is its own palette;
