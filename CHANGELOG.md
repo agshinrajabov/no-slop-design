@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.17.0 — 2026-09-14
+
+The 1.16.0 reruns looked different in every recorded axis — a restaurant floor plan in teal on near-black with
+lamp-lit dish photographs, a cobalt map of distance rings around a Kyoto bowl with studio product shots — and exposed
+two process gaps.
+
+- **A warning was read and ignored.** `design_log.py` told the ceramics run that the last two first viewports were both
+  `graphic-hero` and opened interaction → media; the run reported keeping it "deliberately" and nothing checked that.
+  `plan` and `check` take `--record design/convergence-warnings.json`; `slop_lint.py` adds `convergence-unanswered`
+  (MED) for any recorded warning with no line under "Convergence overrides" in `DESIGN.md`. A warning acted on is
+  cleared by re-running plan. `SKILL.md` non-negotiable 14, Phase 3, the template and the review gate say the same.
+- **Menu photographs counted against a diagram anchor.** The restaurant chose its floor plan as the anchor and was
+  graded B for three dish photos in its menu. `images-contradict-direction` now ignores images inside menu, dish,
+  product, shop, gallery, room, collection or batch containers (or `data-nsd-content`); stray photographs elsewhere
+  still count. The restaurant page is now A.
+
 ## 1.16.0 — 2026-09-14
 
 The 1.15.0 reruns broke the poster-type streak (display type at 4.7× and 3.5× body, down from 8.8× and 22.6×) and the

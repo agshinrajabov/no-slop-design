@@ -60,6 +60,10 @@ Photographs needed: {yes, n — because … · no — the anchor is …}. `slop_
 **Signature interaction** (`interaction-depth.md` §3, §5): {what the visitor does} → {the result they see} → {where the
 result carries}. Declared on the page as `data-nsd-interaction="{type}"`. Without JavaScript: {the static equivalent}.
 Result form: {figure · diagram · calendar · map · card · list · table · media · paper} — because {what the answer is}.
+
+**Convergence overrides** (one line per warning in `design/convergence-warnings.json` that this direction keeps;
+a warning acted on needs no line — re-run `design_log.py plan … --record` after changing the direction):
+- {warning key, e.g. composition}: {why this page keeps it, in terms of this content — not "deliberate"}
 Placed: {section n of m, and why there}. The page ends on: {this business's next real step}.
 
 **Design principles (max 5, each with a tie-breaker rule):**

@@ -297,6 +297,31 @@ def main() -> int:
         open(p, "w", encoding="utf-8").write(slab.replace(">Divorce</div>", "><svg viewBox='0 0 40 50'><circle cx='20' cy='16' r='10'/></svg></div>"))
         check("a silhouette placeholder passes", "people-placeholder-slab" not in rules_of(p), sorted(rules_of(p)))
 
+    print("slop_lint — menu and product photographs are content, and warnings need an answer")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("Anchor type: diagram\n")
+        dishes = "".join(f"<li class='dish'><img src='d{i}.jpg' width='400' height='500' alt='dish'></li>" for i in range(3))
+        page = (f"<html lang='az'><body><main><section><svg viewBox='0 0 800 600' width='800'></svg><h1>40 yer</h1></section>"
+                f"<section id='menu'><ul class='dishes'>{dishes}</ul></section><section>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("menu photos on a diagram-anchored page are content", "images-contradict-direction" not in rules_of(p), sorted(rules_of(p)))
+        stray = page.replace("<h1>40 yer</h1>", "<h1>40 yer</h1>" + "".join(f"<img src='h{i}.jpg' width='800' height='600' alt='x'>" for i in range(3)))
+        open(p, "w", encoding="utf-8").write(stray)
+        check("photos outside the content sections still contradict", "images-contradict-direction" in rules_of(p), sorted(rules_of(p)))
+        open(p, "w", encoding="utf-8").write(page)
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        wf = os.path.join(d, "design", "convergence-warnings.json")
+        for proj in ("a", "b"):
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--composition", "graphic-hero"],
+                           cwd=ROOT, capture_output=True, text=True, env=env)
+        rec = subprocess.run([PY, "scripts/design_log.py", "check", "--record", wf], cwd=ROOT, capture_output=True, text=True, env=env)
+        check("check --record writes the warnings", os.path.exists(wf) and "composition" in open(wf).read(), rec.stdout[-200:])
+        check("an unanswered warning is flagged", "convergence-unanswered" in rules_of(p), sorted(rules_of(p)))
+        open(os.path.join(d, "design", "DESIGN.md"), "a").write(
+            "\n**Convergence overrides**\n- composition: the floor plan is the booking itself, and no other run drew a room\n")
+        check("a written answer clears it", "convergence-unanswered" not in rules_of(p), sorted(rules_of(p)))
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"

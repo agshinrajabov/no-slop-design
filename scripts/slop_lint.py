@@ -147,6 +147,28 @@ def declared_surface(path: str, text: str) -> str | None:
     return declared(path, text, "data-nsd-surface", r"Surface mode\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
 
 
+def strip_regions(text: str, attr_pattern: str) -> str:
+    """Remove every element whose opening tag matches attr_pattern, with its content (nested same-name tags counted)."""
+    out, pos = [], 0
+    opener = re.compile(r"<([a-z][a-z0-9]*)\b[^>]*" + attr_pattern + r"[^>]*>", re.I)
+    while True:
+        m = opener.search(text, pos)
+        if not m:
+            out.append(text[pos:])
+            return "".join(out)
+        out.append(text[pos:m.start()])
+        name, depth, i = m.group(1).lower(), 1, m.end()
+        tag = re.compile(rf"<(/?){name}\b[^>]*>", re.I)
+        while depth:
+            t = tag.search(text, i)
+            if not t:
+                i = len(text)
+                break
+            depth += -1 if t.group(1) else 1
+            i = t.end()
+        pos = i
+
+
 def declared_language(path: str, text: str) -> str | None:
     """The BCP 47 primary subtag from 'Primary language:' in DESIGN.md (or data-nsd-language): 'az — Azerbaijani' → 'az'."""
     value = declared(path, text, "data-nsd-language", r"Primary language\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
@@ -222,6 +244,25 @@ def file_rules(path: str, text: str):
             out.append(("design-record-incomplete", "MED", f"the design record is missing {', '.join(missing)} — Standard mode "
                                                            "writes these (SKILL.md, project layout); the brief and contrast pairs "
                                                            "are where the decisions and the AA evidence live", "§10 Process"))
+
+    # a convergence warning the run saw and neither acted on nor answered in writing
+    warn_file = os.path.join(d, "design", "convergence-warnings.json")
+    if is_page and not in_design and base in ("index.html", "index.htm") and os.path.exists(warn_file):
+        try:
+            warned = json.load(open(warn_file, encoding="utf-8")).get("warnings", [])
+        except (ValueError, OSError):
+            warned = []
+        design_md = os.path.join(d, "design", "DESIGN.md")
+        body = open(design_md, encoding="utf-8", errors="ignore").read() if os.path.exists(design_md) else ""
+        section = re.search(r"Convergence overrides(.*?)(?:\n#{1,3} |\Z)", body, re.I | re.S)
+        answered = section.group(1).lower() if section else ""
+        open_keys = sorted({w.split(":")[0].strip().lower() for w in warned
+                            if not re.search(r"^\s*[-*]\s*" + re.escape(w.split(':')[0].strip().lower()) + r"\b\s*:?.{12,}", answered, re.M)})
+        if open_keys:
+            out.append(("convergence-unanswered", "MED", f"design_log.py warned about {', '.join(open_keys)} and DESIGN.md has no "
+                                                         "line for it under 'Convergence overrides'. Change the direction and "
+                                                         "re-run plan, or write '- <warning>: <why it stays>' (SKILL.md "
+                                                         "non-negotiable 14)", "§10 Process"))
 
     # a result the visitor cannot read: bracketed placeholders where the estimate should be
     root = re.search(r"<(section|div|form|article|aside|main)\b[^>]*data-nsd-interaction[^>]*>", text, re.I)
@@ -365,9 +406,15 @@ def file_rules(path: str, text: str):
                                                f"only {img_count} image — the page owes the imagery it promised, or the direction "
                                                "should change (visual-material.md §1)", "§8 Imagery"))
         content_imgs = [i for i in imgs if not re.search(r"\.svg\b|logo|avatar|icon|favicon", i, re.I)]
-        if non_photo and len(content_imgs) >= 3:
+        # photographs that are the content itself — dishes on a menu, pieces in a shop, rooms in a hotel — are not the
+        # anchor and do not contradict a diagram or type direction (a 1.16 restaurant was graded B for its menu photos)
+        catalog = strip_regions(text, r"(?:class|id)=[\"'][^\"']*\b(menu|dish(?:es)?|products?|shop|catalog(?:ue)?|gallery|"
+                                      r"items?|pieces?|rooms?|collection|batch|firing|work|portfolio)\b|data-nsd-content")
+        anchor_imgs = [i for i in re.findall(r"<img\b[^>]*>", catalog, re.I) if not re.search(r"\.svg\b|logo|avatar|icon|favicon", i, re.I)]
+        if non_photo and len(anchor_imgs) >= 3:
             out.append(("images-contradict-direction", "MED", f"the direction chose '{anchor}' as the anchor, yet the page "
-                                                              f"carries {len(content_imgs)} photographs — images the direction "
+                                                              f"carries {len(anchor_imgs)} photographs outside its menu, product or "
+                                                              "gallery sections — images the direction "
                                                               "never asked for (anti-slop.md §5, photo-stuffing)", "§8 Imagery"))
         sections = len(re.findall(r"<section\b", text, re.I))
         if sections >= 4 and len(content_imgs) >= 6 and len(content_imgs) >= sections:

@@ -162,6 +162,17 @@ def polarity(share: float) -> str:
     return "dark" if share >= 0.6 else "light" if share <= 0.35 else "mixed"
 
 
+def record(path: str | None, project: str | None, warns: list[str]) -> None:
+    """Write the warnings a run saw into its project, so they cannot be read and quietly ignored (a 1.16 run kept a
+    repeated composition 'deliberately' with no reason on record)."""
+    if not path:
+        return
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump({"project": project, "date": date.today().isoformat(), "warnings": warns}, fh, indent=2, ensure_ascii=False)
+    print(f"warnings recorded in {path}: {len(warns)} — act on each, or answer it under 'Convergence overrides' in DESIGN.md")
+
+
 def live(entries: list[dict]) -> list[dict]:
     """Finished entries plus planned ones younger than PLAN_HOURS; a finished entry replaces its own plan."""
     import time
@@ -306,6 +317,10 @@ def main() -> int:
 
     c = sub.add_parser("check", help="warn about convergence before choosing a direction")
     c.add_argument("--json", action="store_true")
+    for p in (c, pl):
+        p.add_argument("--record", default=None, metavar="PATH",
+                       help="write the warnings to PATH (design/convergence-warnings.json); slop_lint then requires each one "
+                            "to be acted on or answered under 'Convergence overrides' in DESIGN.md")
 
     ms = sub.add_parser("measure", help="measure the surface polarity of full-page screenshot(s)")
     ms.add_argument("png", nargs="+")
@@ -344,6 +359,7 @@ def main() -> int:
         warns = analyse(entries + [entry])
         entries.append(entry)
         save(entries)
+        record(args.record, entry.get("project"), warns)
         print(f"planned: {json.dumps(entry, ensure_ascii=False)}")
         for w in warns:
             print("CONVERGENCE:", w)
@@ -385,6 +401,7 @@ def main() -> int:
         return 0
 
     warns = analyse(entries)
+    record(args.record, None, warns)
     registers = [e.get("register") for e in entries[-WINDOW:] if e.get("register")]
     note = None
     if len(registers) >= STREAK and len(set(registers[-STREAK:])) == 1:
