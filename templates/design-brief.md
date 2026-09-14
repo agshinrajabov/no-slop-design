@@ -12,6 +12,7 @@
 | The job they hire it for | When I {situation}, I want to {motivation}, so I can {outcome}. |
 | Business goal for this piece of work | {activation / retention / conversion / trust / speed / …} |
 | Market & audience locale | {country/region · language(s) & script · device mix · local conventions: payments, trust signals, regulation, formats, RTL} |
+| Primary language | {BCP 47 code of the market's main language, e.g. az · other languages as switcher targets · if the page is not in the market's language, the audience reason} |
 | Platform(s) | {web marketing · web app · iOS · Android · cross-platform (Flutter/RN) · desktop} |
 | Expression register | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {audience decision type + category norm + asset budget} |
 | Interaction depth | {I1 · I2 · I3 · I4} — signature interaction: {top job → result → carries into} |

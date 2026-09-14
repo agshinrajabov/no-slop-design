@@ -13,6 +13,7 @@
 | Last reviewed | {date} |
 | Applies to | {web app · marketing · iOS · Android · Flutter} |
 | Market & audience | {country/region · language(s) & script · local conventions honoured} |
+| Primary language | {BCP 47 code, e.g. az — the page's `<html lang>`; if not the market's language, why} |
 | Surface mode | {Persuade · Operate · Read · Play} |
 | **Expression register** | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {decision type + category norm + asset budget} |
 | **Interaction depth** | {I1 Static · I2 Functional · I3 Demonstrative · I4 Immersive} — because {top job + whether its answer depends on the visitor's inputs} |

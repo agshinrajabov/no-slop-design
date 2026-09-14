@@ -338,6 +338,7 @@ deadline, and always with the number and end date shown.
 
 | Rule | Value | Why |
 |---|---|---|
+| Write in the market's language first | The page's copy, `<html lang>` and its test content are in the market's primary language (`az` for Baku, not `en` with "AZ/RU to follow"); other languages are switcher targets. Design with the real strings: Azerbaijani, Russian and German headlines run 20–35% longer than English | A layout drawn around a short English headline breaks, or gets rewritten into weaker copy, when the real language arrives |
 | Budget for expansion | Short strings (up to 10 chars) grow 200 to 300%; 11 to 20 chars 180 to 200%; paragraphs about 130% (W3C, IBM data). German and Finnish are the usual worst case for width, CJK for height (taller glyphs, more line-height) and often 30 to 50% fewer characters | Buttons, tabs, and nav labels break first |
 | No concatenated strings | Never `"You have " + n + " items"` or `t("hello") + name` | Word order differs; plural and gender rules differ |
 | ICU MessageFormat for plurals and selects | `{count, plural, =0 {No files} one {# file} other {# files}}`; CLDR categories zero/one/two/few/many/other (Arabic uses all six, Russian one/few/many/other) | English two-form plurals do not translate |

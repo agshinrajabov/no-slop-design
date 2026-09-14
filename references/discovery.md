@@ -56,6 +56,11 @@ this order (the first two change everything downstream, so they come first):
 1. **Which market and audience?** Country/region, language(s) and script, device mix, and any local conventions
    (payment methods, trust signals, regulation, date/number formats, RTL). Research and references will combine
    this market's leading products with worldwide ones; without the answer, assume the user's own locale and say so.
+   **The page is written in the market's primary language.** For a multilingual market (Azerbaijani and Russian in
+   Baku, French and Dutch in Brussels) the most used one is the default and the others are a switcher. English for a
+   non-English market needs a stated reason about the audience (expats, international buyers), never "the other
+   languages follow later". The design must be tested with the real language: Azerbaijani, German or Russian run
+   20–35% longer than English and break layouts drawn for English headlines.
 2. **Is there an existing or preferred design system?** Ask for the artefact, not an opinion: a Figma library link,
    Storybook URL, tokens file, component library (shadcn/MUI/Material/own), brand guide PDF, or a live product to
    match. "Use Material 3" or "match our Figma" is a valid answer. If none exists, say we will build one and that it

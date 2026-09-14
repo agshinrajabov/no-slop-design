@@ -152,6 +152,8 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | Serif chosen by reflex for "warm / craft / heritage" | Only after testing a sans and a slab against the same attribute |
 | **Brochure page**: a service whose price or availability is the question, answered only in prose, with no signature interaction | Never on a Persuade page; see `interaction-depth.md` |
 | **Interaction as the whole design**: a panel of form controls beside a big heading, half the first viewport empty, data tables for every later section; the anchor the direction chose is missing | Never; the interaction answers the question, the direction still carries the page (`interaction-depth.md` §3b) |
+| **English by default**: a page for a non-English market written in English, with the local languages "to follow" | The audience is demonstrably international (expats, foreign buyers, a conference) and the reason is written down |
+| **Register raised to look different**: the ambition changed because recent projects shared a register, not because the brief asked | Never; break surface, hue, type or structure instead (`design_log.py check`) |
 | **Horizontal-scroll table with no cue**: the last columns sit a few pixels off-screen on a phone and nothing says so | Never; reflow or show an edge cue (`components.md` §8) |
 
 Rule: **a style must be traceable to a brand attribute or a content type.** Never stack more than two trend

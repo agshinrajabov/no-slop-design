@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.8.1"
+  version: "1.9.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -22,7 +22,8 @@ Read the sections the step names; skim the rest by its table of contents.
 
 1. **No pixels before a brief.** Fill `templates/design-brief.md` (or confirm an existing one) first.
 2. **Ask four things before anything else** (one message, pre-filled from what you detected): **(a)** which market,
-   country, and language(s) the audience is in; **(b)** whether an existing or preferred design system exists (Figma
+   country, and language(s) the audience is in — the page is written in that market's primary language unless the
+   user says otherwise; **(b)** whether an existing or preferred design system exists (Figma
    library link, Storybook, tokens file, component library, brand guide) or whether we build one; **(c)** the one
    thing a first-time viewer should remember; **(d)** how much visual ambition the piece should carry — the
    **expression register** R1 Utility / R2 Composed / R3 Expressive / R4 Experimental, with your recommendation and
@@ -57,8 +58,9 @@ Read the sections the step names; skim the rest by its table of contents.
 14. **Anti-convergence.** Run `scripts/design_log.py check` before choosing a direction and obey what it reports;
     record the finished one with `design_log.py add --screenshot <full-page.png>`, which measures surface polarity from the
     pixels instead of trusting a label: a light hero on a mostly dark page is a dark page. The per-project log is empty on a new project, so the
-    cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: register, surface
-    polarity, hue family, typeface class, structural idea. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
+    cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: surface polarity, hue
+    family, typeface class, structural idea. **Never the register**: it comes from the brief, and a streak of R2 runs
+    for R2 briefs is correct. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
     label/value spec table used as the primary layout device in every section; imagery that contradicts the direction
     (photographs added where it chose type or colour, or a lone photo where it chose photography).
 15. **Brief beats skill.** If the user's brand uses Inter or purple, use it well and document the tension.
@@ -118,11 +120,16 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 
 ## Decision rules that prevent slop
 
-- **Register:** decided in Phase 1 from the audience's decision type, the category norm, and the asset budget; every
+- **Register:** decided in Phase 1 from the audience's decision type, the category norm, and the asset budget —
+  never from `design_log.py` history; every
   technique used is on that register's row in `expression-register.md` §7 or justified in writing.
 - **Interaction:** decided in Phase 1 from the top job. The signature interaction answers it with a result the visitor
   produces, carries that result into the conversion, and degrades to a static equivalent. Carousels, hover effects,
   language switchers and FAQ accordions do not count.
+- **Language:** the page copy is written in the market's primary language, set as `<html lang>` and recorded as
+  `Primary language:` in `DESIGN.md`. A second language is a switcher, not the default. English for a non-English
+  market only when the user asks or the audience is demonstrably international (an expat service, a conference);
+  write the reason. "AZ and RU to follow" is not a reason. `slop_lint.py` flags `page-language`.
 - **Audience and market:** the brief names country, language(s), script, device mix, and local conventions; research
   includes the market's leading products; the moodboard includes local references; copy and formats follow the locale.
 - **Design system:** existing system → adopt and extend only; a named external system (Material, HIG, a Figma

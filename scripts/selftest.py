@@ -185,6 +185,30 @@ def main() -> int:
         os.makedirs(os.path.join(d, "shots")); open(os.path.join(d, "shots", "desktop.png"), "wb").write(b"x")
         check("a shots/ folder beside the page is flagged", "review-scaffolding" in rules_of(p), sorted(rules_of(p)))
 
+    print("slop_lint — the page speaks the market's language")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("| Primary language | az — Azerbaijani, RU as switcher |\n")
+        body = f"<body><main><section data-nsd-anchor='colour field'>{long_copy}</section></main></body></html>"
+        en = os.path.join(d, "en.html"); open(en, "w", encoding="utf-8").write("<html lang='en'>" + body)
+        check("an English page for a declared Azerbaijani market is flagged", "page-language" in rules_of(en), sorted(rules_of(en)))
+        az = os.path.join(d, "az.html"); open(az, "w", encoding="utf-8").write("<html lang=\"az-Latn-AZ\">" + body)
+        check("lang='az-Latn-AZ' matches 'az'", "page-language" not in rules_of(az), sorted(rules_of(az)))
+        nolang = os.path.join(d, "nolang.html"); open(nolang, "w", encoding="utf-8").write("<html>" + body)
+        check("a page without lang is flagged", "page-language" in rules_of(nolang), sorted(rules_of(nolang)))
+
+    print("design_log — the register is never an axis to break")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        for proj, surf, hue, face, struct in [("a", "dark", 30, "Fraunces", "photo hero grid"),
+                                              ("b", "light", 150, "Archivo", "timeline sequence"),
+                                              ("c", "dark", 250, "Bitter", "estimator poster")]:
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--register", "R2", "--surface", surf,
+                            "--hue", str(hue), "--display", face, "--structure", struct], cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("three R2 runs raise no convergence warning", "CONVERGENCE" not in out, out.strip()[-240:])
+        check("the register streak is reported as keep-the-brief", "keep the register the brief" in out, out.strip()[-240:])
+
     print("shoot — parses its arguments without a browser")
     sys.path.insert(0, os.path.join(ROOT, "scripts"))
     import shoot

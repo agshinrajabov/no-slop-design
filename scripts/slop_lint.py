@@ -147,6 +147,13 @@ def declared_surface(path: str, text: str) -> str | None:
     return declared(path, text, "data-nsd-surface", r"Surface mode\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
 
 
+def declared_language(path: str, text: str) -> str | None:
+    """The BCP 47 primary subtag from 'Primary language:' in DESIGN.md (or data-nsd-language): 'az — Azerbaijani' → 'az'."""
+    value = declared(path, text, "data-nsd-language", r"Primary language\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
+    m = re.match(r"\s*([a-z]{2,3})(?:[-_][a-z0-9]{2,8})*\b", value or "", re.I)
+    return m.group(1).lower() if m else None
+
+
 def page_css(path: str, text: str) -> str:
     """CSS only — <style> blocks plus linked local stylesheets. The HTML around them has no rules, and reading it as
     CSS once made a whole document look like one selector."""
@@ -217,6 +224,17 @@ def file_rules(path: str, text: str):
                                                           "data-nsd-interaction (interaction-depth.md §3)", "Interaction"))
 
     # the interaction's result must stay on screen on a phone while inputs change (interaction-depth.md §7)
+    # the page speaks the market's language: <html lang> must exist and match the declared primary language
+    if is_page and re.search(r"<html\b", text, re.I):
+        lang_attr = re.search(r"<html\b[^>]*\blang\s*=\s*[\"']?([a-z]{2,3})", text, re.I)
+        want = declared_language(path, text)
+        if not lang_attr:
+            out.append(("page-language", "MED", "<html> has no lang attribute — screen readers, hyphenation and fonts guess "
+                                                "the language; set it to the market's primary language (discovery.md §3)", "§9 Accessibility"))
+        elif want and lang_attr.group(1).lower() != want:
+            out.append(("page-language", "MED", f"the page is lang=\"{lang_attr.group(1)}\" but DESIGN.md declares the primary "
+                                                f"language '{want}' — write the page in the market's language, or change the "
+                                                "declaration and write why (SKILL.md decision rules, Language)", "§6 Copy"))
     css = page_css(path, text) if is_page else ""
     if is_page and re.search(r"data-nsd-interaction", text, re.I):
         # a sticky header does not show the result, and an element hidden by default is only shown conditionally —

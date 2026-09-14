@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.9.0 — 2026-09-14
+
+The 1.8.0 rerun of the translation brief was the best of the three — a raspberry colour field with the headline
+stitched and sealed, a drawn bundle as the estimator's result, 14 minutes, lint A — and it made two decisions the
+brief did not support.
+
+- **It wrote the page in English for a Baku agency**, with Azerbaijani and Russian "to follow". The page is now written
+  in the market's primary language by default: intake question (a), a `Primary language:` field in the brief and
+  `DESIGN.md`, a localization rule to design with the real strings (Azerbaijani, Russian and German headlines run
+  20–35% longer), a review gate item, a tell, and `slop_lint.py` `page-language` (MED) when `<html lang>` is missing
+  or differs from the declared primary language.
+- **It raised the register to R3 because the last three runs were R2.** `design_log.py check` counted the register as
+  an axis to break, so history was deciding ambition. The register is now reported as a note ("keep the register the
+  brief calls for") and removed from the axes to vary; `SKILL.md`, the review gate and the catalog say the same.
+- Selftest covers both; eval 05 gains rubric items 21–22.
+
 ## 1.8.1 — 2026-09-14
 
 - `shoot.py` reported "result not visible" on the 1.8.0 test page while its sticky bar showed the new price. It looked

@@ -153,8 +153,9 @@ def analyse(entries: list[dict]) -> list[str]:
 
     # surface polarity is the first thing anyone sees, so two in a row already count
     streak("surface", "surface polarity", n=2)
-    streak("register", "expression register")
     streak("display", "display typeface")
+    # the register is not an axis to break: it comes from the brief (decision type, category norm, asset budget).
+    # A 1.8 run moved a translation agency to R3 because the last three runs were R2 — history deciding ambition.
     hues = [hue_family(e.get("hue")) for e in recent if e.get("hue") is not None]
     if len(hues) >= STREAK and len(set(hues[-STREAK:])) == 1 and hues[-1] != "unknown":
         warns.append(f"brand hue family: the last {STREAK} were all {hues[-1]} — a different family is the cheapest way to look different")
@@ -229,8 +230,14 @@ def main() -> int:
         return 0
 
     warns = analyse(entries)
+    registers = [e.get("register") for e in entries[-WINDOW:] if e.get("register")]
+    note = None
+    if len(registers) >= STREAK and len(set(registers[-STREAK:])) == 1:
+        note = (f"the last {STREAK} runs were all {registers[-1]}. That is not a warning: keep the register the brief "
+                "calls for, and make the difference on the axes above")
     if args.json:
-        print(json.dumps({"entries": len(entries), "recent": entries[-WINDOW:], "warnings": warns}, indent=2, ensure_ascii=False))
+        print(json.dumps({"entries": len(entries), "recent": entries[-WINDOW:], "warnings": warns, "register_note": note},
+                         indent=2, ensure_ascii=False))
         return 0
     print(f"design history: {len(entries)} entries, looking at the last {min(len(entries), WINDOW)}")
     for e in entries[-WINDOW:]:
@@ -240,9 +247,12 @@ def main() -> int:
         print()
         for w in warns:
             print("CONVERGENCE:", w)
-        print("\nBreak at least two axes: register, surface polarity, hue family, typeface class, structural idea.")
+        print("\nBreak at least two axes: surface polarity, hue family, typeface class, structural idea. "
+              "Never the register — it comes from the brief.")
     else:
         print("\nno convergence warnings")
+    if note:
+        print("register:", note)
     return 0
 
 

@@ -66,3 +66,9 @@ The register had quietly capped interaction. A correct run keeps the restrained 
     reflows or shows an edge cue.
 20. The deliverable holds no review scaffolding (`review-scaffolding` clean), and the run stayed within budget
     because no screenshot harness was built.
+
+## Rubric additions (1.9)
+
+21. The page is written in the market's primary language (Azerbaijani for a Baku agency, unless the run names an
+    international audience); `<html lang>` matches `Primary language:`; headlines hold with real lengths.
+22. The register is argued from the brief alone; a register streak in `design_log.py check` did not move it.
