@@ -215,6 +215,17 @@ def main() -> int:
     check("--set splits selector and value", shoot.parse_set("#pages=12") == ("#pages", "12"), str(shoot.parse_set("#pages=12")))
     check("--set keeps '=' inside an attribute selector", shoot.parse_set("[name=pages]=3") == ("[name=pages]", "3"),
           str(shoot.parse_set("[name=pages]=3")))
+    calm = {"display": 70, "ratio": 5.0, "graphic": 0.0, "field": 0.0}
+    check("a calm R2 first viewport has no bold move", not shoot.bold_move(calm, "R2")[0], shoot.bold_move(calm, "R2")[1])
+    check("R1 needs no bold move", shoot.bold_move(calm, "R1")[0], "R1 failed")
+    check("a saturated field with 4.7× type passes R2", shoot.bold_move({"ratio": 4.7, "graphic": 0, "field": 0.9}, "R2")[0], "field failed")
+    check("poster type passes R3", shoot.bold_move({"display": 195, "ratio": 13.9, "graphic": 0.06, "field": 1.0}, "R3")[0], "type failed")
+    check("a 35% graphic passes R2 but not R3", shoot.bold_move({"ratio": 3, "graphic": 0.35, "field": 0}, "R2")[0]
+          and not shoot.bold_move({"ratio": 3, "graphic": 0.35, "field": 0}, "R3")[0], "graphic thresholds")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("| **Expression register** | R2 Composed — because facts |\n")
+        check("register is read from DESIGN.md", shoot.register_from(d) == "R2", str(shoot.register_from(d)))
     h = run("scripts/shoot.py", "--help")
     check("shoot.py --help", h.returncode == 0 and "--set" in h.stdout, h.stderr[-200:])
     with tempfile.TemporaryDirectory() as d:

@@ -10,7 +10,7 @@ motion ambition the page carries, which techniques are on the table, and what "g
 1. The four registers
 2. Choosing the register
 3. R1 Utility
-4. R2 Composed
+4. R2 Composed (4b: the bold move every register above R1 owes its first viewport)
 5. R3 Expressive
 6. R4 Experimental
 7. Technique catalogue by register
@@ -86,6 +86,25 @@ The default for services and B2B. Poster-like first viewport with one real image
 one orchestrated entrance, honest proof. Craft shows in typography, spacing, and the details in `components.md` §3.
 This is where most of this skill's earlier output landed, and why three industries came out looking alike: R2 was
 being applied by reflex. Choose it, don't default to it.
+
+### 4b. The bold move (every register above R1)
+
+Composed does not mean forgettable. A 1.9 run chose R2 correctly and shipped a correct, calm first viewport — a 70 px
+headline, a thin route line, a form row — that nobody would remember. R2 limits *how many* loud things a page has,
+not whether it has one. **Every Persuade first viewport above R1 carries exactly one bold move**, chosen from the
+direction's anchor:
+
+| Bold move | What it looks like | R2 floor | R3–R4 floor |
+|---|---|---|---|
+| **Type at poster scale** | the claim, the product name or the document itself set so large it is the image | display ≥ 6× body size | ≥ 8× |
+| **A drawn graphic** | the diagram, product, illustration or photograph at a size that dominates | ≥ 30% of the 1280×800 viewport | ≥ 45% |
+| **A colour field** | a saturated brand colour that owns the viewport, with type on it | ≥ 40% of the viewport, type ≥ 3× | ≥ 60% |
+
+A dark or near-white band is a surface, not a colour field. A graphic under 64 px on either side is an icon. A route
+drawn as a 4 px line across the page is a divider, however meaningful: draw the route as the graphic — thick,
+tall, with the stops as objects — or set the price or the date as the type. `scripts/shoot.py` measures all three in
+the first viewport and fails the review when none reaches the register's floor. The floor is the minimum; the move
+still has to be the direction's idea, not a big word chosen to pass.
 
 ## 5. R3 Expressive
 
@@ -207,6 +226,8 @@ Rules for the seam:
 - Spec/definition tables as the primary layout device on every section, in every industry.
 - A direction that chose photography, then shipped one small photograph on a 9,000 px page.
 - Display type capped at 44 px on a brand site; the page reads as a document.
+- A correct R2 first viewport with no bold move: medium headline, a thin diagram, a form row. Nothing wrong, nothing
+  remembered (§4b).
 - No motion anywhere, described as "restraint", on a surface whose job is to excite.
 - The same composition (headline left, facts right) applied to a clinic, a café, a hotel and a festival.
 
@@ -224,6 +245,7 @@ Rules for the seam:
 - The register is named in the brief and the moodboard, with a one-sentence reason tied to the audience's decision
   type and the category norm.
 - The alternative direction sits one register away, priced in effort.
+- Above R1, the first viewport has one bold move at or above the register's floor (§4b); `shoot.py` reports it.
 - Techniques used are on the register's row in §7, or justified in writing.
 - For R3: art direction written, real or licensed photography in the prototype, one signature moment, entrance
   choreography, reduced-motion path.

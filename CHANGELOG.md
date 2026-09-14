@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.10.0 — 2026-09-14
+
+The 1.9.0 run was correct on every rule — Azerbaijani, R2 argued from the brief, a working estimator — and its first
+viewport was forgettable: a 70 px headline, a thin route line, a row of form fields. R2 had been read as "nothing
+loud", when it means "one loud thing".
+
+- **The bold move** (`expression-register.md` §4b): every Persuade first viewport above R1 carries one — type at
+  poster scale (R2: display ≥ 6× body; R3–R4: 8×), a drawn graphic (≥ 30% of the 1280×800 viewport; 45%), or a
+  saturated colour field with type on it (≥ 40% with type ≥ 3×; 60%). Dark and near-white bands are surfaces, icons
+  are not graphics, and the move must be the direction's idea. Composition step, review gate, catalog tell and
+  eval 05 item 23.
+- **`shoot.py` measures it** in the first viewport, reads the register from `design/DESIGN.md` (or `--register`),
+  and fails the review when no measure reaches the floor. Calibrated against the four translation runs, it agrees
+  with the side-by-side judgement: 1.6 passes on its amber field (92%), 1.8.0 on 195 px type (13.9×), 1.7.1 (4.4×,
+  a dark band) and 1.9.0 (5×, no graphic or field) fail. Colour is read through a canvas so OKLCH tokens and
+  one-colour gradients count.
+
 ## 1.9.1 — 2026-09-14
 
 The 1.9.0 rerun (Azerbaijani, R2 from the brief, a route diagram as the anchor, 11 minutes, lint A) reported its page

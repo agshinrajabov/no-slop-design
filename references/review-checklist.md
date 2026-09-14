@@ -107,6 +107,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
       technique match its row in `expression-register.md` §7; anything off-row is justified in writing.
 - [ ] No label/value table is used as the primary layout device in more than two sections; section devices vary.
 - [ ] Persuade: the first viewport shows the anchor the direction chose (`Anchor type:` in `DESIGN.md`); photographs appear only if that anchor is photographic, none were added to fill space, no grey placeholder boxes.
+- [ ] Above R1, the first viewport has one bold move at the register's floor — type ≥ 6× body (R3: 8×), a graphic ≥ 30% of the viewport (R3: 45%), or a saturated colour field ≥ 40% (R3: 60%) — and it is the direction's idea (`shoot.py` "first" line; `expression-register.md` §4b).
 - [ ] The anchor is executed at full weight, not implied: "type as image" is type that is the image (scale, crop or arrangement a heading would never get), a colour field fills its field, a diagram is drawn. A large heading beside a form is not an anchor.
 - [ ] The signature interaction did not become the whole design: its result has a designed form (a drawn route, a composed figure), no half of the first viewport is dead space, and at most one data table appears outside the interaction (`tables-as-sections` clean; `interaction-depth.md` §3b).
 - [ ] Rerun or redesign: the previous version's first viewport is beside this one, and this one is not less expressive. A fix that loses the expression is a regression.

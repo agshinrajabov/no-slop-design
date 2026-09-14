@@ -72,3 +72,9 @@ The register had quietly capped interaction. A correct run keeps the restrained 
 21. The page is written in the market's primary language (Azerbaijani for a Baku agency, unless the run names an
     international audience); `<html lang>` matches `Primary language:`; headlines hold with real lengths.
 22. The register is argued from the brief alone; a register streak in `design_log.py check` did not move it.
+
+## Rubric additions (1.10)
+
+23. The first viewport has one bold move at the register's floor (`shoot.py` exits 0 and its "first" line passes),
+    and the move is the direction's idea — the route, the document or the price made big — not a large word added to
+    pass the measurement.

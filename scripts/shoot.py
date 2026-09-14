@@ -74,6 +74,58 @@ f.addEventListener('load', () => setTimeout(() => {
     selector: el.id ? '#' + el.id : el.tagName.toLowerCase() + (el.classList.length ? '.' + [...el.classList].join('.') : ''),
     scrollWidth: el.scrollWidth, clientWidth: el.clientWidth, table: !!el.querySelector('table')
   }));
+  // the first viewport's boldest move: display type against body type, the largest graphic, the largest colour field
+  {
+    const vw = w.innerWidth, vh = Math.min(w.innerHeight, VH), area = vw * vh;
+    const clip = r => Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+    const sizes = new Map(); let display = 0;
+    for (const el of d.body.querySelectorAll('*')) {
+      const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join('');
+      if (!own) continue;
+      const r = el.getBoundingClientRect(), s = w.getComputedStyle(el);
+      if (r.width === 0 || s.visibility === 'hidden' || s.display === 'none') continue;
+      const fs = parseFloat(s.fontSize);
+      sizes.set(fs, (sizes.get(fs) || 0) + own.length);
+      if (r.top < vh && r.bottom > 0) display = Math.max(display, fs);
+    }
+    const body = [...sizes].sort((a, b) => b[1] - a[1])[0]?.[0] || 16;
+    let graphic = 0, field = 0, graphicEl = null, fieldEl = null;
+    const name = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.classList.length ? '.' + [...el.classList].slice(0, 2).join('.') : '');
+    // real media only: a wrapper that carries data-nsd-anchor is a container, and an icon is not a graphic
+    for (const el of d.body.querySelectorAll('svg, img, video, canvas')) {
+      if (el.parentElement && el.parentElement.closest('svg')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 64 || r.height < 64) continue;
+      const share = clip(r) / area;
+      if (share > graphic) { graphic = share; graphicEl = name(el); }
+    }
+    // a colour field is a saturated colour; a near-black or near-white band is a surface, not a bold move
+    // computed colours come back as oklch()/color() when the tokens are OKLCH; a 1×1 canvas turns any of them into sRGB
+    const cv = document.createElement('canvas'); cv.width = cv.height = 1;
+    const cx = cv.getContext('2d', {willReadFrequently: true});
+    const rgba = css => { cx.clearRect(0, 0, 1, 1); cx.fillStyle = '#000'; cx.fillStyle = css; cx.fillRect(0, 0, 1, 1);
+                          return cx.getImageData(0, 0, 1, 1).data; };
+    for (const el of [d.body, ...d.body.querySelectorAll('header, section, div, main, article, aside, figure')]) {
+      const st = w.getComputedStyle(el);
+      // alpha is read from the canvas (a regex on ", 0)" once dropped rgb(233, 178, 0)); a field can also be painted as
+      // a one-colour gradient, which is how the 1.6 page drew its amber hero
+      let css = st.backgroundColor;
+      if (rgba(css)[3] < 128 && /gradient/.test(st.backgroundImage)) {
+        const stops = st.backgroundImage.match(/(?:oklch|oklab|lab|lch|rgba?|hsla?|color)\([^()]*\)|#[0-9a-f]{3,8}\b/gi) || [];
+        if (stops.length && stops.every(s => s === stops[0])) css = stops[0];
+      }
+      if (!css || css === 'transparent') continue;
+      const [r, g, b, a] = rgba(css);
+      if (a < 128) continue;
+      const hi = Math.max(r, g, b), lo = Math.min(r, g, b);
+      const sat = hi === 0 ? 0 : (hi - lo) / hi;
+      if (sat < 0.35 || hi < 60) continue;
+      const share = clip(el.getBoundingClientRect()) / area;
+      if (share > field) { field = share; fieldEl = name(el); }
+    }
+    out.firstView = {display, body, ratio: +(display / body).toFixed(1), graphic: +graphic.toFixed(2), graphicEl,
+                     field: +field.toFixed(2), fieldEl};
+  }
   if (!ACTIONS.length) { report(out); return; }
   // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
   // on the page and prefer the ones whose text the edit changed
@@ -119,6 +171,41 @@ f.addEventListener('load', () => setTimeout(() => {
 """
 
 
+# The bold move every register above R1 owes its first viewport (expression-register.md §4b). Any one of these passes.
+BOLD = {  # register: (display type ÷ body type, largest graphic share, saturated colour-field share with type ≥ 3×)
+    "R2": (6.0, 0.30, 0.40),
+    "R3": (8.0, 0.45, 0.60),
+    "R4": (8.0, 0.45, 0.60),
+}
+
+
+def bold_move(first_view: dict, register: str | None) -> tuple[bool, str]:
+    """Judge the first viewport against the register's bold-move thresholds. R1 (or unknown) always passes."""
+    t = BOLD.get((register or "").upper()[:2])
+    fv = first_view or {}
+    ratio, graphic, field = fv.get("ratio", 0), fv.get("graphic", 0), fv.get("field", 0)
+    facts = (f"display type {fv.get('display', 0):.0f}px = {ratio}× body · largest graphic {graphic:.0%}"
+             + (f" ({fv['graphicEl']})" if fv.get("graphicEl") else "")
+             + f" · saturated colour field {field:.0%}" + (f" ({fv['fieldEl']})" if fv.get("fieldEl") else ""))
+    if not t:
+        return True, facts
+    ok = ratio >= t[0] or graphic >= t[1] or (field >= t[2] and ratio >= 3)
+    need = f"{register.upper()[:2]} needs one of: type ≥ {t[0]:g}× body, a graphic ≥ {t[1]:.0%} of the viewport, or a colour field ≥ {t[2]:.0%} with type ≥ 3×"
+    return ok, facts + ("" if ok else f" — {need}")
+
+
+def register_from(page_dir: str | None) -> str | None:
+    """The register written in design/DESIGN.md (or the brief) next to the page."""
+    for base in filter(None, [page_dir, page_dir and os.path.dirname(page_dir)]):
+        for name in ("DESIGN.md", "brief.md"):
+            p = os.path.join(base, "design", name)
+            if os.path.exists(p):
+                m = re.search(r"Expression register\**\s*(?:\|\s*|:\**\s*)\**\s*(R[1-4])", open(p, encoding="utf-8", errors="ignore").read())
+                if m:
+                    return m.group(1)
+    return None
+
+
 def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False) -> str:
     body = f'<iframe id="nsd" src="{html.escape(src)}" style="border:0;display:block;width:{w}px;height:{h}px"></iframe>'
     if probe or actions:
@@ -158,6 +245,7 @@ def main() -> int:
     ap.add_argument("--scheme", choices=("light", "dark"), default="light",
                     help="prefers-color-scheme for every render (default light — the machine's own mode is never used). "
                          "Render the scheme the audience will see; run twice for pages that support both")
+    ap.add_argument("--register", help="R1–R4 for the bold-move check (default: read from design/DESIGN.md)")
     ap.add_argument("--no-nojs", action="store_true", help="skip the JavaScript-disabled render")
     ap.add_argument("--chrome", help="path to a Chrome/Chromium/Edge binary (or set CHROME)")
     ap.add_argument("--json", action="store_true")
@@ -220,7 +308,7 @@ def main() -> int:
         return png if os.path.exists(png) else None
 
     report: dict = {"out": out, "chrome": binary, "scheme": args.scheme}
-    desk = probe(args.width, 900)
+    desk = probe(args.width, 800)
     phone = probe(PHONE_W, PHONE_H)
     for label, p in (("desktop", desk), ("phone", phone)):
         if "error" in p:
@@ -247,6 +335,12 @@ def main() -> int:
             os.remove(os.path.join(out, f))
 
     problems = []
+    register = args.register or register_from(page_dir)
+    bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
+    report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts}
+    if not bold_ok:
+        problems.append(f"the first viewport at {args.width}×800 has no bold move for {register} ({bold_facts.split(' — ')[0]}) "
+                        "— expression-register.md §4b")
     if report["phone"]["page_overflow_px"]:
         problems.append(f"the page scrolls sideways at 375 px by {report['phone']['page_overflow_px']} px")
     e = report.get("edit")
@@ -264,6 +358,8 @@ def main() -> int:
             print(f"  no-JS    {report['nojs']['png']}   look: is every section visible, is the static fallback there?")
         if desk["height"] > MAX_H or phone["height"] > MAX_H:
             print(f"  note: the page is taller than {MAX_H}px; renders are cut there")
+        print(f"  first    {report['first_view']['register'] or 'register unknown'}: {bold_facts}"
+              + ("" if bold_ok else "  ← NO BOLD MOVE"))
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"
