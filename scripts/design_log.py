@@ -14,6 +14,8 @@ Usage:
   python3 scripts/design_log.py add --project qala-house \\
       --register R3 --surface dark --hue 66 --display "Archivo Expanded" --text Archivo \\
       --structure "full-bleed photo + horizontal timetable" --industry festival --market DE
+  python3 scripts/design_log.py add ... --screenshot full-page.png   # surface polarity measured from pixels
+  python3 scripts/design_log.py measure full-page.png                 # just print the dark share
   python3 scripts/design_log.py list --limit 10
   python3 scripts/design_log.py check --json
 
@@ -26,7 +28,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import struct
 import sys
+import zlib
 from datetime import date
 
 STORE = os.environ.get("NSD_HISTORY") or os.path.expanduser("~/.no-slop-design/history.json")
@@ -61,6 +65,76 @@ def hue_family(h) -> str:
         if lo <= h < hi:
             return name
     return "unknown"
+
+
+
+# --------------------------------------------------------------------------- surface polarity from a screenshot
+# A declared surface is often wrong: a light hero over a mostly dark page gets recorded as "light". The pixels are
+# what the visitor sees, so measure them. Stdlib PNG reader for 8-bit RGB/RGBA non-interlaced files, which is what
+# headless Chrome and Playwright write. Use a 1x full-page screenshot; 2x works but is four times slower.
+DARK_L = 0.18          # relative luminance below which a pixel reads as dark (sRGB ~#767676 sits at 0.18)
+
+
+def read_png(path: str):
+    data = open(path, "rb").read()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError(f"{path}: not a PNG")
+    pos, idat, w = 8, [], None
+    while pos < len(data):
+        ln, typ = struct.unpack(">I4s", data[pos:pos + 8])
+        chunk = data[pos + 8:pos + 8 + ln]
+        pos += 12 + ln
+        if typ == b"IHDR":
+            w, h, depth, ctype, _, _, interlace = struct.unpack(">IIBBBBB", chunk)
+            if depth != 8 or interlace or ctype not in (2, 6):
+                raise ValueError(f"{path}: unsupported PNG (depth {depth}, colour type {ctype}, interlace {interlace})")
+            bpp = 3 if ctype == 2 else 4
+        elif typ == b"IDAT":
+            idat.append(chunk)
+        elif typ == b"IEND":
+            break
+    raw = zlib.decompress(b"".join(idat))
+    stride, prev, rows, i = w * bpp, bytearray(w * bpp), [], 0
+    for _ in range(h):
+        f, line = raw[i], bytearray(raw[i + 1:i + 1 + stride])
+        i += 1 + stride
+        if f == 1:
+            for x in range(bpp, stride):
+                line[x] = (line[x] + line[x - bpp]) & 255
+        elif f == 2:
+            for x in range(stride):
+                line[x] = (line[x] + prev[x]) & 255
+        elif f == 3:
+            for x in range(stride):
+                line[x] = (line[x] + ((line[x - bpp] if x >= bpp else 0) + prev[x]) // 2) & 255
+        elif f == 4:
+            for x in range(stride):
+                a = line[x - bpp] if x >= bpp else 0
+                b, c = prev[x], (prev[x - bpp] if x >= bpp else 0)
+                p = a + b - c
+                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                line[x] = (line[x] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 255
+        rows.append(line)
+        prev = line
+    return w, h, bpp, rows
+
+
+def dark_share(paths: list[str], step: int = 4) -> float:
+    lin = [((v / 255) / 12.92 if v / 255 <= 0.04045 else ((v / 255 + 0.055) / 1.055) ** 2.4) for v in range(256)]
+    dark = total = 0
+    for path in paths:
+        w, h, bpp, rows = read_png(path)
+        for y in range(0, h, step):
+            row = rows[y]
+            for x in range(0, w, step):
+                o = x * bpp
+                total += 1
+                dark += (0.2126 * lin[row[o]] + 0.7152 * lin[row[o + 1]] + 0.0722 * lin[row[o + 2]]) < DARK_L
+    return dark / total if total else 0.0
+
+
+def polarity(share: float) -> str:
+    return "dark" if share >= 0.6 else "light" if share <= 0.35 else "mixed"
 
 
 def analyse(entries: list[dict]) -> list[str]:
@@ -104,9 +178,14 @@ def main() -> int:
     for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
         a.add_argument(f"--{f}", default=None)
     a.add_argument("--hue", type=float, default=None)
+    a.add_argument("--screenshot", nargs="+", default=None,
+                   help="full-page PNG(s); surface polarity is measured from the pixels and overrides --surface")
 
     c = sub.add_parser("check", help="warn about convergence before choosing a direction")
     c.add_argument("--json", action="store_true")
+
+    ms = sub.add_parser("measure", help="measure the surface polarity of full-page screenshot(s)")
+    ms.add_argument("png", nargs="+")
 
     l = sub.add_parser("list", help="show recent entries")
     l.add_argument("--limit", type=int, default=10)
@@ -114,12 +193,25 @@ def main() -> int:
     args = ap.parse_args()
     entries = load()
 
+    if args.cmd == "measure":
+        share = dark_share(args.png)
+        print(f"dark share {share:.2f} → surface polarity: {polarity(share)}")
+        return 0
+
     if args.cmd == "add":
         entry = {k: getattr(args, k) for k in ("project", "register", "surface", "display", "text", "structure",
                                                "industry", "market", "anchor", "interaction") if getattr(args, k)}
         if args.hue is not None:
             entry["hue"] = args.hue
             entry["hue_family"] = hue_family(args.hue)
+        if args.screenshot:
+            share = dark_share(args.screenshot)
+            measured = polarity(share)
+            if args.surface and args.surface != measured:
+                print(f"note: surface was declared '{args.surface}' but the screenshot is {share:.0%} dark; recording '{measured}'")
+            entry["surface"], entry["dark_share"], entry["surface_source"] = measured, round(share, 2), "measured"
+        elif args.surface:
+            entry["surface_source"] = "declared"
         entry["date"] = date.today().isoformat()
         entries.append(entry)
         save(entries)

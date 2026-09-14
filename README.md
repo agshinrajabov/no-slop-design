@@ -106,7 +106,7 @@ produces a report and rebuilds nothing.
 ## What it refuses
 
 A catalog of roughly 84 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 47 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 48 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -175,7 +175,7 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 | `contrast.py` | WCAG 2.x and APCA for a pair, a pairs file, or — with `--tokens` — every text role on every surface role, in every mode. Exit 1 on an AA failure. |
 | `build_tokens.py` | Compiles W3C DTCG tokens (aliases, `*.dark.json` modes) to CSS custom properties, Tailwind v4 `@theme`, SwiftUI, Compose, Flutter and flat JSON. `--check` validates and runs a palette sanity check. |
 | `type_scale.py` | Fluid modular type scale with line-height and tracking per step. |
-| `design_log.py` | Cross-project memory. Fingerprints each finished direction and warns before the next one repeats it — the per-project log is always empty exactly when convergence happens. |
+| `design_log.py` | Cross-project memory. Fingerprints each finished direction and warns before the next one repeats it — the per-project log is always empty exactly when convergence happens. Surface polarity is measured from a full-page screenshot, not taken on trust. |
 | `audit_repo.py`, `selftest.py` | Maintainer tools, run in CI: the docs, templates and scripts must describe the same skill, and every rule must still fire on its fixture. |
 
 ## Layout
@@ -214,6 +214,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.4 | An existing system, an iOS screen, and eval 04 on a weaker model | OKLCH silently dropped from the native token output, page rules judging component source, the unchecked marquee, register-aware budgets |
 | 1.5 | Real use: the skill reached for photographs by reflex, because 1.1 had turned "no images" into an image quota | the direction decides the anchor type; image rules read that decision instead of counting images; photo-stuffing is a tell |
 | 1.6 | A B+ translation-agency page that was all type and no interaction: the register had quietly capped interaction for every service business | `interaction-depth.md` as a separate axis; one signature interaction per persuasive page; explanatory scroll sequences allowed at R2; the cross-project log warns after two same-surface runs |
+| 1.7 | The 1.6 rerun worked but was logged as "light" while 84% of its pixels were dark; its mobile result scrolled out of view; unchecked radios looked checked; a price column was clipped | surface polarity measured from screenshots; a 375 px result-visibility check and lint rule; native-control and narrow-table rules; honest deltas and market-locale numbers |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.7.0 — 2026-09-14
+
+The 1.6 rerun of the translation brief delivered what 1.6 asked for — a working estimator as the hero, graded A− — and
+exposed four gaps the skill could not see.
+
+- **Surface polarity was self-reported.** The run was logged as "light" because its hero was ochre; measured from a
+  full-page screenshot, 84% of the page was dark, so the dark streak had never broken. Token-based measurement would
+  not have caught it either (`surface.base` was light; the dark sections used `surface.inverse`). `design_log.py` now
+  reads PNG screenshots with the standard library: `add --screenshot page.png` records the measured polarity and
+  corrects a contradicting label, and `measure page.png` prints the dark share.
+- **The result left the screen on phones.** On 375 px the price sat 1.4 screens below the inputs, with no sticky bar.
+  `interaction-depth.md` now defines the mobile requirement as a test (change the main input; the new result is
+  visible without scrolling), the review gate runs it, and `slop_lint.py` adds `interaction-result-offscreen` (LOW)
+  when the page declares an interaction but has no sticky, fixed or dialog result.
+- **Unchecked radios looked checked** on an ochre band inside a dark `color-scheme`. `components.md` craft floor and
+  the review gate now cover native controls on a surface of the other polarity.
+- **A price column was clipped** at 375 px, and a colour band ended mid-control on desktop. New narrow-table rule and
+  two layout checks.
+- Also: "honest deltas" (an option that changes nothing says so) and prices in the market's locale; selftest and eval 05
+  extended.
+
 ## 1.6.0 — 2026-09-14
 
 The 1.5 test page (a translation agency) earned a B+ and was still a brochure: one load-time stagger, a language

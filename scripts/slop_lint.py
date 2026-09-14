@@ -178,6 +178,20 @@ def file_rules(path: str, text: str):
                                                           "or an accordion does not count. If one exists, mark its root with "
                                                           "data-nsd-interaction (interaction-depth.md §3)", "Interaction"))
 
+    # the interaction's result must stay on screen on a phone while inputs change (interaction-depth.md §7)
+    if is_page and re.search(r"data-nsd-interaction", text, re.I):
+        css = text
+        hrefs = re.findall(r"<link[^>]+rel=[\"']?stylesheet[^>]*href=[\"']([^\"']+)", text, re.I)
+        hrefs += re.findall(r"<link[^>]+href=[\"']([^\"']+\.css)[\"'][^>]*rel=[\"']?stylesheet", text, re.I)
+        for href in hrefs:
+            local = os.path.join(os.path.dirname(os.path.abspath(path)), href.split("?")[0])
+            if not href.startswith(("http:", "https:", "//")) and os.path.exists(local):
+                css += open(local, encoding="utf-8", errors="ignore").read()
+        if not re.search(r"position\s*:\s*(sticky|fixed)|<dialog\b", css, re.I):
+            out.append(("interaction-result-offscreen", "LOW", "the signature interaction has no sticky result, fixed bar or sheet: on a "
+                                                              "phone the result scrolls out of view while the visitor changes inputs. "
+                                                              "Check at 375 px (interaction-depth.md §7, Mobile)", "Interaction"))
+
     # performance and provenance of the imagery that is there
     imgs = re.findall(r"<img\b[^>]*>", text, re.I)
     if imgs:

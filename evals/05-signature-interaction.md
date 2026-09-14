@@ -47,3 +47,12 @@ The register had quietly capped interaction. A correct run keeps the restrained 
 - A language switch or FAQ accordion presented as "the interaction".
 - A quiz wall before any information.
 - The page becomes R3 in its visuals to justify the interaction — the axes were supposed to be separate.
+
+## Rubric additions (1.7)
+
+13. At 375 px, changing the main input shows the new result without scrolling.
+14. Surface polarity was recorded from a measured full-page screenshot (`design_log.py add --screenshot`), and a
+    dark-share above 0.6 is reported as dark even when the hero is light.
+15. Native radios and checkboxes read correctly on every surface; no table column is clipped at 360 px; no section
+    background ends mid-content.
+16. Options that change nothing say so beside the result; prices are formatted in the market's locale.

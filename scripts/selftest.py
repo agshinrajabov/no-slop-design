@@ -109,6 +109,35 @@ def main() -> int:
         out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
         check("surface streak warns after two runs", "surface polarity" in out, out.strip()[-160:])
 
+    print("design_log — surface polarity is measured from pixels, not declared")
+    import struct as _st, zlib as _zl
+
+    def png(path, w, h, dark_rows):
+        raw = b"".join(b"\x00" + (b"\x10\x10\x10" if y < dark_rows else b"\xf0\xf0\xf0") * w for y in range(h))
+        chunk = lambda t, data: _st.pack(">I", len(data)) + t + data + _st.pack(">I", _zl.crc32(t + data) & 0xFFFFFFFF)
+        open(path, "wb").write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", _st.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                               + chunk(b"IDAT", _zl.compress(raw)) + chunk(b"IEND", b""))
+
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        shot = os.path.join(d, "page.png"); png(shot, 40, 40, 28)
+        m = subprocess.run([PY, "scripts/design_log.py", "measure", shot], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("measure reads a mostly dark page as dark", "surface polarity: dark" in m, m.strip())
+        a = subprocess.run([PY, "scripts/design_log.py", "add", "--project", "p", "--surface", "light", "--screenshot", shot],
+                           cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("a declared 'light' over a dark screenshot is corrected", "recording 'dark'" in a, a.strip()[-200:])
+
+    print("slop_lint — the interaction result must stay on screen on phones")
+    with tempfile.TemporaryDirectory() as d:
+        page = (f"<html><body><main data-nsd-interaction='estimator'><section><input type='number'><output aria-live='polite'>1</output>"
+                f"</section><section>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "a.html"); open(p, "w", encoding="utf-8").write(page)
+        check("no sticky result is flagged", "interaction-result-offscreen" in rules_of(p), sorted(rules_of(p)))
+        open(os.path.join(d, "s.css"), "w").write(".result{position:sticky;bottom:0}")
+        p2 = os.path.join(d, "b.html")
+        open(p2, "w", encoding="utf-8").write(page.replace("<body>", "<head><link rel='stylesheet' href='s.css'></head><body>"))
+        check("a sticky result in the linked stylesheet passes", "interaction-result-offscreen" not in rules_of(p2), sorted(rules_of(p2)))
+
     print("slop_lint — reveal without a no-JS fallback fires, and a guarded one does not")
     with tempfile.TemporaryDirectory() as d:
         bad = os.path.join(d, "reveal-bad.html")

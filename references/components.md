@@ -62,6 +62,10 @@ Missing states in generated UI, in order of frequency: focus-visible, loading, e
 
 The cheapest signals that a UI was built rather than assembled. Do all of them.
 
+- **Native controls on a surface of the other polarity:** radios, checkboxes, selects and date inputs paint themselves
+  from `color-scheme` and `accent-color`, not from the surface they sit on. A light band on a dark-scheme page (or the
+  reverse) gets its own `color-scheme` on that region, or the controls are styled fully. At a glance, an unchecked
+  control must never look filled.
 - **Browser surfaces themed from tokens:** `::selection` (brand tint + readable text), `caret-color`, `scrollbar-color`
   / `::-webkit-scrollbar` (thin, surface-tinted), `accent-color` for native controls, focus ring, `text-underline-offset`
   (0.15em) and `text-decoration-thickness` (1px), `::placeholder` color at ≥ 3:1.
@@ -159,6 +163,8 @@ the control, keyboard operable (Space/Arrows), grouped with `fieldset/legend`.
 - **Panel/section**: heading + content separated by whitespace and, at most, a hairline.
 - **List**: 40–56px rows, leading icon/avatar, primary + secondary text, trailing meta/chevron; dividers or spacing,
   not cards; swipe actions on mobile with visible alternatives.
+- **Narrow tables:** at 360 px no column is clipped. Reflow rows into label–value pairs, or scroll the table
+  horizontally inside its own container with a visible edge cue; never `overflow: hidden` on a table's wrapper.
 - **Table**: text left, numbers right, `tabular-nums`, header sticky, first column sticky when wide, row hover, row
   height by density, sort indicators on header, filters above, bulk actions appear on selection, empty/loading/error
   rows, responsive by column priority (hide/collapse), never card-ify every row on mobile by default.
@@ -216,3 +222,5 @@ hover on every card · toast for errors that need action · nested modals · spi
 - Keyboard: Tab order, Enter/Space, Esc, arrows in composites; focus visible everywhere.
 - Loading and error never shift layout; empty states designed.
 - Reduced-motion and forced-colors variants exist.
+- Unchecked and checked controls are distinguishable on every surface they sit on.
+- No table column is clipped at 360 px.

@@ -31,6 +31,8 @@ the gate is that they never have to say "this looks AI-generated".
 
 1. Render the work (browser at 3 widths, or simulator/emulator for native, or the prototype) and **look at it**.
    Screenshots, not code, are the primary evidence. Take them at 360, 768, 1280 (web) or the target device.
+   Also one full-page screenshot at 1x for `design_log.py`: headless Chrome `--screenshot=page.png
+   --window-size=1280,<page height>`, or Playwright `page.screenshot({ path: 'page.png', fullPage: true })`.
 2. Run Gate 0 scripts.
 3. Walk Gates 1–13 with the checklists; record every finding with impact (blocker / high / medium / polish),
    evidence (screenshot ref, line, value), and fix.
@@ -58,6 +60,7 @@ Nothing below B ships. C requires a revision pass, not an apology.
 ```bash
 python3 scripts/slop_lint.py <src or file>                 # grade A/B required; annotate remaining hits
 python3 scripts/design_log.py check                        # convergence with recent projects; obey it
+python3 scripts/design_log.py measure full-page.png         # surface polarity from pixels; record with add --screenshot
 python3 scripts/contrast.py --pairs design/contrast-pairs.txt   # exit 0 required
 python3 scripts/build_tokens.py tokens/*.json --check      # 0 errors
 grep -rnE "#[0-9a-fA-F]{3,8}\b" src/components | grep -v tokens | head   # literal colors → 0
@@ -81,6 +84,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Task can be completed in the minimum sensible number of steps; count them.
 - [ ] Persuade: the signature interaction answers the top job with a visible result in ≤ 2 steps, near the first viewport, and its result carries into the conversion (`interaction-depth.md` §3).
 - [ ] The signature interaction works by keyboard, announces its result, respects reduced motion, and has a static no-JS equivalent on the page.
+- [ ] At 375 px, change the main input: the new result is visible without scrolling (sticky result bar, bottom sheet, or the result above the inputs).
 - [ ] Every decision point is a "mindless click" (obvious what happens); nothing requires reading instructions.
 - [ ] Back/undo exists for every reversible action; irreversible actions confirm or offer undo.
 - [ ] Error, empty, loading, offline, partial states designed for every region.
@@ -134,12 +138,15 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Radius hierarchy; nested radii computed; no uniform bubbly radius.
 - [ ] Grid consistent; deliberate break-outs; one page container.
 - [ ] 320–1920 tested; no horizontal scroll; mobile is a redesign, not a stack.
+- [ ] Section backgrounds contain their content at 1280 and 360: no colour band ending mid-control, no card spilling into the next section unless the overlap is drawn on purpose.
+- [ ] At 360 px no table column is clipped (reflow, or a scroll container with a visible edge cue).
 - [ ] Touch targets ≥ 44/48 with 8px spacing on touch surfaces; ≥ 24 everywhere.
 - [ ] `env(safe-area-inset-*)`, `dvh`, `scrollbar-gutter: stable` where relevant.
 
 ## 10. Gate 7 — components and states
 
 - [ ] State matrix complete for every interactive component (hover, focus-visible, pressed, selected, disabled, loading, error, empty, dark, RTL, reduced-motion, forced-colors).
+- [ ] Native radios, checkboxes and selects read correctly on every surface they sit on; an unchecked control never looks filled (`color-scheme` per region, or a fully styled control).
 - [ ] Craft floor applied (selection, caret, scrollbar, accent-color, focus ring, underline offset, tap highlight, numerals).
 - [ ] Controls in a row share height; hit areas exceed visuals.
 - [ ] Native elements where possible; ARIA correct where not.

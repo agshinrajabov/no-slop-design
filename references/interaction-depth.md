@@ -116,8 +116,9 @@ trust — how a document is translated and certified, how a parcel moves, how a 
 | Reduced motion | state changes without transforms or parallax |
 | No JavaScript | the static equivalent is on the page: the price table, the final state, the form |
 | Budget | per §2; no library for I2–I3 unless the project already uses one |
-| Numbers | `Intl` formatting, the local currency, dates in working days, assumptions shown, the word "estimate" |
-| Mobile | reachable from a sticky action or a bottom sheet; targets ≥ 44 px |
+| Numbers | `Intl` formatting in the **market's** locale, not the page language (az-AZ writes `80,00 ₼`, not `AZN 80.00`); dates in working days; assumptions shown; the word "estimate" |
+| Honest deltas | when an option changes nothing (express cannot move a date the apostille decides), say so beside the result; never let a label promise what the result does not show |
+| Mobile | the result stays visible while the visitor changes inputs: a sticky result bar, a bottom sheet, or the result above the inputs. Verify at 375 px by changing the main input — the new result is on screen without scrolling. Targets ≥ 44 px |
 | Handoff | name the analytics events: started, result shown, carried into conversion |
 
 ## 8. Interaction slop
@@ -135,5 +136,6 @@ sign-up; scroll-jacking; custom cursors on service sites; three competing intera
 - The signature interaction answers the top job with a visible result in ≤ 2 steps, in or right after the first
   viewport, and its result carries into the conversion.
 - Keyboard, announced result, reduced motion and the no-JS fallback are verified, not assumed.
+- At 375 px, changing the main input shows the new result without scrolling.
 - `data-nsd-interaction` is on the page; `slop_lint.py` reports no `no-signature-interaction`.
 - Nothing from §8 is on the page.

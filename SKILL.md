@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -51,7 +51,8 @@ Read the sections the step names; skim the rest by its table of contents.
 12. **Accessibility is a floor at every register.** WCAG 2.2 AA, verified with `scripts/contrast.py`; keyboard, focus, target sizes, reduced motion. Ambition is bought with craft, never with accessibility.
 13. **Nothing ships on the first pass.** Render it, look at it, run the review gate (`references/review-checklist.md`) and `scripts/slop_lint.py`; grade B or better.
 14. **Anti-convergence.** Run `scripts/design_log.py check` before choosing a direction and obey what it reports;
-    record the finished one with `design_log.py add`. The per-project log is empty on a new project, so the
+    record the finished one with `design_log.py add --screenshot <full-page.png>`, which measures surface polarity from the
+    pixels instead of trusting a label: a light hero on a mostly dark page is a dark page. The per-project log is empty on a new project, so the
     cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: register, surface
     polarity, hue family, typeface class, structural idea. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
     label/value spec table used as the primary layout device in every section; imagery that contradicts the direction
@@ -85,7 +86,8 @@ out beyond a single line, review gates 0 and 13 only.
 **Stop conditions for Standard.** When any of these hit, finish what is on screen and list the rest as next steps:
 the register's time target passed, 8 web fetches used, 6 page sections written, 6 images placed. Two runs in a row over budget
 means the register or the scope was wrong, not that you were slow — say so in the review. Before you stop, record
-the run with `scripts/design_log.py add`: an unrecorded run cannot stop the next one from repeating it.
+the run with `scripts/design_log.py add --screenshot <full-page.png>`: an unrecorded run cannot stop the next one from
+repeating it, and a declared surface is often wrong.
 
 **Compile only what the target consumes.** `build_tokens.py` emits five platforms; a web page needs two.
 Web: `--format css,tailwind` (or `css`). iOS: `--format swift`. Android: `--format kotlin`. Flutter: `--format dart`.
@@ -104,7 +106,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
 | **5 Compose** | Per screen: content by priority → visual anchor → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states, not a widget bolted on. Vary the device per section; a label/value table may appear at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3 | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, the signature interaction working (keyboard, announced result, reduced motion, no-JS fallback, `data-nsd-interaction`), 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
-| **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
+| **7 Review** | Render at 360/768/1280 in the intended color scheme and **look**; reload once with JavaScript disabled; at 375 px change the signature interaction's main input and confirm the result stays on screen; take a 1x full-page screenshot for `design_log.py add --screenshot`; Gate 0 scripts; gates per mode; studio test; fix; re-run | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
 **Scope shortcuts.** Single component: 0 → 1 (short) → 5 → 6 → 7. Critique only: 0 → 7, report without rebuilding.
@@ -146,7 +148,7 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 | `python3 scripts/contrast.py fg bg` · `--tokens build/tokens.flat.json` · `--pairs file` | WCAG 2.x + APCA; `--tokens` checks every text role on every surface per mode |
 | `python3 scripts/build_tokens.py tokens/*.json --out build/ [--check]` | DTCG → CSS vars (light/dark), Tailwind v4 `@theme`, Swift, Kotlin, Dart, flat JSON |
 | `python3 scripts/type_scale.py` | fluid modular type scale with line-height and tracking |
-| `python3 scripts/design_log.py check` · `add --project … --register … --surface … --hue … --display … --structure …` | cross-project convergence: what the last few directions looked like, which axes must differ now |
+| `python3 scripts/design_log.py check` · `add --project … --register … --hue … --display … --structure … --screenshot page.png` · `measure page.png` | cross-project convergence: what the last few directions looked like, which axes must differ now; surface polarity measured from a full-page screenshot |
 | `python3 scripts/audit_repo.py` · `scripts/selftest.py` | maintainers only: the skill's own consistency, and rule regressions |
 
 External tools when present: a **browser** for capturing references and rendering the prototype (screenshots are the
