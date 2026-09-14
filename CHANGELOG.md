@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.14.0 — 2026-09-14
+
+Four varied prompts on 1.13.0 — a Lisbon hotel, an Istanbul bakery, a Berlin SaaS pricing page, a Manchester family
+law practice — came out genuinely different (photography at R3, a shop-sign poster, a rota that is the bill, a plum
+type poster), and still shared four habits.
+
+- **The result as a paper artefact.** A receipt, a solicitor's letter, and before them a calendar leaf. The result's
+  form is now a named choice (`figure`, `diagram`, `calendar`, `map`, `card`, `list`, `table`, `media`, `paper`) in
+  `interaction-depth.md` §3b and `DESIGN.md`, recorded with `design_log.py --result-form`; `check` warns when two
+  runs in a row, or three of five, share it. Paper only when the business really hands that paper over.
+- **The opening and closing formula.** Three of four pages put the interaction directly under the hero, and the
+  translation and clinic runs all ended on a contact form. "Close" now means within the first three sections and
+  reachable from the first viewport; pages end on the business's next real step. `check` warns when the last two
+  pages open with the same two devices, or the last three end on a form.
+- **Portraits as colour slabs.** The law page showed three solicitors as plum boxes with a label — and
+  `visual-material.md` §8 had allowed it ("a color field from the palette"). People now get a stand-in portrait
+  marked as such, a generated one labelled, or a silhouette or monogram placeholder; `slop_lint.py` adds
+  `people-placeholder-slab` (MED).
+- **Runs in parallel could not see each other.** The four tests ran at once, and each `design_log.py check` saw none of
+  the others. New `design_log.py plan`, run when the direction is chosen, registers it for six hours; `check` lists
+  planned runs and counts them; `add` replaces the plan.
+- **Brief beats skill, in the linter.** The SaaS page was graded B for Inter, which the client had asked to keep.
+  Typeface and Tailwind-default rules now skip a face that the project's brief or `DESIGN.md` records as fixed by the
+  brand.
+
 ## 1.13.0 — 2026-09-14
 
 Asked why every test page looked alike, the answer was mostly the skill. Measured across the last six runs (four

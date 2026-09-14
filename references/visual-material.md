@@ -154,6 +154,11 @@ When no image tool exists and no client assets are available:
   caption only in the review build, not in the design.
 - If a real photo cannot match, use a **designed placeholder**: a color field from the palette with the brand mark or
   the graphic device, at the exact ratio, with the shot-list caption. Never a gray box with square-bracket text.
+- **People are not colour fields.** A portrait slot filled with a tinted box and a label reads as a grey box in brand
+  colours (a 1.13 law-firm test did this for three solicitors). For people use a licensed stand-in portrait marked
+  "stand-in" in the caption and in `assets.md`, a generated portrait when an image tool exists and the caption says so,
+  or a designed placeholder that still reads as a person: a cropped silhouette, or the initials set large as type.
+  `slop_lint.py` flags `people-placeholder-slab`.
 - Every placeholder maps to a shot-list item so the client knows exactly what to shoot.
 
 ## 9. Sourcing for prototypes (licences)

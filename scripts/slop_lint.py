@@ -320,6 +320,15 @@ def file_rules(path: str, text: str):
                                                   "the no-JS fallback) and give the rest a different device: a diagram, a "
                                                   "sequence, a worked example (interaction-depth.md §8, anti-slop.md §8)", "§3 Layout"))
 
+    # people shown as flat colour slabs: a portrait slot filled with a tinted box and a label is a grey box in brand colours
+    slabs = [m for m in re.finditer(r"<(div|span|figure)\b[^>]*class=[\"'][^\"']*\b(portrait|headshot|avatar|photo|team-photo)\b[^\"']*[\"'][^>]*>(.*?)</\1>",
+                                    text, re.I | re.S) if not re.search(r"<(img|picture|svg|video)\b", m.group(3), re.I)]
+    if is_page and slabs:
+        out.append(("people-placeholder-slab", "MED", f"{len(slabs)} portrait slot(s) filled with a flat colour box — a grey "
+                                                      "box in brand colours. Use a designed placeholder with a shot-list note "
+                                                      "(a cropped silhouette, an initial monogram set as type, or a licensed "
+                                                      "stand-in marked as such) (visual-material.md §8)", "§8 Imagery"))
+
     # performance and provenance of the imagery that is there
     imgs = re.findall(r"<img\b[^>]*>", text, re.I)
     if imgs:
@@ -393,6 +402,28 @@ REVEAL_SHOW = re.compile(r"\.(is-in|is-visible|in-view|revealed|is-revealed|aos-
 NOJS_GUARD = re.compile(r"<noscript|\.no-js\b|html\.js\b|documentElement\.classList\.add\(['\"]js", re.I)
 
 
+_MANDATED: dict[str, str] = {}
+
+
+def mandated_text(path: str) -> str:
+    """Lines of the nearest design/brief.md and DESIGN.md that record brand-fixed choices. Brief beats skill: a client
+    who asked to keep Inter should not have their page graded down for Inter (a 1.13 test got a B for exactly that)."""
+    d = os.path.dirname(os.path.abspath(path))
+    for _ in range(3):
+        if os.path.isdir(os.path.join(d, "design")):
+            break
+        d = os.path.dirname(d)
+    if d not in _MANDATED:
+        lines = []
+        for name in ("brief.md", "DESIGN.md"):
+            p = os.path.join(d, "design", name)
+            if os.path.exists(p):
+                lines += [l for l in open(p, encoding="utf-8", errors="ignore").read().splitlines()
+                          if re.search(r"\b(fixed|keep|kept|mandated|required by|client('s)? (brand|font)|brand (font|typeface|colour|color))\b", l, re.I)]
+        _MANDATED[d] = "\n".join(lines)
+    return _MANDATED[d]
+
+
 def scan(paths):
     findings, counts, total_lines = [], Counter(), 0
     reveal_hides, nojs_guard = [], False
@@ -417,7 +448,14 @@ def scan(paths):
             for rid, sev, rx, msg, sec in COMPILED:
                 if rid == "system-ui-primary" and is_native:
                     continue
-                if rx.search(line):
+                m = rx.search(line)
+                if m:
+                    if rid in ("default-font", "startup-default-font", "tailwind-default-primary"):
+                        face = re.search(r"Inter|Roboto|Poppins|Open[ +]Sans|Montserrat|Lato|Space[ +]Grotesk|Plus[ +]Jakarta|Sora|Outfit|Manrope|DM[ +]Sans",
+                                         m.group(0), re.I)
+                        if face and re.search(re.escape(face.group(0)).replace(r"\+", "[ +]").replace(r"\ ", "[ +]"),
+                                              mandated_text(path), re.I):
+                            continue  # the brand fixed this choice; brief beats skill
                     counts[rid] += 1
                     if rid in DENSITY_RULES:
                         continue  # aggregated below

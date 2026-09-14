@@ -37,6 +37,8 @@ from datetime import date
 STORE = os.environ.get("NSD_HISTORY") or os.path.expanduser("~/.no-slop-design/history.json")
 WINDOW = 5          # how many recent entries count as "lately"
 STREAK = 3          # this many in a row on one axis is a streak worth breaking
+PLAN_HOURS = 6      # a planned direction counts in `check` for this long, so parallel runs can see each other
+RESULT_FORMS = ("figure", "paper", "diagram", "card", "list", "table", "calendar", "map", "media")
 
 
 def load() -> list[dict]:
@@ -138,8 +140,17 @@ def polarity(share: float) -> str:
     return "dark" if share >= 0.6 else "light" if share <= 0.35 else "mixed"
 
 
+def live(entries: list[dict]) -> list[dict]:
+    """Finished entries plus planned ones younger than PLAN_HOURS; a finished entry replaces its own plan."""
+    import time
+    done = {e.get("project") for e in entries if e.get("status") != "planned"}
+    now = time.time()
+    return [e for e in entries if e.get("status") != "planned"
+            or (e.get("project") not in done and now - e.get("planned_at", 0) < PLAN_HOURS * 3600)]
+
+
 def analyse(entries: list[dict]) -> list[str]:
-    recent = entries[-WINDOW:]
+    recent = live(entries)[-WINDOW:]
     warns: list[str] = []
     if len(recent) < 2:
         return warns
@@ -203,6 +214,23 @@ def analyse(entries: list[dict]) -> list[str]:
         shared = words[0] & words[1] - {"a", "the", "with", "and", "of", "+", "one"}
         if len(shared) >= 2:
             warns.append(f"structure: the last two share “{', '.join(sorted(shared))}” — change the composition idea, not just the palette")
+    # the interaction's answer given the same physical form: calendar leaf, receipt, solicitor's letter in a row
+    forms = [e.get("result_form") for e in recent if e.get("result_form")]
+    if len(forms) >= 2 and forms[-1] == forms[-2]:
+        warns.append(f"result form: the last two interactions answered as a '{forms[-1]}' — give this answer another form "
+                     f"({', '.join(f for f in RESULT_FORMS if f != forms[-1])})")
+    elif len(forms) >= 3 and Counter(forms).most_common(1)[0][1] >= 3:
+        top = Counter(forms).most_common(1)[0][0]
+        warns.append(f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — the paper-artefact "
+                     "result is becoming a house style" if top == "paper" else
+                     f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — vary it")
+    # the opening and closing formula: hero then interaction, contact form last
+    if len(skels) >= 2 and skels[-1][0][:2] == skels[-2][0][:2] and len(skels[-1][0]) >= 2:
+        warns.append(f"opening: the last two pages opened the same way ({' > '.join(skels[-1][0][:2])}) — the interaction "
+                     "may sit later (after rooms, menu, doctors) or be the page's spine; open on what this business shows first")
+    if len(skels) >= 3 and all(s and s[-1] == "form" for s, _ in skels[-3:]):
+        warns.append("closing: the last three pages ended on a contact form — end on the next real step for this business "
+                     "(a map and hours, a booking, a phone number, a WhatsApp link, an order)")
     industries = [e.get("industry") for e in recent if e.get("industry")]
     if len(set(industries)) >= 3 and len({e.get("surface") for e in recent if e.get("surface")}) == 1:
         warns.append("three different industries came out with the same surface polarity — that is the skill's own tell, not a house style")
@@ -214,8 +242,15 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     a = sub.add_parser("add", help="record a finished direction")
-    for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
-        a.add_argument(f"--{f}", default=None)
+    pl = sub.add_parser("plan", help="register a chosen direction before building, so runs in parallel see it")
+    for p in (a, pl):
+        for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
+            p.add_argument(f"--{f}", default=None)
+        p.add_argument("--result-form", dest="result_form", default=None, choices=RESULT_FORMS,
+                       help="the physical form of the interaction's answer: " + ", ".join(RESULT_FORMS))
+    pl.add_argument("--composition", default=None)
+    pl.add_argument("--skeleton", default=None)
+    pl.add_argument("--hue", type=float, default=None)
     a.add_argument("--skeleton", default=None, help="section devices in order, as printed by shoot.py (e.g. interaction>steps>table>form)")
     a.add_argument("--media", type=int, default=None, help="number of images/video on the page, as printed by shoot.py")
     a.add_argument("--composition", default=None,
@@ -242,10 +277,25 @@ def main() -> int:
         print(f"dark share {share:.2f} → surface polarity: {polarity(share)}")
         return 0
 
+    keys = ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor",
+            "interaction", "composition", "skeleton", "result_form")
+    if args.cmd == "plan":
+        import time
+        entry = {k: getattr(args, k) for k in keys if getattr(args, k, None)}
+        if args.hue is not None:
+            entry["hue"], entry["hue_family"] = args.hue, hue_family(args.hue)
+        entry.update(status="planned", planned_at=time.time(), date=date.today().isoformat())
+        warns = analyse(entries + [entry])
+        entries.append(entry)
+        save(entries)
+        print(f"planned: {json.dumps(entry, ensure_ascii=False)}")
+        for w in warns:
+            print("CONVERGENCE:", w)
+        return 0
+
     if args.cmd == "add":
-        entry = {k: getattr(args, k) for k in ("project", "register", "surface", "display", "text", "structure",
-                                               "industry", "market", "anchor", "interaction", "composition", "skeleton")
-                 if getattr(args, k)}
+        entry = {k: getattr(args, k) for k in keys if getattr(args, k, None)}
+        entries = [e for e in entries if not (e.get("status") == "planned" and e.get("project") == entry.get("project"))]
         if args.media is not None:
             entry["media"] = args.media
         if not args.composition:
@@ -288,9 +338,11 @@ def main() -> int:
         print(json.dumps({"entries": len(entries), "recent": entries[-WINDOW:], "warnings": warns, "register_note": note},
                          indent=2, ensure_ascii=False))
         return 0
-    print(f"design history: {len(entries)} entries, looking at the last {min(len(entries), WINDOW)}")
-    for e in entries[-WINDOW:]:
-        print(f"  {e.get('date','?')}  {e.get('project','?')}: {e.get('register','?')} · {e.get('surface','?')} · "
+    view = live(entries)[-WINDOW:]
+    print(f"design history: {len(entries)} entries, looking at the last {len(view)} (planned runs in progress included)")
+    for e in view:
+        print(f"  {'[planned] ' if e.get('status') == 'planned' else ''}{e.get('date','?')}  {e.get('project','?')}: "
+              f"{e.get('register','?')} · {e.get('surface','?')} · {e.get('result_form', 'result ?')} · "
               f"{e.get('hue_family','?')} · {e.get('display','?')} · {e.get('composition', 'composition ?')} · "
               f"{e.get('structure','')[:40]}")
     if warns:

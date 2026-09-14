@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.13.0"
+  version: "1.14.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -33,8 +33,10 @@ Read the sections the step names; skim the rest by its table of contents.
    "no interaction": every Persuade page ships **one signature interaction that performs the top job** — an
    estimator, an availability picker, a live demo — with a visible result in ≤ 2 steps that carries into the
    conversion (`references/interaction-depth.md`). The interaction answers the question; it does not replace the
-   direction — the anchor still carries the first viewport and the result gets a designed form (§3b there). A hotel,
-   a festival and a clinic must not come out alike.
+   direction — the anchor still carries the first viewport and the result gets a designed form (§3b there). That
+   form varies by content — a figure, a diagram that redraws, slots on a calendar, a map — and is not a paper
+   artefact by habit (receipt, letter, calendar leaf). The interaction sits within the first three sections, reachable
+   from the first viewport, not always directly under the hero. A hotel, a festival and a clinic must not come out alike.
 4. **Local + global.** Research and inspiration always combine the audience's own market (its leading products,
    conventions, script, trust signals, payment and legal norms) with worldwide references.
 5. **Detect before you design.** If a design system, brand, or token file exists, adopt it (`references/existing-design-system.md`). Never introduce a second visual language.
@@ -111,7 +113,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **0 Detect** | Classify the request; scan repo, brand assets, live product, `design/design-log.json`; run `scripts/design_log.py check` for what recent projects already looked like; baseline existing UI with `scripts/slop_lint.py` | `discovery.md` §1–2; `existing-design-system.md` §1–2 | findings |
 | **1 Brief** | One intake message with the four questions from non-negotiable 2 plus product, user, top job, anti-attributes, constraints, done-criteria. Decide the **surface mode** (Persuade / Operate / Read / Play), the **expression register** (R1–R4), the **interaction depth** (I1–I4) and the **signature interaction** from the top job | `discovery.md` §3–5; `expression-register.md` §1–2; `interaction-depth.md` §1–5 | `design/brief.md` |
 | **2 Research** | Time-boxed: job stories, competitor first-screens (local + global), review mining, heuristic pass. Every insight ends in a decision | `mini-user-research.md` §1–3, §6–7, §11 | Standard: the research summary inside `design/DESIGN.md`. Deep: `design/research.md` |
-| **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`. Deep: `design/moodboard.html` |
+| **3 Direction** | Attributes/anti-attributes → references (local + global, ≥ 30% non-UI) → remix thesis → register confirmed → imagery art direction → direction + alternative one register away | `moodboard.md` §3, §5–8; `expression-register.md` §3–7 (the chosen register's section + the technique table); `visual-material.md` §1–3b | Standard: direction block in `design/DESIGN.md`, then `design_log.py plan --project … --result-form … --composition …` so runs in parallel see this direction. Deep: `design/moodboard.html` |
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
 | **5 Compose** | Per screen: content by priority → visual anchor → **one bold move in the first viewport** (poster-scale type, a dominant graphic, or a saturated colour field at the register's floor; R2 is not exempt) → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states and a designed result, not a widget bolted on — and not the whole composition: the anchor keeps its weight, no dead half beside the panel. Vary the device per section; at most one data table outside the interaction, a label/value table at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3, §8; `interaction-depth.md` §3b; `expression-register.md` §4b | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, the signature interaction working (keyboard, announced result, reduced motion, no-JS fallback, `data-nsd-interaction`), 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |

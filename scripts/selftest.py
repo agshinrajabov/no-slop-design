@@ -242,6 +242,37 @@ def main() -> int:
         out2 = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
         check("a different skeleton with images clears both", "skeleton:" not in out2 and "imagery:" not in out2, out2.strip()[-300:])
 
+    print("design_log — result forms, openings, endings, and runs in parallel")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        log("add", "--project", "bakery", "--result-form", "paper", "--skeleton", "media>interaction>text>form")
+        log("add", "--project", "law", "--result-form", "paper", "--skeleton", "media>interaction>table>form")
+        out = log("check")
+        check("two paper results in a row warn", "result form:" in out, out.strip()[-300:])
+        check("the same opening twice warns", "opening:" in out, out.strip()[-300:])
+        planned = log("plan", "--project", "hotel", "--result-form", "paper", "--composition", "graphic-hero")
+        check("plan warns before building", "result form:" in planned, planned.strip()[-300:])
+        check("a planned run is visible to check", "[planned]" in log("check"), "not listed")
+        log("add", "--project", "hotel", "--result-form", "calendar", "--skeleton", "media>text>interaction>map")
+        after = log("check")
+        check("finishing a run replaces its plan", "[planned]" not in after, after.strip()[-300:])
+
+    print("slop_lint — brand-fixed fonts are the brief's choice, portraits are not colour slabs")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        page = (f"<html lang='de'><head><style>body{{font-family: Inter, sans-serif}}</style></head><body><main>"
+                f"<section data-nsd-anchor='colour field'>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("Inter without a brand decision is flagged", "default-font" in rules_of(p), sorted(rules_of(p)))
+        open(os.path.join(d, "design", "brief.md"), "w").write("- **Brand assets fixed:** colour `#0F766E`, typeface Inter.\n")
+        check("Inter fixed by the brand passes", "default-font" not in rules_of(p), sorted(rules_of(p)))
+        slab = page.replace("</main>", "<section><div class='portrait' role='img' aria-label='Portrait to come'>Divorce</div></section></main>")
+        open(p, "w", encoding="utf-8").write(slab)
+        check("a portrait colour slab is flagged", "people-placeholder-slab" in rules_of(p), sorted(rules_of(p)))
+        open(p, "w", encoding="utf-8").write(slab.replace(">Divorce</div>", "><svg viewBox='0 0 40 50'><circle cx='20' cy='16' r='10'/></svg></div>"))
+        check("a silhouette placeholder passes", "people-placeholder-slab" not in rules_of(p), sorted(rules_of(p)))
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"

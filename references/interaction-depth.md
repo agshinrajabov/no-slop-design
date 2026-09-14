@@ -48,7 +48,10 @@ job story in the brief. It is:
 
 - **job-performing** — it answers the question the visitor arrived with (what does it cost, when is it ready, is it
   free on my dates, will it fit, what will it look like) with a result they can see;
-- **close** — in or directly after the first viewport, a result in ≤ 2 steps;
+- **close** — within the first three sections and reachable from the first viewport (a button or link jumps to it),
+  a result in ≤ 2 steps. Directly under the hero is one option, not the rule: a hotel may show its rooms first and
+  check availability after, a restaurant its menu first. Four different businesses in a row put it directly under
+  the hero;
 - **connected** — its result carries into the next action: it prefills the form, the WhatsApp message, the booking;
 - **honest** — estimates say "estimate", assumptions are visible, fees are not hidden, nothing asks for sign-up
   before showing the result;
@@ -74,6 +77,22 @@ expression.
   stated idea.
 - **One table.** Beyond the no-JS fallback or a price list, the page's other sections use other devices: a sequence,
   a worked example, a diagram (`slop_lint.py` flags `tables-as-sections`).
+- **The result's form comes from the content, and varies.** Record it as `--result-form` in `design_log.py`:
+
+  | Form | Fits when the answer is… | Example |
+  |---|---|---|
+  | `figure` | one number or time that matters most | "Bu gün 16:40" |
+  | `diagram` | a change in a thing the visitor can picture | windows lighting up, a body region taped, seals redrawn |
+  | `calendar` | dates or slots | free nights shaded on a month |
+  | `map` | a place or a route | the walk from the tram stop |
+  | `card` / `list` / `table` | a comparison of options | three plans priced for 8 people |
+  | `media` | what it will look like | before/after, a room photo per choice |
+  | `paper` | a document the business really hands over | a quote the client signs |
+
+  A paper artefact (receipt, solicitor's letter, calendar leaf, ticket) answered three different businesses in a
+  row. Use it only when the business actually hands that paper over, and never twice running; the log warns.
+- **The page does not end on a contact form by habit.** End on this business's next real step: a map and hours for
+  a shop, a booking for a hotel, a phone number for an urgent service, the order for a bakery.
 - **The interaction does not dictate the page's order.** The signature interaction is one region, not a page
   template. Six runs in a row built the same skeleton around it — interaction → steps → price table → form — for a
   translation agency and two clinics. Where the interaction sits (first viewport, directly after it, or as the page's
