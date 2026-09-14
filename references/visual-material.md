@@ -37,6 +37,13 @@ fabricating anything.
   with no photographs required. Declare it as `Anchor type:` in `DESIGN.md` (or `data-nsd-anchor` on the element), so
   the linter judges the page against the decision rather than an image count. Never empty boxes with captions;
   placeholders only as described in §8.
+- **"No assets" is not a direction.** A one-sentence brief never comes with photographs, so an agent that reads
+  "no assets → type and SVG" produces the same flat page for every industry: six test pages in a row carried zero
+  images. For any business with a place, people, a product or a process (§2, first row), the direction considers a
+  photographic or illustrated anchor first — licensed stock that passes the three-match test (§3b), generated
+  imagery when an image tool exists (§7), or a commissioned-illustration placeholder mapped to a shot list (§8) — and
+  writes one line on why it was rejected if the page ends up without images. `design_log.py` warns when the last three
+  pages had no image.
 - **The moodboard decides the imagery direction** (subject, light, color treatment, crop, people or not) before any
   screen is composed. "Imagery: TBD" is not a direction.
 

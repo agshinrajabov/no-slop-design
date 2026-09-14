@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.13.0 — 2026-09-14
+
+Asked why every test page looked alike, the answer was mostly the skill. Measured across the last six runs (four
+translation agencies, two clinics): every page had the same skeleton — interaction → steps → price table → steps →
+form — zero images, R2 in five of six with the same one-line reason, and the anti-convergence checks only looked at
+surface axes, so agents changed the colour and the typeface and kept the page. Rules accumulated from one brief had
+become a template. The test prompts made it worse: the same one-sentence form, no assets, and a reply that asked for
+the measured numbers.
+
+- **The skeleton is measured.** `shoot.py` names each top-level section's device (interaction, form, table, media,
+  graphic, steps, text) and counts images, printing a "skeleton" line. `design_log.py add --skeleton --media` records
+  them; `check` warns when the last two pages share ≥ 75% of their section order, and when the last three carried no
+  image. Recorded for the six runs, it reports both.
+- **The template is removed from the rules.** Standard mode's page row says sections come from the content and names
+  the house skeleton; `interaction-depth.md` §3b says the interaction does not dictate the page's order; a new catalog
+  tell and review item.
+- **"No assets" is not a direction.** `visual-material.md` §1: for a place, people, product or process, consider
+  licensed photography or illustration first and write why it lost.
+- **R3 for services with feeling.** `expression-register.md` §2 adds decisions that carry anxiety, hope or pride (a
+  child's health, cosmetic treatment, a wedding) as R3 candidates to argue, not an automatic R2.
+
 ## 1.12.0 — 2026-09-14
 
 The first test outside translation — "Design a website for a clinic." — produced a good paediatric clinic page

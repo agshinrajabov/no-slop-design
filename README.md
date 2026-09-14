@@ -105,7 +105,7 @@ produces a report and rebuilds nothing.
 
 ## What it refuses
 
-A catalog of roughly 92 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+A catalog of roughly 93 tells across colour, type, layout, components, iconography, copy, motion, imagery,
 accessibility and process. 56 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
@@ -221,6 +221,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.10 | The 1.9 rerun was right on every rule and forgettable: R2 had been read as "nothing loud" | every first viewport above R1 carries one bold move — poster-scale type, a dominant graphic or a saturated colour field — measured by `shoot.py` against the register's floor |
 | 1.11 | The seal-diagram run: best idea yet, but its estimator showed `[n]` days and no price, its graphic fell below the inputs on phones, and it skipped the brief | estimates use labelled sample rates; the phone's first screen needs its own bold move; the Standard design record is enforced |
 | 1.12 | The first clinic run was good and looked like the last translation run: an answer set huge on a colour field | `shoot.py` names the first-viewport composition, the history log warns when two runs share it across industries; a result above the inputs no longer trips the offscreen rule |
+| 1.13 | Six pages, one skeleton: interaction → steps → price table → form, no image, R2 by the same sentence — the rules had become a template | the section skeleton and image count are measured and compared across runs; the template is named as a tell; "no assets" no longer means no images; feeling-led services argue R3 |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

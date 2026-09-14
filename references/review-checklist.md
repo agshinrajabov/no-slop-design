@@ -222,6 +222,7 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Walk `anti-slop.md` §1–§9 with the screenshots; zero unannotated tells.
 - [ ] Over-correction check (§8): every style signal traceable to an attribute or content type; ≤ 2 trend signals stacked.
 - [ ] Anti-convergence: this design differs from the last one logged in `design-log.json` on ≥ 2 axes (structure, type, hue, surface, density, motion) unless it is the same product. The register is not one of them: it is set by the brief, never raised or lowered to break a streak. The first-viewport composition `shoot.py` names ("compose" line) is recorded with `design_log.py add --composition`, and a composition the log reports as repeated is changed, even when the industry is different.
+- [ ] Not the skill's house skeleton: interaction → steps → price table → form with no image. The sections come from this content; `shoot.py` "skeleton" and `--media` are recorded, and a skeleton or imagery streak the log reports is broken.
 - [ ] Not the skill's own tell: dark surface + serif display + fact table + one button. If the page could be swapped with another industry's page by changing the nouns, the direction failed.
 - [ ] Local fit: at least one decision traceable to the audience's market (convention, reference, copy register).
 - [ ] Name three decisions no template would have made.

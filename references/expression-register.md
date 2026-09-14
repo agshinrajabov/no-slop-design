@@ -53,6 +53,7 @@ Ask, in the brief, and write the answer down. If the user is unavailable, decide
 | Task frequency: daily, repeated, professional | R1 |
 | Purchase or trust decision made by reading facts (clinic, law, finance, logistics, B2B SaaS) | R2 |
 | Purchase decision made by *feeling* (hotel, restaurant, fashion, travel, fitness, beauty, property) | R3 |
+| Facts matter **and** the decision carries anxiety, hope or pride (a child's health, cosmetic treatment, a wedding, a first home, a school) | R3 is a real candidate: argue both and write why one lost. "Trust decision made by reading facts" is not the whole answer for every service |
 | The product *is* culture or spectacle (festival, album, film, game, exhibition, agency portfolio) | R4 |
 | Audience is time-poor or in a hurry (support, booking under stress, emergency) | R1–R2 |
 | Audience is browsing for pleasure, on a big screen, in the evening | R3–R4 |

@@ -171,6 +171,32 @@ def analyse(entries: list[dict]) -> list[str]:
         top, n = Counter(c for c, _ in comps).most_common(1)[0]
         if n >= 3:
             warns.append(f"composition: '{top}' in {n} of the last {len(comps)} runs — choose another first-viewport composition")
+    # the page skeleton measured by shoot.py: the device of each section, in order
+    def collapse(s):
+        out = []
+        for part in (s or "").split(">"):
+            if part and (not out or out[-1] != part):
+                out.append(part)
+        return out
+
+    def lcs(a, b):
+        t = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+        for i, x in enumerate(a):
+            for j, y in enumerate(b):
+                t[i + 1][j + 1] = t[i][j] + 1 if x == y else max(t[i][j + 1], t[i + 1][j])
+        return t[-1][-1]
+
+    skels = [(collapse(e.get("skeleton")), e.get("industry")) for e in recent if e.get("skeleton")]
+    if len(skels) >= 2:
+        (a, ia), (b, ib) = skels[-2], skels[-1]
+        if len(a) >= 3 and len(b) >= 3 and lcs(a, b) / max(len(a), len(b)) >= 0.75:
+            warns.append(f"skeleton: the last two pages ran the same sections in the same order ({' > '.join(b)})"
+                         + (f" for {ia} and {ib}" if ia and ib and ia != ib else "")
+                         + " — the skill's house skeleton; derive the sections from this content, not from the last page")
+    media = [e.get("media") for e in recent if e.get("media") is not None]
+    if len(media) >= 3 and all(int(m) == 0 for m in media[-3:]):
+        warns.append("imagery: the last 3 pages carried no image at all — 'no assets' is not a direction; consider "
+                     "licensed photography, commissioned or generated illustration, and write why it was rejected")
     structures = [(e.get("structure") or "").lower() for e in recent if e.get("structure")]
     if len(structures) >= 2:
         words = [set(s.split()) for s in structures[-2:]]
@@ -190,6 +216,8 @@ def main() -> int:
     a = sub.add_parser("add", help="record a finished direction")
     for f in ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor", "interaction"):
         a.add_argument(f"--{f}", default=None)
+    a.add_argument("--skeleton", default=None, help="section devices in order, as printed by shoot.py (e.g. interaction>steps>table>form)")
+    a.add_argument("--media", type=int, default=None, help="number of images/video on the page, as printed by shoot.py")
     a.add_argument("--composition", default=None,
                    help="first-viewport composition as printed by shoot.py: graphic-hero, result-poster, type-poster, "
                         "field-and-heading, heading-and-panel")
@@ -216,7 +244,10 @@ def main() -> int:
 
     if args.cmd == "add":
         entry = {k: getattr(args, k) for k in ("project", "register", "surface", "display", "text", "structure",
-                                               "industry", "market", "anchor", "interaction", "composition") if getattr(args, k)}
+                                               "industry", "market", "anchor", "interaction", "composition", "skeleton")
+                 if getattr(args, k)}
+        if args.media is not None:
+            entry["media"] = args.media
         if not args.composition:
             print("note: no --composition recorded; shoot.py prints it ('compose' line) — without it a repeated first "
                   "viewport across industries goes unnoticed")

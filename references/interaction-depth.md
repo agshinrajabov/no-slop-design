@@ -74,6 +74,11 @@ expression.
   stated idea.
 - **One table.** Beyond the no-JS fallback or a price list, the page's other sections use other devices: a sequence,
   a worked example, a diagram (`slop_lint.py` flags `tables-as-sections`).
+- **The interaction does not dictate the page's order.** The signature interaction is one region, not a page
+  template. Six runs in a row built the same skeleton around it — interaction → steps → price table → form — for a
+  translation agency and two clinics. Where the interaction sits (first viewport, directly after it, or as the page's
+  spine) and what follows it come from the content: a hotel's rooms, a restaurant's menu, a clinic's doctors. The
+  history log compares skeletons (`shoot.py` "skeleton" line).
 - **A rerun is compared with the run before it.** Put the previous screenshots beside the new ones; a fix that loses
   the previous version's expression is a regression, whatever the gate grades say.
 

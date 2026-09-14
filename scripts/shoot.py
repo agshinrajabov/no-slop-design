@@ -126,6 +126,28 @@ f.addEventListener('load', () => setTimeout(() => {
     out.firstView = {display, displayInResult, body, ratio: +(display / body).toFixed(1), graphic: +graphic.toFixed(2), graphicEl,
                      field: +field.toFixed(2), fieldEl};
   }
+  // the page's skeleton: which device each top-level section uses, in order. Six test pages in a row came out as
+  // interaction > steps > table > form with no image; the first-viewport check could not see it.
+  {
+    const vw0 = w.innerWidth;
+    const secs = [...d.querySelectorAll('section, header, article')].filter(el =>
+      !(el.parentElement && el.parentElement.closest('section, header, article')) && el.getBoundingClientRect().height > 120);
+    const kind = el => {
+      if (el.matches('[data-nsd-interaction]') || el.querySelector('[data-nsd-interaction]')) return 'interaction';
+      if (el.querySelector('form')) return 'form';
+      if (el.querySelector('table')) return 'table';
+      if (el.querySelector('img, picture, video')) return 'media';
+      const box = el.getBoundingClientRect();
+      if ([...el.querySelectorAll('svg')].some(s => { const r = s.getBoundingClientRect(); return r.width * r.height > 0.2 * box.width * box.height; })) return 'graphic';
+      const lists = [...el.querySelectorAll('ol, ul, dl')].filter(l => l.children.length >= 3 && !l.closest('nav'));
+      if (lists.length || el.querySelectorAll('[class*="step"]').length >= 3) return 'steps';
+      return 'text';
+    };
+    out.skeleton = secs.map(kind);
+    const bg = [...d.body.querySelectorAll('*')].filter(el => /url\(/.test(w.getComputedStyle(el).backgroundImage)
+      && el.getBoundingClientRect().width > vw0 * 0.2).length;
+    out.media = d.querySelectorAll('img, picture, video').length + bg;
+  }
   if (!ACTIONS.length) { report(out); return; }
   // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
   // on the page and prefer the ones whose text the edit changed
@@ -376,6 +398,8 @@ def main() -> int:
     register = args.register or register_from(page_dir)
     bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
     comp = composition(desk.get("firstView"))
+    skeleton = ">".join(desk.get("skeleton") or [])
+    report["skeleton"], report["media"] = skeleton, desk.get("media", 0)
     report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts,
                             "composition": comp}
     phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True)
@@ -407,6 +431,8 @@ def main() -> int:
               + ("" if bold_ok else "  ← NO BOLD MOVE"))
         print(f"  first375 {phone_facts}" + ("" if phone_ok else "  ← NO BOLD MOVE ON THE PHONE"))
         print(f"  compose  {comp} — {COMPOSITIONS[comp]}; record with design_log.py add ... --composition {comp}")
+        print(f"  skeleton {skeleton or '(no top-level sections found)'} · {desk.get('media', 0)} image(s); record with "
+              f"--skeleton {skeleton} --media {desk.get('media', 0)}")
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"

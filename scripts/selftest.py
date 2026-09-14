@@ -228,6 +228,20 @@ def main() -> int:
         out2 = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
         check("a different composition clears it", "composition:" not in out2, out2.strip()[-240:])
 
+    print("design_log — the house skeleton and a run of imageless pages are warned")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        for proj, ind, comp in [("a", "translation", "type-poster"), ("b", "clinic", "graphic-hero"), ("c", "law", "field-and-heading")]:
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--industry", ind, "--composition", comp,
+                            "--skeleton", "interaction>steps>table>form", "--media", "0"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("the same skeleton twice is warned", "skeleton:" in out, out.strip()[-300:])
+        check("three imageless pages are warned", "imagery:" in out, out.strip()[-300:])
+        subprocess.run([PY, "scripts/design_log.py", "add", "--project", "d", "--industry", "hotel", "--composition", "graphic-hero",
+                        "--skeleton", "media>text>interaction>media", "--media", "7"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out2 = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("a different skeleton with images clears both", "skeleton:" not in out2 and "imagery:" not in out2, out2.strip()[-300:])
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"

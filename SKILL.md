@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.12.0"
+  version: "1.13.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -81,8 +81,8 @@ a defect, and the fix is fewer artefacts, not faster typing.
 | Direction | 1 recommended, fully specified, **written inside `DESIGN.md`** + 1 alternative in five lines, one register away. No separate `research.md` or `moodboard.html` | 2–3 full directions in `moodboard.html`, specimens |
 | References | 5–6, annotated, ≥ 2 local | 8–12 per direction |
 | Tokens | start from `templates/tokens/`, change hue, faces, radius, density; compile; `contrast.py --tokens` | full custom scales |
-| Page | the requested page, **4–6 sections**, all states of what it contains | flows + specs per screen |
-| Imagery | what the anchor type needs, 0–6 images: photographs only if the anchor is photographic, each three-match tested | full shot list + sourcing table |
+| Page | the requested page, 4–6 sections **derived from this content** — not interaction → steps → price table → form, which is this skill's own house skeleton — all states of what it contains | flows + specs per screen |
+| Imagery | what the anchor type needs, 0–6 images, each three-match tested. "No assets" is not a reason for zero: for a place, people, product or process, consider licensed photography or illustration first and write why it lost (`visual-material.md` §1) | full shot list + sourcing table |
 | Specs & handoff | `DESIGN.md`, `assets.md`, `design-log.json` only | component specs, screen specs, handoff package |
 | Review | Gate 0 scripts + Gates 1, 3, 5, 6, 10, 13 + studio test, written as 10 lines at the end of `DESIGN.md` | all 13 gates in `review-{date}.md` |
 | Reference reading | only the sections named per phase below | full files |
