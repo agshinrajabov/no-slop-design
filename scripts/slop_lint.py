@@ -180,13 +180,13 @@ def file_rules(path: str, text: str):
 
     # the interaction's result must stay on screen on a phone while inputs change (interaction-depth.md §7)
     if is_page and re.search(r"data-nsd-interaction", text, re.I):
-        css = text
+        css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", text, re.I | re.S))  # CSS only: the HTML around it has no rules
         hrefs = re.findall(r"<link[^>]+rel=[\"']?stylesheet[^>]*href=[\"']([^\"']+)", text, re.I)
         hrefs += re.findall(r"<link[^>]+href=[\"']([^\"']+\.css)[\"'][^>]*rel=[\"']?stylesheet", text, re.I)
         for href in hrefs:
             local = os.path.join(os.path.dirname(os.path.abspath(path)), href.split("?")[0])
             if not href.startswith(("http:", "https:", "//")) and os.path.exists(local):
-                css += open(local, encoding="utf-8", errors="ignore").read()
+                css += "\n" + open(local, encoding="utf-8", errors="ignore").read()
         # a sticky header does not show the result, and an element hidden by default is only shown conditionally —
         # the 1.6 run's dock appeared after the result had scrolled past, i.e. never while the visitor was editing
         persistent = False
