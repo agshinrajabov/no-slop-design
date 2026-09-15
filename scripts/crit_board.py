@@ -49,6 +49,11 @@ def pick(entries: list[dict], here: str, industry: str | None) -> list[tuple[str
     chosen = [("best · crit " + str(e["crit"]), e) for e in best]
     if industry:
         same = [e for e in done if industry.lower() in (e.get("industry") or "").lower() or industry.lower() in (e.get("project") or "")]
+        # the best page this industry has had, not only the latest: a 1.20 restaurant run was shown its weakest
+        # predecessor and never saw the floor-plan page that scored higher on idea
+        scored = sorted((e for e in same if e.get("crit")), key=lambda e: -float(e["crit"]))
+        if scored and all(scored[0] is not e for _, e in chosen):
+            chosen.append((f"best {industry} · crit {scored[0]['crit']}", scored[0]))
         if same and all(same[-1] is not e for _, e in chosen):
             chosen.append(("latest " + industry + (f" · crit {same[-1]['crit']}" if same[-1].get("crit") else ""), same[-1]))
     return [(label, e) for label, e in chosen]

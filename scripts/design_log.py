@@ -284,6 +284,20 @@ def analyse(entries: list[dict]) -> list[str]:
         warns.append(f"type scale: {len(big)} of the last {len(ratios)} first viewports set display type at ≥ 8× body "
                      f"({', '.join(f'{r:g}×' for r in ratios)}) — oversized type keeps coming back as the default bold move; "
                      "make this one a photograph, a drawing, a colour field or the product itself")
+    # the UI dialect measured by shoot.py: control shape, dividers, labels, section headers, display face. Pages that
+    # differ in colour, photograph and idea still read as one studio's template when all five match.
+    dialects = [e["dialect"].split(";") for e in longer if e.get("dialect") and len(e["dialect"].split(";")) == 5]
+    if len(dialects) >= 2:
+        a, b = dialects[-2], dialects[-1]
+        same = [x for x, y in zip(a, b) if x == y]
+        if len(same) >= 4:
+            warns.append(f"dialect: the last two pages drew their UI the same way ({', '.join(same)}) — change the control "
+                         "shape, the dividers, the label style or the section-header layout so the components belong to this "
+                         "business, not to the skill")
+    if len(dialects) >= 3:
+        top, n = Counter(";".join(x) for x in dialects).most_common(1)[0]
+        if n >= 3 and ";".join(dialects[-1]) == top:
+            warns.append(f"dialect: '{top}' in {n} of the last {len(dialects)} pages — the skill's house UI")
     # runs in progress at the same time converge together: two parallel runs read the same history and both turned dark
     me = recent[-1] if recent else {}
     if me.get("dir"):
@@ -344,6 +358,8 @@ def main() -> int:
                    help="first-viewport composition as printed by shoot.py: graphic-hero, result-poster, type-poster, "
                         "field-and-heading, heading-and-panel")
     a.add_argument("--hue", type=float, default=None)
+    a.add_argument("--dialect", default=None,
+                   help="the UI dialect from shoot.py's 'dialect' line: controls;dividers;labels;section headers;display face")
     a.add_argument("--crit", type=int, default=None,
                    help="Gate 14 studio-crit total (6 axes × 1–5, so 6–30) after the crit board; the best scores fill the next board")
     a.add_argument("--page", default=None, help="the page file, for the crit board (default: <dir>/index.html)")
@@ -380,7 +396,7 @@ def main() -> int:
         return 0
 
     keys = ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor",
-            "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look")
+            "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look", "dialect")
     if args.cmd == "plan":
         import time
         missing = [f"--{n.replace('_', '-')}" for n in ("project", "composition", "result_form") if not getattr(args, n, None)]

@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.20.0"
+  version: "1.21.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -72,7 +72,8 @@ Read the sections the step names; skim the rest by its table of contents.
     record the finished one with `design_log.py add --screenshot <full-page.png>`, which measures surface polarity from the
     pixels instead of trusting a label: a light hero on a mostly dark page is a dark page. The per-project log is empty on a new project, so the
     cross-project history is the one that catches a house style forming. Differ on ≥ 2 axes: surface polarity, hue
-    family, typeface class, first-viewport composition. Record the composition `shoot.py` names ("compose" line) with
+    family, typeface class, first-viewport composition, UI dialect (`shoot.py` "dialect" line: control shape, dividers,
+    labels, section headers, display face). Record the composition `shoot.py` names ("compose" line) with
     `add --composition`; a composition the log reports as repeated changes even for a different industry. **Never the register**: it comes from the brief, and a streak of R2 runs
     for R2 briefs is correct. Do not let this skill's own outputs become a template. Known self-tells: dark surface + serif display + label/value table + one button; the
     label/value spec table used as the primary layout device in every section; imagery that contradicts the direction
@@ -91,7 +92,7 @@ a defect, and the fix is fewer artefacts, not faster typing.
 | Research | ≤ 6 min, ≤ 8 web fetches: 3 job stories, 3 competitor first-screens (1 local), 1 review-mining pass | full `mini-user-research.md` menu |
 | Direction | 1 recommended, fully specified, **written inside `DESIGN.md`** + 1 alternative in five lines, one register away. No separate `research.md` or `moodboard.html` | 2–3 full directions in `moodboard.html`, specimens |
 | References | 5–6, annotated, ≥ 2 local | 8–12 per direction |
-| Tokens | start from `templates/tokens/`, change hue, faces, radius, density; compile; `contrast.py --tokens` | full custom scales |
+| Tokens | start from `templates/tokens/` for the **names only**: hue, faces, and the structural scales — radius family, spacing rhythm, control heights, border weights, motion speeds — all come from the direction (a ceramics shop, a law firm and a restaurant do not share a 4px base and 8px buttons); compile; `contrast.py --tokens`; `slop_lint.py` flags `starter-dialect` | full custom scales |
 | Page | the requested page, 4–6 sections **derived from this content** — not interaction → steps → price table → form, which is this skill's own house skeleton — all states of what it contains | flows + specs per screen |
 | Imagery | what the anchor type needs, 0–6 images, each three-match tested. "No assets" is not a reason for zero: for a place, people, product or process, consider licensed photography or illustration first and write why it lost (`visual-material.md` §1) | full shot list + sourcing table |
 | Specs & handoff | `DESIGN.md`, `assets.md`, `design-log.json` only | component specs, screen specs, handoff package |

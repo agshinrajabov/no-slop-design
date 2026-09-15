@@ -105,8 +105,8 @@ produces a report and rebuilds nothing.
 
 ## What it refuses
 
-A catalog of roughly 99 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 60 of the mechanical ones are checked by the linter, some of them across files. A few:
+A catalog of roughly 100 tells across colour, type, layout, components, iconography, copy, motion, imagery,
+accessibility and process. 61 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -230,6 +230,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.18 | Warnings were answered, but a re-plan warned a run against its own earlier plans, and a shop promised a signed box the studio never offered | a plan replaces its project's earlier plan; unstated services and guarantees are marked as proposals on the page and listed for confirmation |
 | 1.19 | Two parallel runs read the same warning and both went dark; poster type came back two rounds after it was broken; a renamed plan was compared with itself | runs in progress are compared with each other and re-checked at the end; type scale and composition counted over six runs; plans identified by folder |
 | 1.20 | Every check passed and a restaurant page still got worse: nothing asked whether the page was good | Gate 14 studio crit against the best earlier pages on a rendered board (`crit_board.py`), scored and revised to an A+ bar; bracket-heavy pages flagged |
+| 1.21 | Pages still read as one studio's work: 39–41 of 41 structural token values were the template's, and two different businesses measured the same UI dialect | structural scales set from the direction and linted; UI dialect measured and compared; the crit board shows the best page per industry; a weak idea is rebuilt, not polished |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

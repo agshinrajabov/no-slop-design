@@ -252,6 +252,11 @@ desktop and phone first screens beside the best-scored earlier pages and the lat
 
 **A+** = every axis ≥ 4, total ≥ 26, and not weaker than the best page on the board on Idea or Memorability. Below
 that, revise the two weakest axes (one pass in Standard mode, up to three in Deep), re-render the board, re-score.
+**An Idea below 4 is not polished, it is replaced.** Enlarging a word or aligning photos cannot give a page an idea
+(a 1.20 restaurant went from 21 to 23 that way and stayed at Idea 3). Go back to Phase 3 with the board open: name
+what only this business has — the room, the ritual, the object, the route — write one new direction sentence,
+re-plan it, and rebuild the first viewport and the interaction around it. Standard mode allows about five extra
+minutes for this. Then score again.
 Record the final total with `design_log.py add … --crit <total> --page index.html` so the next board has it. Report the
 score and the one-sentence reasons to the user; never round a 24 up.
 

@@ -110,18 +110,37 @@ A system is not usable until each category has at least this:
 |---|---|---|
 | color primitives | neutral 12 steps · brand 12 · status ×4 (12 each or 5) | OKLCH; neutrals tinted |
 | color semantic | surfaces 5 · text 8 · border 3 · action 3×3 states · status 4×4 · focus · selection · scrim · skeleton | light + dark |
-| space | `space.0..24` on 4px base (0 2 4 6 8 12 16 20 24 32 40 48 64 80 96 128) + semantic `inset.{xs..xl}`, `stack.{…}`, `inline.{…}`, `gutter`, `margin.page` | |
-| size | `control.{sm,md,lg}` = 32/40/48 · `icon.{sm,md,lg}` = 16/20/24 · `target.min` = 44 · `content.max` (e.g. 1200) · `measure.max` (65ch) | |
-| radius | `none 0 · control 6 · card 12 · sheet 20 · pill 9999` (values per direction) | nested inner = outer − padding |
-| border | `width.{hairline 1, strong 2}` | |
+| space | `space.0..24` steps + semantic `inset.{xs..xl}`, `stack.{…}`, `inline.{…}`, `gutter`, `margin.page` | base and ratio per direction (§6b); the template's 4px ladder is only a working default |
+| size | `control.{sm,md,lg}` · `icon.{sm,md,lg}` · `target.min` ≥ 44 · `content.max` · `measure.max` | control heights per direction; 44 is the floor, not the value |
+| radius | `none · control · card · sheet · pill` | values per direction; nested inner = outer − padding |
+| border | `width.{hairline, strong}` | weights per direction |
 | shadow | `raised · overlay · modal` (light); dark uses surface steps | tokens may be lists |
 | font | `family.{display,text,mono}` · `weight.{regular,medium,semibold,bold}` (only loaded ones) | |
 | typography (composite) | `display h1 h2 h3 h4 body-lg body body-sm label caption code` | size, lh, weight, family, tracking |
-| duration | `instant 80 · fast 120 · base 200 · slow 320 · slower 480` | |
+| duration | `instant · fast · base · slow · slower` | speeds per direction, within motion.md's 80–480ms range |
 | ease | `standard · decelerate · accelerate · emphasized` | cubicBezier |
 | opacity | `disabled 0.4 · overlay 0.6 · skeleton 0.12` | |
 | z | `base 0 · raised 10 · sticky 100 · overlay 1000 · modal 1100 · toast 1200` | |
 | breakpoint | content-driven, named by layout change (e.g. `narrow 600 · regular 905 · wide 1240 · max 1440`) | |
+
+### 6b. The structural scales belong to the direction
+
+The starter template gives names and a working set of values so a build never fails. Its values are not a style.
+Measured across six test pages for a restaurant, two ceramics shops, a hotel, a bakery and a law firm, 39–41 of the 41
+structural values — spacing steps, radius family, control heights, border widths, motion durations — were the
+template's own, and the pages shared one UI dialect under different colours. Before composing, set them from the
+direction:
+
+| Scale | Ask | Examples |
+|---|---|---|
+| Spacing base and ratio | how dense is this business's world? | a menu board packs tight (4px base, 1.25 ratio); a hotel breathes (8px base, 1.6) |
+| Radius family | what are its objects' edges? | thrown ceramics: irregular, generous (14–28px); legal paper: square (0–2px); tiles: small and consistent (3px) |
+| Control height and weight | what does pressing feel like here? | a booking tool for phones: 52px, solid; an editorial shop: 40px, hairline |
+| Borders | ruled paper, framed tiles, or no lines at all? | 1px rules, 3px frames, or none |
+| Motion | how fast does this world move? | a bakery counter: quick (100–160ms); a gallery: slow (300–480ms) |
+
+`slop_lint.py` flags `starter-dialect` when 75% or more of these values are the template's own, and `shoot.py`
+reports the resulting UI dialect so `design_log.py` can compare it with recent pages.
 
 ## 7. Build pipeline and platform outputs
 

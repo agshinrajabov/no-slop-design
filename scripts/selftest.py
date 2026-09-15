@@ -394,6 +394,55 @@ def main() -> int:
         open(p, "w", encoding="utf-8").write(page.replace(filler, "<p>[Menu prices]</p>"))
         check("brackets kept to the contact block and one fact pass", "placeholder-overload" not in rules_of(p), sorted(rules_of(p)))
 
+    print("the starter dialect, the UI dialect, and the best page per industry")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "build"))
+        prim = json.load(open(os.path.join(ROOT, "templates", "tokens", "primitives.json")))
+        css = []
+        def walk(node, path):
+            if isinstance(node, dict):
+                if "$value" in node and not isinstance(node["$value"], (dict, list)):
+                    css.append(f"--{'-'.join(path)}: {node['$value']};")
+                for k, v in node.items():
+                    if not k.startswith("$"):
+                        walk(v, path + [k])
+        for g in ("space", "radius", "size", "border", "duration"):
+            walk(prim[g], [g])
+        open(os.path.join(d, "build", "tokens.css"), "w").write(":root{" + "".join(css) + "}")
+        page = f"<html lang='en'><head><link rel='stylesheet' href='build/tokens.css'></head><body><main><section data-nsd-anchor='colour field'>{long_copy}</section></main></body></html>"
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("the template's structural scales verbatim are flagged", "starter-dialect" in rules_of(p), sorted(rules_of(p)))
+        changed = [c if i % 2 else c.split(":")[0] + ": 13px;" for i, c in enumerate(css)]
+        open(os.path.join(d, "build", "tokens.css"), "w").write(":root{" + "".join(changed) + "}")
+        check("half the scales changed passes", "starter-dialect" not in rules_of(p), sorted(rules_of(p)))
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        pages = {}
+        for proj, ind, crit, dia in [("h-top", "hotel", "28", "square;open;plain-labels;stacked-headers;condensed"),
+                                     ("k-top", "ceramics", "27", "round;open;plain-labels;stacked-headers;serif"),
+                                     ("b-top", "bakery", "27", "pill;ruled;caps-labels;split-headers;condensed"),
+                                     ("r-plan", "restaurant", "25", "soft;ruled;caps-labels;split-headers;grotesk"),
+                                     ("c-seats", "ceramics", "26", "soft;ruled;caps-labels;split-headers;grotesk"),
+                                     ("r-form", "restaurant", "21", "square;open;plain-labels;stacked-headers;serif")]:
+            pd = os.path.join(d, proj); os.makedirs(pd); open(os.path.join(pd, "index.html"), "w").write(f"<p>{proj}</p>")
+            pages[proj] = pd
+            log("add", "--project", proj, "--industry", ind, "--crit", crit, "--dialect", dia, "--dir", pd, "--page", os.path.join(pd, "index.html"))
+        warned = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True,
+                                env=dict(env, NSD_HISTORY=os.path.join(d, "h.json"))).stdout
+        new = os.path.join(d, "new"); os.makedirs(new); open(os.path.join(new, "index.html"), "w").write("<p>new</p>")
+        subprocess.run([PY, "scripts/crit_board.py", os.path.join(new, "index.html"), "--industry", "restaurant", "--html-only",
+                        "--out", os.path.join(d, "b")], cwd=ROOT, capture_output=True, text=True, env=env)
+        board = open(os.path.join(d, "b", "crit-board.html")).read()
+        check("the board shows the best page for the industry, not only the latest", "best restaurant" in board and "r-plan" in board, board[-300:])
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        for proj in ("a", "b"):
+            subprocess.run([PY, "scripts/design_log.py", "add", "--project", proj, "--dir", os.path.join(d, proj),
+                            "--dialect", "soft;ruled;caps-labels;split-headers;grotesk"], cwd=ROOT, capture_output=True, text=True, env=env)
+        out = subprocess.run([PY, "scripts/design_log.py", "check"], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        check("two pages in the same UI dialect are warned", "dialect:" in out, out.strip()[-300:])
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"

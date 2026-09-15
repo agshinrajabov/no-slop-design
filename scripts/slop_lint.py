@@ -147,6 +147,32 @@ def declared_surface(path: str, text: str) -> str | None:
     return declared(path, text, "data-nsd-surface", r"Surface mode\**\s*(?:\|\s*|:\**\s*)([^\n|]+)")
 
 
+_STARTER: dict[str, str] | None = None
+
+
+def starter_scales() -> dict[str, str]:
+    """CSS custom properties the starter template defines for the structural scales, as build_tokens names them."""
+    global _STARTER
+    if _STARTER is None:
+        _STARTER = {}
+        p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates", "tokens", "primitives.json")
+        try:
+            prim = json.load(open(p, encoding="utf-8"))
+        except (OSError, ValueError):
+            return _STARTER
+
+        def walk(node, path):
+            if isinstance(node, dict):
+                if "$value" in node and not isinstance(node["$value"], (dict, list)):
+                    _STARTER["--" + "-".join(path)] = str(node["$value"])
+                for k, v in node.items():
+                    if not k.startswith("$"):
+                        walk(v, path + [k])
+        for group in ("space", "radius", "size", "border", "duration"):
+            walk(prim.get(group, {}), [group])
+    return _STARTER
+
+
 def strip_regions(text: str, attr_pattern: str) -> str:
     """Remove every element whose opening tag matches attr_pattern, with its content (nested same-name tags counted)."""
     out, pos = [], 0
@@ -263,6 +289,22 @@ def file_rules(path: str, text: str):
                                                          "line for it under 'Convergence overrides'. Change the direction and "
                                                          "re-run plan, or write '- <warning>: <why it stays>' (SKILL.md "
                                                          "non-negotiable 14)", "§10 Process"))
+
+    # the starter's own dialect: every run kept the template's radius, spacing, control, border and motion scales
+    # verbatim, so a restaurant, a ceramics shop and a law firm shared one set of buttons and one rhythm
+    tokens_css = os.path.join(d, "build", "tokens.css")
+    if is_page and not in_design and os.path.exists(tokens_css):
+        starter = starter_scales()
+        if starter:
+            css_vars = dict(re.findall(r"(--[a-z0-9-]+)\s*:\s*([^;]+);", open(tokens_css, encoding="utf-8", errors="ignore").read()))
+            present = [k for k in starter if k in css_vars]
+            same = [k for k in present if css_vars[k].strip().lower() == starter[k].lower()]
+            if len(present) >= 12 and len(same) / len(present) >= 0.75:
+                out.append(("starter-dialect", "MED", f"{len(same)} of {len(present)} structural token values (radius, spacing, "
+                                                      "control sizes, borders, motion) are the template's own — the page speaks "
+                                                      "the skill's dialect whatever its colour. Derive the radius family, spacing "
+                                                      "rhythm, control height, border weight and motion speed from the direction "
+                                                      "(design-tokens.md §2)", "§3 Layout"))
 
     # a page that reads unfinished: bracketed placeholders across the main path, not just in the contact block. A 1.19
     # restaurant left "[Restoranın təsviri: …]" under dolma and piti — dishes anyone can describe truthfully.

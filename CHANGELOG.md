@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.21.0 — 2026-09-15
+
+The 1.20.0 reruns scored themselves honestly on the new studio crit — a ceramics shop reached A+ (26: "a different
+plate for every guest", pieces dealt seat by seat), a restaurant stopped at 23 with Idea 3 — and the user's verdict on
+the series was still that the pages look like one studio's work whatever the industry. The measurement agreed.
+
+- **The starter dialect.** On six recent pages across four industries, 39–41 of the 41 structural token values —
+  spacing, radius, control sizes, borders, motion — were the template's own. Colours, faces and photographs changed;
+  the rhythm and the components did not. `design-tokens.md` §6b sets these scales from the direction (with examples by
+  business), `SKILL.md`'s Standard tokens row says the template supplies names only, and `slop_lint.py` adds
+  `starter-dialect` (MED) at 75% or more template values. It fires on all six pages.
+- **The UI dialect is measured.** `shoot.py` prints a "dialect" line — control shape, dividers, label style, section-
+  header layout, display face — and `design_log.py add --dialect` records it; `check` warns when the last two pages
+  share four of the five, or one dialect fills three of the last six. The two 1.20 pages measured identical
+  (`square;open;plain-labels;stacked-headers;condensed`), as did the hotel and the bakery.
+- **The crit board shows the best page for the industry**, not only the latest, so a run can see the strongest idea its
+  category has had.
+- **An Idea below 4 is replaced, not polished**: the revision goes back to Phase 3 with the board open, names what only
+  this business has, re-plans and rebuilds the first viewport and interaction (about five extra minutes in Standard).
+
 ## 1.20.0 — 2026-09-15
 
 After nineteen releases of rules, the 1.19.0 reruns passed every check and one of them was the weakest page of the

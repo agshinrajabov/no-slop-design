@@ -147,6 +147,32 @@ f.addEventListener('load', () => setTimeout(() => {
     const bg = [...d.body.querySelectorAll('*')].filter(el => /url\(/.test(w.getComputedStyle(el).backgroundImage)
       && el.getBoundingClientRect().width > vw0 * 0.2).length;
     out.media = d.querySelectorAll('img, picture, video').length + bg;
+    // the UI dialect: how controls, dividers, labels, section headers and the display face are drawn
+    const ctrls = [...d.querySelectorAll('button, .btn, a[class*="button"], input:not([type=hidden]), select')]
+      .filter(el => el.getBoundingClientRect().width > 0).slice(0, 40);
+    const radii = ctrls.map(el => parseFloat(w.getComputedStyle(el).borderTopLeftRadius) || 0).sort((a, b) => a - b);
+    const r = radii.length ? radii[Math.floor(radii.length / 2)] : 0;
+    const shape = r < 3 ? 'square' : r <= 10 ? 'soft' : r <= 24 ? 'round' : 'pill';
+    const ruled = secs.filter(el => { const s = w.getComputedStyle(el); return parseFloat(s.borderTopWidth) > 0 || parseFloat(s.borderBottomWidth) > 0
+      || [...el.querySelectorAll('hr, li, tr')].some(x => parseFloat(w.getComputedStyle(x).borderBottomWidth) > 0 || parseFloat(w.getComputedStyle(x).borderTopWidth) > 0); }).length;
+    const edges = secs.length && ruled / secs.length >= 0.4 ? 'ruled' : 'open';
+    const caps = [...d.body.querySelectorAll('*')].filter(el => el.children.length === 0 && (el.textContent || '').trim().length > 2
+      && w.getComputedStyle(el).textTransform === 'uppercase' && parseFloat(w.getComputedStyle(el).fontSize) < 15).length;
+    const labels = caps >= 5 ? 'caps-labels' : 'plain-labels';
+    let split = 0;
+    for (const h of d.querySelectorAll('h2')) {
+      const p = h.parentElement && [...h.parentElement.parentElement.querySelectorAll('p')].find(x => !h.parentElement.contains(x));
+      if (!p) continue;
+      const a = h.getBoundingClientRect(), b = p.getBoundingClientRect();
+      if (Math.abs(a.top - b.top) < a.height && Math.abs(a.left - b.left) > 200) split++;
+    }
+    const headers = split >= 2 ? 'split-headers' : 'stacked-headers';
+    const big = [...d.querySelectorAll('h1, h2')].sort((x, y) => parseFloat(w.getComputedStyle(y).fontSize) - parseFloat(w.getComputedStyle(x).fontSize))[0];
+    const fam = big ? w.getComputedStyle(big).fontFamily.toLowerCase() : '';
+    const display = /mono/.test(fam) ? 'mono' : /condensed|compressed|narrow|oswald|bebas|anton|league gothic|big shoulders|saira extra/.test(fam)
+      ? 'condensed' : /serif/.test(fam.split(',')[0]) && !/sans/.test(fam.split(',')[0]) ? 'serif'
+      : /(garamond|caslon|baskerville|fraunces|playfair|lora|newsreader|source serif|bitter|roboto slab|zilla|domine|spectral|cormorant|dm serif|instrument serif|libre bask)/.test(fam) ? 'serif' : 'grotesk';
+    out.dialect = [shape, edges, labels, headers, display].join(';');
   }
   if (!ACTIONS.length) { report(out); return; }
   // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
@@ -399,7 +425,7 @@ def main() -> int:
     bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
     comp = composition(desk.get("firstView"))
     skeleton = ">".join(desk.get("skeleton") or [])
-    report["skeleton"], report["media"] = skeleton, desk.get("media", 0)
+    report["skeleton"], report["media"], report["dialect"] = skeleton, desk.get("media", 0), desk.get("dialect")
     report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts,
                             "composition": comp}
     phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True)
@@ -433,6 +459,8 @@ def main() -> int:
         print(f"  compose  {comp} — {COMPOSITIONS[comp]}; record with design_log.py add ... --composition {comp}")
         print(f"  skeleton {skeleton or '(no top-level sections found)'} · {desk.get('media', 0)} image(s); record with "
               f"--skeleton {skeleton} --media {desk.get('media', 0)} --display-ratio {(desk.get('firstView') or {}).get('ratio', 0)}")
+        print(f"  dialect  {desk.get('dialect', '?')} (controls;dividers;labels;section headers;display face); record with "
+              f"--dialect '{desk.get('dialect', '')}'")
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"
