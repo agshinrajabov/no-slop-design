@@ -344,6 +344,9 @@ def main() -> int:
                    help="first-viewport composition as printed by shoot.py: graphic-hero, result-poster, type-poster, "
                         "field-and-heading, heading-and-panel")
     a.add_argument("--hue", type=float, default=None)
+    a.add_argument("--crit", type=int, default=None,
+                   help="Gate 14 studio-crit total (6 axes × 1–5, so 6–30) after the crit board; the best scores fill the next board")
+    a.add_argument("--page", default=None, help="the page file, for the crit board (default: <dir>/index.html)")
     a.add_argument("--screenshot", nargs="+", default=None,
                    help="full-page PNG(s); surface polarity is measured from the pixels and overrides --surface")
 
@@ -408,6 +411,15 @@ def main() -> int:
         entries = [e for e in entries if not same_run(e, entry)]
         if args.media is not None:
             entry["media"] = args.media
+        if args.crit is not None:
+            if not 6 <= args.crit <= 30:
+                print("--crit is the Gate 14 total: six axes scored 1–5, so 6–30")
+                return 2
+            entry["crit"] = args.crit
+        else:
+            print("note: no --crit recorded; run scripts/crit_board.py and score Gate 14 — unscored pages never reach the board")
+        if args.page:
+            entry["page"] = os.path.abspath(args.page)
         if not args.composition:
             print("note: no --composition recorded; shoot.py prints it ('compose' line) — without it a repeated first "
                   "viewport across industries goes unnoticed")

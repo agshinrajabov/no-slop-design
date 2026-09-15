@@ -21,7 +21,7 @@ the gate is that they never have to say "this looks AI-generated".
 13. Gate 10 — accessibility
 14. Gate 11 — platform fit
 15. Gate 12 — tokens and code hygiene
-16. Gate 13 — slop and originality
+16. Gate 13 — slop and originality (16b: Gate 14 — studio crit, the A+ bar)
 17. The studio test
 18. Revision protocol
 
@@ -232,6 +232,28 @@ Plus, where available: axe-core / Lighthouse accessibility ≥ 95, no console er
 - [ ] Local fit: at least one decision traceable to the audience's market (convention, reference, copy register).
 - [ ] Name three decisions no template would have made.
 - [ ] Name the brand attribute behind: typeface, primary color, radius, densest screen, the one motion.
+
+## 16b. Gate 14 — studio crit (the A+ bar)
+
+Rules catch mistakes and repeats; they do not say whether the page is good. Six rounds of fixes passed every check
+while one restaurant page went from a lit floor plan to a booking form with bracketed menu text. So the last gate
+compares, the way a studio does: `python3 scripts/crit_board.py index.html --industry <industry>` pins this page's
+desktop and phone first screens beside the best-scored earlier pages and the latest page for the same industry.
+**Look at the PNG**, then score this page 1–5 on each axis, in writing, one sentence each:
+
+| Axis | 5 means | 3 means |
+|---|---|---|
+| **Idea** | one sentence names an idea only this business could have (the kiln's six siblings; the room plan that is the booking) | a competent layout with the business's nouns |
+| **Memorability** | someone who saw the first screen for three seconds can describe it tomorrow | "a nice restaurant site" |
+| **Imagery & craft** | every image, drawing and crop is finished and art-directed; details (captions, numerals, edges) are considered | stand-ins or drawings that look provisional |
+| **Type & rhythm** | a clear pairing, scale contrast, sections with different pace | one size step, even rhythm, template spacing |
+| **Completeness** | every visible sentence is real or a clearly labelled sample; brackets only for client-only facts | the main path shows `[…]` where writing was possible |
+| **Interaction** | the answer arrives with a designed form that is a pleasure to use and carries into the next step | a working form |
+
+**A+** = every axis ≥ 4, total ≥ 26, and not weaker than the best page on the board on Idea or Memorability. Below
+that, revise the two weakest axes (one pass in Standard mode, up to three in Deep), re-render the board, re-score.
+Record the final total with `design_log.py add … --crit <total> --page index.html` so the next board has it. Report the
+score and the one-sentence reasons to the user; never round a 24 up.
 
 ## 17. The studio test
 

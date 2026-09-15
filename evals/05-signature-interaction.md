@@ -84,3 +84,9 @@ The register had quietly capped interaction. A correct run keeps the restrained 
 24. The estimate shows a number and a date (sample rates labelled as samples if needed); no `[n]` in the result.
 25. The phone's first screen has its own bold move (`shoot.py` "first375" passes).
 26. The Standard design record is complete: brief, DESIGN.md, assets, design log, contrast pairs, tokens.
+
+## Rubric additions (1.20)
+
+27. `crit_board.py` was run, the board was looked at, and Gate 14 was scored in writing with one sentence per axis;
+    the run revised its two weakest axes if it fell below A+, and reported the final score without rounding up.
+28. No more than six bracketed placeholders in the main path; common knowledge is written, client-only facts bracketed.

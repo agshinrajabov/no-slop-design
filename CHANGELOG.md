@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.20.0 — 2026-09-15
+
+After nineteen releases of rules, the 1.19.0 reruns passed every check and one of them was the weakest page of the
+series: a restaurant that had been a lit floor plan and a tile-and-lamp dish poster became a booking form with
+bracketed menu text. Rules catch mistakes and repeats; nothing in the skill asked whether the page was good. This
+release adds that question instead of another rule about repetition.
+
+- **Gate 14 — studio crit** (`review-checklist.md` §16b). Score the page 1–5 on idea, first-viewport memorability,
+  imagery and craft, type and rhythm, completeness and interaction, one sentence each. A+ is every axis ≥ 4, a total of
+  26 or more, and not weaker than the best page on the board on idea or memorability. Below that, revise the two
+  weakest axes (one pass in Standard, up to three in Deep), re-render, re-score, and report the score honestly.
+- **`scripts/crit_board.py`** renders the board: this page's desktop and phone first screens beside the three
+  best-scored earlier pages and the latest page for the same industry, so the comparison is made by looking.
+  `design_log.py add --crit <6–30> --page` stores the score; unscored pages never reach the board.
+- **`placeholder-overload`** (MED): more than six bracketed placeholders outside the contact and legal blocks. What is
+  common knowledge (what dolma is, how a firing works) is written truthfully; brackets are for facts only the client has.
+- `SKILL.md` non-negotiable 13 and Phase 7, the tools table, eval 05 items 27–28.
+
 ## 1.19.0 — 2026-09-15
 
 The 1.18.0 reruns marked every unconfirmed promise as a proposal and answered their warnings in writing, and showed

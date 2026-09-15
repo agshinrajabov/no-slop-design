@@ -106,7 +106,7 @@ produces a report and rebuilds nothing.
 ## What it refuses
 
 A catalog of roughly 99 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 59 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 60 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -173,6 +173,7 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 |---|---|
 | `slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift and Kotlin for slop signatures and prints a grade with the catalog section to read. `--json`, `--strict` for CI. |
 | `shoot.py <page>` | The review renders in one command with headless Chrome: desktop and 375 px full pages, a JavaScript-disabled page, and the 375 px editing test (`--set "#pages=12"`) that reports whether the result is still on screen. Lists scroll containers, prints the dark share, writes outside your project. |
+| `crit_board.py <page>` | The studio crit. Pins your page's desktop and phone first screens beside the best-scored earlier pages and the latest one for the same industry, so "is it good?" is answered by looking, then scored on six axes. |
 | `contrast.py` | WCAG 2.x and APCA for a pair, a pairs file, or — with `--tokens` — every text role on every surface role, in every mode. Exit 1 on an AA failure. |
 | `build_tokens.py` | Compiles W3C DTCG tokens (aliases, `*.dark.json` modes) to CSS custom properties, Tailwind v4 `@theme`, SwiftUI, Compose, Flutter and flat JSON. `--check` validates and runs a palette sanity check. |
 | `type_scale.py` | Fluid modular type scale with line-height and tracking per step. |
@@ -228,6 +229,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.17 | A run saw a convergence warning and kept the repeat "deliberately"; a restaurant's menu photos were graded as contradicting its floor-plan anchor | warnings are written into the project and must be acted on or answered in DESIGN.md (linted); menu, product and gallery photos count as content |
 | 1.18 | Warnings were answered, but a re-plan warned a run against its own earlier plans, and a shop promised a signed box the studio never offered | a plan replaces its project's earlier plan; unstated services and guarantees are marked as proposals on the page and listed for confirmation |
 | 1.19 | Two parallel runs read the same warning and both went dark; poster type came back two rounds after it was broken; a renamed plan was compared with itself | runs in progress are compared with each other and re-checked at the end; type scale and composition counted over six runs; plans identified by folder |
+| 1.20 | Every check passed and a restaurant page still got worse: nothing asked whether the page was good | Gate 14 studio crit against the best earlier pages on a rendered board (`crit_board.py`), scored and revised to an A+ bar; bracket-heavy pages flagged |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

@@ -3,7 +3,7 @@ name: no-slop-design
 description: Senior product-design workflow for web and mobile UI that avoids generic "AI slop" and produces token-based, accessible, platform-correct design with a deliberate visual anchor. Use when asked to design, redesign, review, or "make it look better" for any screen, app, landing page, component, or design system; when building UI from scratch; when a design system or brand must be adopted or created; when generating design tokens, moodboards, or design specs; or when output must not look AI-generated. Runs discovery (market, audience, existing design system) → mini research → moodboard → tokens → composition around a chosen visual anchor → self-critique before delivering.
 license: MIT
 metadata:
-  version: "1.19.0"
+  version: "1.20.0"
   author: Agshin Rajabov and contributors
   homepage: https://github.com/agshinrajabov/no-slop-design
 ---
@@ -62,6 +62,9 @@ Read the sections the step names; skim the rest by its table of contents.
 13. **Nothing ships on the first pass.** Render it with `scripts/shoot.py` (never a home-made harness), look at it,
     run the review gate (`references/review-checklist.md`) and `scripts/slop_lint.py`; grade B or better. Review
     evidence stays out of the deliverable. A rerun is judged beside the run before it: less expressive is a regression.
+    Passing every rule is not the bar: the page is pinned beside the best earlier pages (`scripts/crit_board.py`) and
+    scored on Gate 14 — idea, memorability, imagery and craft, type and rhythm, completeness, interaction — and revised
+    until every axis is ≥ 4 or the budget is spent. Report the score honestly.
 14. **Anti-convergence.** Run `scripts/design_log.py check` before choosing a direction and obey what it reports —
     a warning kept is answered in writing under "Convergence overrides" in `DESIGN.md`, never kept silently
     (`slop_lint.py` flags `convergence-unanswered`). Runs in parallel see each other's plans ("in progress" warnings)
@@ -123,7 +126,7 @@ Phases are sequential; each ends with an artefact in the project's `design/` fol
 | **4 System** | Tokens from the template: hue, neutrals, faces, scale, radius, density, motion; light + dark; compile; `contrast.py --tokens` | `design-tokens.md` §2–4; `color.md` §3–5; `typography.md` §1–3 | `tokens/`, `build/`, `design/DESIGN.md` |
 | **5 Compose** | Per screen: content by priority → visual anchor → **one bold move in the first viewport** (poster-scale type, a dominant graphic, or a saturated colour field at the register's floor; R2 is not exempt) → one focal point → reading path → a structure that fits the content **and the register** → scale contrast → rhythm → remove. The signature interaction is a first-class region with all its states and a designed result, not a widget bolted on — and not the whole composition: the anchor keeps its weight, no dead half beside the panel. Vary the device per section; at most one data table outside the interaction, a label/value table at most twice. All component states. Copy last | `spacing-layout.md` §2, §6–8; `expression-register.md` §7; `visual-material.md` §2, §8; `components.md` §2–3, §8; `interaction-depth.md` §3b; `expression-register.md` §4b | screen composition |
 | **6 Build** | HTML/CSS prototype with real content, the anchor the direction chose (licensed images only if it is photographic), all states, the signature interaction working (keyboard, announced result, reduced motion, no-JS fallback, `data-nsd-interaction`), 3 widths; or the repo's framework; or native; Figma via MCP if available. Craft floor | `web-frontend.md` §craft floor, or the platform file | working UI |
-| **7 Review** | `python3 scripts/shoot.py index.html --set "<main input>=<value>"` — one command for desktop and 375 px full pages, the JavaScript-disabled render, the 375 px editing test, scroll containers, the dark share and the first viewport's bold move against the register's floor; its exit code must be 0. Then **look** at every PNG it wrote (and, on a rerun, beside the previous run's); Gate 0 scripts; gates per mode; studio test; fix; re-run. Nothing from the review lands in the deliverable | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
+| **7 Review** | `python3 scripts/shoot.py index.html --set "<main input>=<value>"` — one command for desktop and 375 px full pages, the JavaScript-disabled render, the 375 px editing test, scroll containers, the dark share and the first viewport's bold move against the register's floor; its exit code must be 0. Then **look** at every PNG it wrote (and, on a rerun, beside the previous run's); Gate 0 scripts; gates per mode; studio test; fix; re-run. **Last: `python3 scripts/crit_board.py index.html --industry …`, look at the board, score Gate 14 (studio crit), and revise the two weakest axes until it reaches A+ or the budget is spent; record `design_log.py add … --crit <total> --page index.html`.** Nothing from the review lands in the deliverable | `review-checklist.md`; `anti-slop.md` §8, §12 of `visual-material.md` | Standard: review of record in `design/DESIGN.md`. Deep: `design/review-{date}.md` |
 | **8 Hand off** (Deep, or on request) | Deliverables, specs, shot list, QA checks, decision records; record the finished direction with `scripts/design_log.py add` so the next project cannot repeat it | `handoff.md` | handoff package |
 
 **Scope shortcuts.** Single component: 0 → 1 (short) → 5 → 6 → 7. Critique only: 0 → 7, report without rebuilding.
@@ -168,6 +171,7 @@ Design system only: 0 → 1 → 3 → 4 → 7. Redesign: 0 (full audit) → refi
 |---|---|
 | `python3 scripts/slop_lint.py <path> [--json] [--strict]` | scan HTML/CSS/JSX/TSX/Vue/Svelte/Dart/Swift/Kotlin for slop signatures, including missing imagery and placeholder boxes; grade A–F |
 | `python3 scripts/shoot.py index.html [--set "#input=value"] [--expect sel]` | headless Chrome review renders written outside the project: desktop + 375 px full pages, no-JS, the 375 px editing frame with a visible/not-visible verdict, scroll containers, dark share. Exit 1 on an off-screen result or sideways page scroll |
+| `python3 scripts/crit_board.py index.html [--industry x]` | the studio crit: this page's desktop and phone first screens beside the best-scored earlier pages and the latest same-industry page, rendered to one PNG to look at before scoring Gate 14 |
 | `python3 scripts/contrast.py fg bg` · `--tokens build/tokens.flat.json` · `--pairs file` | WCAG 2.x + APCA; `--tokens` checks every text role on every surface per mode |
 | `python3 scripts/build_tokens.py tokens/*.json --out build/ [--check]` | DTCG → CSS vars (light/dark), Tailwind v4 `@theme`, Swift, Kotlin, Dart, flat JSON |
 | `python3 scripts/type_scale.py` | fluid modular type scale with line-height and tracking |

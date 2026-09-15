@@ -150,7 +150,7 @@ def declared_surface(path: str, text: str) -> str | None:
 def strip_regions(text: str, attr_pattern: str) -> str:
     """Remove every element whose opening tag matches attr_pattern, with its content (nested same-name tags counted)."""
     out, pos = [], 0
-    opener = re.compile(r"<([a-z][a-z0-9]*)\b[^>]*" + attr_pattern + r"[^>]*>", re.I)
+    opener = re.compile(r"<([a-z][a-z0-9]*)\b[^>]*(?:" + attr_pattern + r")[^>]*>", re.I)
     while True:
         m = opener.search(text, pos)
         if not m:
@@ -263,6 +263,23 @@ def file_rules(path: str, text: str):
                                                          "line for it under 'Convergence overrides'. Change the direction and "
                                                          "re-run plan, or write '- <warning>: <why it stays>' (SKILL.md "
                                                          "non-negotiable 14)", "§10 Process"))
+
+    # a page that reads unfinished: bracketed placeholders across the main path, not just in the contact block. A 1.19
+    # restaurant left "[Restoranın təsviri: …]" under dolma and piti — dishes anyone can describe truthfully.
+    if is_page and not in_design:
+        main_text = strip_regions(re.sub(r"<(script|style)\b.*?</\1>", "", text, flags=re.I | re.S),
+                                  r"(?:class|id)=[\"'][^\"']*\b(?:footer|contact|address|visit|legal|imprint|find|location|hours|order-form)\b")
+        main_text = re.sub(r"<footer\b.*?</footer>", "", main_text, flags=re.I | re.S)
+        visible = re.sub(r"<[^>]+>", " ", main_text)
+        # short tokens are client-only facts ([price], [Studio name], [phone]) and belong in brackets; what reads
+        # unfinished is a bracket standing in for a sentence the designer could have written
+        brackets = [b for b in re.findall(r"\[[^\]\n<>]{3,160}\]", visible) if len(b) >= 30]
+        if len(brackets) > 3:
+            out.append(("placeholder-overload", "MED", f"{len(brackets)} sentence-length bracketed placeholders outside the contact and legal "
+                                                       f"blocks (e.g. {brackets[0][:50]}) — the page reads unfinished. Write "
+                                                       "what is common knowledge truthfully (what dolma is, how a firing works) "
+                                                       "and keep brackets for facts only the client has (content-microcopy.md §5)",
+                        "§6 Copy"))
 
     # promises the client never made, presented as fact: a 1.17 shop told buyers every piece ships in a signed
     # paulownia box, which the studio had not said

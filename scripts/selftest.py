@@ -371,6 +371,29 @@ def main() -> int:
         p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
         check("result right after the select passes", "interaction-result-offscreen" not in rules_of(p), sorted(rules_of(p)))
 
+    print("crit board and placeholder overload — the A+ bar")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        best = os.path.join(d, "best"); os.makedirs(best)
+        open(os.path.join(best, "index.html"), "w").write("<html><body>best</body></html>")
+        subprocess.run([PY, "scripts/design_log.py", "add", "--project", "best", "--industry", "restaurant", "--crit", "28",
+                        "--page", os.path.join(best, "index.html")], cwd=ROOT, capture_output=True, text=True, env=env)
+        bad = subprocess.run([PY, "scripts/design_log.py", "add", "--project", "x", "--crit", "40"], cwd=ROOT, capture_output=True, text=True, env=env)
+        check("a crit outside 6–30 is refused", bad.returncode == 2, bad.stdout[-120:])
+        new = os.path.join(d, "new"); os.makedirs(new)
+        open(os.path.join(new, "index.html"), "w").write("<html><body>new</body></html>")
+        b = subprocess.run([PY, "scripts/crit_board.py", os.path.join(new, "index.html"), "--industry", "restaurant",
+                            "--html-only", "--out", os.path.join(d, "board")], cwd=ROOT, capture_output=True, text=True, env=env)
+        board = open(os.path.join(d, "board", "crit-board.html")).read() if os.path.exists(os.path.join(d, "board", "crit-board.html")) else ""
+        check("the crit board pins the best earlier page beside this one", "best/index.html" in board and "crit 28" in board, b.stdout[-200:])
+    with tempfile.TemporaryDirectory() as d:
+        filler = "".join(f"<p>[Description of dish {i}: ingredients]</p>" for i in range(8))
+        page = f"<html lang='en'><body><main><section data-nsd-anchor='colour field'>{filler}{long_copy}</section><footer>[address] [phone]</footer></main></body></html>"
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("eight bracketed placeholders in the main path are flagged", "placeholder-overload" in rules_of(p), sorted(rules_of(p)))
+        open(p, "w", encoding="utf-8").write(page.replace(filler, "<p>[Menu prices]</p>"))
+        check("brackets kept to the contact block and one fact pass", "placeholder-overload" not in rules_of(p), sorted(rules_of(p)))
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"
