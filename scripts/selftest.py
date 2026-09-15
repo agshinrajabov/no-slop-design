@@ -129,7 +129,7 @@ def main() -> int:
 
     print("slop_lint — the interaction result must stay on screen on phones")
     with tempfile.TemporaryDirectory() as d:
-        page = (f"<html><body><main data-nsd-interaction='estimator'><section><input type='number'><output aria-live='polite'>1</output>"
+        page = (f"<html><body><main data-nsd-interaction='estimator'><section><select></select><input type='number'><input type='date'><input type='checkbox'><output aria-live='polite'>1</output>"
                 f"</section><section>{long_copy}</section></main></body></html>")
         p = os.path.join(d, "a.html"); open(p, "w", encoding="utf-8").write(page)
         check("no sticky result is flagged", "interaction-result-offscreen" in rules_of(p), sorted(rules_of(p)))
@@ -344,6 +344,33 @@ def main() -> int:
         open(p, "w", encoding="utf-8").write(marked)
         check("marked proposals pass", "proposal-unmarked" not in rules_of(p), sorted(rules_of(p)))
 
+    print("design_log — plans by folder, parallel runs, habits that swing back")
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        rec_a = os.path.join(d, "shop", "design", "convergence-warnings.json")
+        log("plan", "--project", "shop-v1", "--composition", "type-poster", "--result-form", "card", "--record", rec_a)
+        again = log("plan", "--project", "shop-renamed", "--composition", "graphic-hero", "--result-form", "card", "--record", rec_a)
+        stored = json.load(open(os.path.join(d, "h.json")))["entries"]
+        check("a renamed re-plan from the same folder replaces the plan", len(stored) == 1 and "result form:" not in again, again[-300:])
+        rec_b = os.path.join(d, "cafe", "design", "convergence-warnings.json")
+        par = log("plan", "--project", "cafe", "--composition", "graphic-hero", "--result-form", "map", "--surface", "dark", "--record", rec_b)
+        check("a parallel plan with the same composition is warned", "in progress:" in par, par[-300:])
+    with tempfile.TemporaryDirectory() as d:
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        for proj, r in [("a", "15"), ("b", "5"), ("c", "9"), ("d", "6"), ("e", "12")]:
+            log("add", "--project", proj, "--display-ratio", r, "--dir", os.path.join(d, proj))
+        check("poster type that swings back is warned over six runs", "type scale:" in log("check"), "not warned")
+
+    print("slop_lint — a result directly under its control is on screen")
+    with tempfile.TemporaryDirectory() as d:
+        page = (f"<html lang='en'><body><main><section data-nsd-interaction='estimator' data-nsd-anchor='colour field'>"
+                f"<select id='ship'><option>DE</option></select><output aria-live='polite'>24–27 Sep</output></section>"
+                f"<section>{long_copy}</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        check("result right after the select passes", "interaction-result-offscreen" not in rules_of(p), sorted(rules_of(p)))
+
     print("slop_lint — a result above the inputs is on screen without a sticky bar")
     with tempfile.TemporaryDirectory() as d:
         above = (f"<html lang='az'><body><main><section data-nsd-interaction='availability' data-nsd-anchor='colour field'>"
@@ -352,7 +379,7 @@ def main() -> int:
         p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(above)
         check("result before the inputs passes interaction-result-offscreen", "interaction-result-offscreen" not in rules_of(p), sorted(rules_of(p)))
         below = above.replace("<output aria-live='polite'>Bu gün 16:40</output><select id='x'></select>",
-                              "<select id='x'></select><output aria-live='polite'>Bu gün 16:40</output>")
+                              "<select id='x'></select><select></select><input type='date'><input type='number'><output aria-live='polite'>Bu gün 16:40</output>")
         open(p, "w", encoding="utf-8").write(below)
         check("result after the inputs with nothing sticky still fires", "interaction-result-offscreen" in rules_of(p), sorted(rules_of(p)))
 

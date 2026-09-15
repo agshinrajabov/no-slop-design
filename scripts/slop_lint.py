@@ -326,6 +326,13 @@ def file_rules(path: str, text: str):
         first_input = re.search(r"<select\b|<textarea\b|<input\b(?![^>]*type\s*=\s*[\"']?(?:hidden|submit|button))", scope, re.I)
         if first_result and first_input and first_result.start() < first_input.start():
             persistent = True
+        # or directly after one or two controls, with no section or heading between: the whole question and its answer
+        # fit one phone screen (the 1.18 ceramics dates sat right under a single country select)
+        elif first_result and first_input:
+            between = scope[first_input.start():first_result.start()]
+            controls = len(re.findall(r"<select\b|<textarea\b|<input\b(?![^>]*type\s*=\s*[\"']?(?:hidden|submit|button))", between, re.I))
+            if controls <= 2 and len(between) < 2500 and not re.search(r"<(section|h2|h3|article)\b", between, re.I):
+                persistent = True
         for rule in re.finditer(r"([^{}]+)\{[^{}]*position\s*:\s*(?:sticky|fixed)[^{}]*\}", css, re.I):
             for sel in rule.group(1).split(","):
                 sel = sel.strip()

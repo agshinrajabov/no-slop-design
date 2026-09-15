@@ -227,6 +227,7 @@ Each version came from running the skill and looking at the screenshots, not fro
 | 1.16 | Two reruns broke the type streak but both photographed top-down on pale stone, described as "limestone" and "kiln-shelf alumina", so the check never matched | image look is recorded from a fixed vocabulary (angle, light, surface, palette) and compared facet by facet |
 | 1.17 | A run saw a convergence warning and kept the repeat "deliberately"; a restaurant's menu photos were graded as contradicting its floor-plan anchor | warnings are written into the project and must be acted on or answered in DESIGN.md (linted); menu, product and gallery photos count as content |
 | 1.18 | Warnings were answered, but a re-plan warned a run against its own earlier plans, and a shop promised a signed box the studio never offered | a plan replaces its project's earlier plan; unstated services and guarantees are marked as proposals on the page and listed for confirmation |
+| 1.19 | Two parallel runs read the same warning and both went dark; poster type came back two rounds after it was broken; a renamed plan was compared with itself | runs in progress are compared with each other and re-checked at the end; type scale and composition counted over six runs; plans identified by folder |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 

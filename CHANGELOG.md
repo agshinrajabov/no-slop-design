@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.19.0 — 2026-09-15
+
+The 1.18.0 reruns marked every unconfirmed promise as a proposal and answered their warnings in writing, and showed
+three ways the history log still let a house style through.
+
+- **A herd.** Both runs, planned at the same moment, read "the last two were light" and both went dark (92% and 93%).
+  `check` and `plan` now compare the newest direction with every other run in progress and warn when they share a
+  surface, composition, result form or hue family ("in progress: … take the other side on at least one"). `add`
+  takes `--record` too, so a collision that only becomes visible when the page is finished is written into the
+  project and must be answered.
+- **A pendulum.** Poster type was broken in 1.15 and came back two rounds later at 15.4×; the rule only looked for
+  three in a row. Type scale and composition are now counted over the last six runs: the newest at ≥ 8× with three
+  such openings in six warns, and so does a composition in three of six.
+- **A plan compared with itself, again.** 1.18 replaced a project's earlier plan by name, and a run renamed its project
+  between plans. Plans now record their folder (from `--record`, `--dir` or the working directory) and a re-plan from
+  the same folder replaces the old one whatever it is called.
+- `interaction-result-offscreen` no longer fires when the result follows its control directly, with no heading or
+  section between them (the 1.18 ceramics dates sat right under the country select).
+
 ## 1.18.0 — 2026-09-15
 
 The 1.17.0 reruns answered every convergence warning in writing, and both changed direction because of one (the

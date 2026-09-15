@@ -38,6 +38,22 @@ STORE = os.environ.get("NSD_HISTORY") or os.path.expanduser("~/.no-slop-design/h
 WINDOW = 5          # how many recent entries count as "lately"
 STREAK = 3          # this many in a row on one axis is a streak worth breaking
 PLAN_HOURS = 6      # a planned direction counts in `check` for this long, so parallel runs can see each other
+LONG = 6            # habits that swing back after a streak is broken are counted over this many runs
+
+
+def project_dir(args) -> str:
+    """The project a plan or record belongs to, by folder rather than name: a 1.18 run renamed its project between plans
+    and was compared with itself again. design/convergence-warnings.json → the project folder above design/."""
+    if getattr(args, "dir", None):
+        return os.path.abspath(args.dir)
+    if getattr(args, "record", None):
+        return os.path.dirname(os.path.dirname(os.path.abspath(args.record)))
+    return os.getcwd()
+
+
+def same_run(e: dict, entry: dict) -> bool:
+    return e.get("status") == "planned" and (e.get("project") == entry.get("project")
+                                             or (e.get("dir") and e.get("dir") == entry.get("dir")))
 RESULT_FORMS = ("figure", "paper", "diagram", "card", "list", "table", "calendar", "map", "media")
 # image look, recorded as angle;light;surface;palette from these words only (or "none" for a page without imagery)
 LOOK = {
@@ -184,6 +200,7 @@ def live(entries: list[dict]) -> list[dict]:
 
 def analyse(entries: list[dict]) -> list[str]:
     recent = live(entries)[-WINDOW:]
+    longer = live(entries)[-LONG:]
     warns: list[str] = []
     if len(recent) < 2:
         return warns
@@ -211,10 +228,12 @@ def analyse(entries: list[dict]) -> list[str]:
         warns.append(f"composition: the last two first viewports were both '{comps[-1][0]}'"
                      + (f" ({' and '.join(inds)})" if len(inds) > 1 else "")
                      + " — a different industry with the same first viewport is a house style forming; choose another composition")
-    elif len(comps) >= 3:
-        top, n = Counter(c for c, _ in comps).most_common(1)[0]
-        if n >= 3:
-            warns.append(f"composition: '{top}' in {n} of the last {len(comps)} runs — choose another first-viewport composition")
+    else:
+        long_comps = [e.get("composition") for e in longer if e.get("composition")]
+        if len(long_comps) >= 3:
+            top, n = Counter(long_comps).most_common(1)[0]
+            if n >= 3 and long_comps[-1] == top:
+                warns.append(f"composition: '{top}' in {n} of the last {len(long_comps)} runs — choose another first-viewport composition")
     # the page skeleton measured by shoot.py: the device of each section, in order
     def collapse(s):
         out = []
@@ -257,12 +276,25 @@ def analyse(entries: list[dict]) -> list[str]:
         warns.append(f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — the paper-artefact "
                      "result is becoming a house style" if top == "paper" else
                      f"result form: '{top}' in {Counter(forms)[top]} of the last {len(forms)} runs — vary it")
-    # the cheapest bold move repeated: poster-scale type on every first viewport (1.14 tests: 166, 400, 176, 158, 384 px)
-    ratios = [float(e["display_ratio"]) for e in recent if e.get("display_ratio") is not None]
-    if len(ratios) >= 3 and all(r >= 8 for r in ratios[-3:]):
-        warns.append(f"type scale: the last 3 first viewports set display type at {', '.join(f'{r:g}×' for r in ratios[-3:])} "
-                     "body size — oversized type is becoming the default bold move; make this one a photograph, a drawing, "
-                     "a colour field or the product itself, and keep the type in proportion")
+    # the cheapest bold move repeated: poster-scale type on every first viewport (1.14 tests: 166, 400, 176, 158, 384 px).
+    # Counted over a longer window, not only as a streak: 1.15 broke the streak, two rounds later it swung back to 15×.
+    ratios = [float(e["display_ratio"]) for e in longer if e.get("display_ratio") is not None]
+    big = [r for r in ratios if r >= 8]
+    if ratios and ratios[-1] >= 8 and len(big) >= 3:
+        warns.append(f"type scale: {len(big)} of the last {len(ratios)} first viewports set display type at ≥ 8× body "
+                     f"({', '.join(f'{r:g}×' for r in ratios)}) — oversized type keeps coming back as the default bold move; "
+                     "make this one a photograph, a drawing, a colour field or the product itself")
+    # runs in progress at the same time converge together: two parallel runs read the same history and both turned dark
+    me = recent[-1] if recent else {}
+    if me.get("dir"):
+        for other in live(entries):
+            if other is me or other.get("status") != "planned" or not other.get("dir") or other["dir"] == me["dir"]:
+                continue
+            shared = [f"{k.replace('_', ' ')} {me[k]}" for k in ("surface", "composition", "result_form", "hue_family")
+                      if me.get(k) and me.get(k) == other.get(k)]
+            if shared:
+                warns.append(f"in progress: '{other.get('project')}' is being designed right now with the same {', '.join(shared)} "
+                             "— two runs reacting to the same history move the same way; take the other side on at least one")
     # generated or stock imagery sharing one look: wooden table, soft window light, warm browns — or two top-down shots
     # on pale stone. Facets come from a fixed vocabulary so "limestone" and "kiln-shelf-alumina" both read as stone.
     looks = [e["image_look"].split(";") for e in recent
@@ -317,7 +349,9 @@ def main() -> int:
 
     c = sub.add_parser("check", help="warn about convergence before choosing a direction")
     c.add_argument("--json", action="store_true")
-    for p in (c, pl):
+    for p in (a, pl):
+        p.add_argument("--dir", default=None, help="project folder (default: the folder above --record's design/, else cwd)")
+    for p in (c, pl, a):
         p.add_argument("--record", default=None, metavar="PATH",
                        help="write the warnings to PATH (design/convergence-warnings.json); slop_lint then requires each one "
                             "to be acted on or answered under 'Convergence overrides' in DESIGN.md")
@@ -355,10 +389,10 @@ def main() -> int:
         entry = {k: getattr(args, k) for k in keys if getattr(args, k, None)}
         if args.hue is not None:
             entry["hue"], entry["hue_family"] = args.hue, hue_family(args.hue)
-        entry.update(status="planned", planned_at=time.time(), date=date.today().isoformat())
-        # a re-plan replaces this project's earlier plan: a 1.17 run that changed direction twice was warned against
-        # its own previous plans in four of six warnings
-        entries = [e for e in entries if not (e.get("status") == "planned" and e.get("project") == entry.get("project"))]
+        entry.update(status="planned", planned_at=time.time(), date=date.today().isoformat(), dir=project_dir(args))
+        # a re-plan replaces this project's earlier plan — matched by folder as well as name, since a 1.18 run renamed
+        # its project between plans and was warned against itself again
+        entries = [e for e in entries if not same_run(e, entry)]
         warns = analyse(entries + [entry])
         entries.append(entry)
         save(entries)
@@ -370,7 +404,8 @@ def main() -> int:
 
     if args.cmd == "add":
         entry = {k: getattr(args, k) for k in keys if getattr(args, k, None)}
-        entries = [e for e in entries if not (e.get("status") == "planned" and e.get("project") == entry.get("project"))]
+        entry["dir"] = project_dir(args)
+        entries = [e for e in entries if not same_run(e, entry)]
         if args.media is not None:
             entry["media"] = args.media
         if not args.composition:
@@ -391,8 +426,18 @@ def main() -> int:
         entries.append(entry)
         save(entries)
         print(f"recorded: {json.dumps(entry, ensure_ascii=False)}")
-        for w in analyse(entries):
+        warns = analyse(entries)
+        for w in warns:
             print("note:", w)
+        if args.record:
+            # re-checked when the page is finished: a run planned alongside another only sees the collision now
+            earlier = []
+            if os.path.exists(args.record):
+                try:
+                    earlier = json.load(open(args.record, encoding="utf-8")).get("warnings", [])
+                except (ValueError, OSError):
+                    earlier = []
+            record(args.record, entry.get("project"), list(dict.fromkeys(earlier + warns)))
         return 0
 
     if args.cmd == "list":
