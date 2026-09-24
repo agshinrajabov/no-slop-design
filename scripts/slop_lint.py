@@ -202,6 +202,68 @@ def declared_language(path: str, text: str) -> str | None:
     return m.group(1).lower() if m else None
 
 
+LANGUAGE_AXES = ("surface", "chroma", "type", "density", "radius", "imagery", "layout", "motion", "controls")
+LANGUAGE_WORDS = {
+    "surface": ("light", "dark", "mixed"), "chroma": ("achromatic", "low", "saturated"),
+    "type": ("grotesk", "humanist", "serif", "slab", "mono", "condensed", "system"), "density": ("tight", "medium", "airy"),
+    "radius": ("square", "soft", "round", "pill"), "imagery": ("none", "product", "photo", "illustration", "type", "3d"),
+    "layout": ("centered", "left", "asymmetric", "grid"), "motion": ("none", "functional", "choreographed", "scene"),
+    "controls": ("hairline", "solid", "raw"),
+}
+
+
+def declared_design_language(path: str, text: str) -> dict[str, str] | None:
+    """The nine-axis design language the direction wrote (design-language.md §4): `data-nsd-design-language` on the
+    page, else the 'Design language:' line in design/DESIGN.md. None when absent or not from the vocabulary."""
+    value = declared(path, text, "data-nsd-design-language", r"Design language\**\s*(?:\|\s*|:\**\s*|\([^)]*\)\**:?\s*)\**\s*`?([a-z0-9;?-]+)")
+    parts = [p.strip() for p in (value or "").split(";")]
+    if len(parts) != len(LANGUAGE_AXES):
+        return None
+    prof = dict(zip(LANGUAGE_AXES, parts))
+    return prof if all(prof[a] == "?" or prof[a] in LANGUAGE_WORDS[a] for a in LANGUAGE_AXES) else None
+
+
+def market_evidence(path: str) -> bool:
+    """Whether DESIGN.md's 'Market:' line names measured competitors (two URLs, or a profile judged by eye)."""
+    d = os.path.dirname(os.path.abspath(path))
+    for _ in range(3):
+        cand = os.path.join(d, "design", "DESIGN.md")
+        if os.path.exists(cand):
+            body = open(cand, encoding="utf-8", errors="ignore").read()
+            m = re.search(r"^\W*Market\**\s*:\**\s*(.+)$", body, re.I | re.M)
+            line = m.group(1) if m else ""
+            return len(re.findall(r"https?://", line)) >= 2 or bool(re.search(r"by eye|shoot\.py --profile", line, re.I))
+        d = os.path.dirname(d)
+    return False
+
+
+def relaxed_rules(lang: dict[str, str] | None) -> set[str]:
+    """Rules that describe a genre's native devices, not its untouched defaults. A language written down with market
+    evidence makes them decisions: a centred hero in a developer tool, a three-column grid in a component library,
+    system type in a brutalist page, dense rows in documentation. What stays flagged in every language is the default
+    nobody chose: untouched theme values, the reflex typeface without a brand line, purple gradients, glow blobs."""
+    if not lang:
+        return set()
+    out: set[str] = set()
+    if lang["layout"] == "centered":
+        out |= {"everything-centered"}
+    if lang["layout"] == "grid" or lang["imagery"] == "product":
+        out |= {"three-col-grid", "bento"}
+    if lang["density"] == "tight":
+        out |= {"ledger-site", "ledger-hero", "tables-as-sections"}
+    if lang["type"] == "system":
+        out |= {"system-ui-primary"}
+    if lang["type"] == "mono":
+        out |= {"tracking-widest-caps"}
+    if lang["controls"] == "raw":
+        out |= {"dashed-border-decor"}
+    if lang["radius"] == "pill":
+        out |= {"uniform-radius"}
+    if lang["motion"] in ("choreographed", "scene"):
+        out |= {"fade-up-everything"}
+    return out
+
+
 def page_css(path: str, text: str) -> str:
     """CSS only — <style> blocks plus linked local stylesheets. The HTML around them has no rules, and reading it as
     CSS once made a whole document look like one selector."""
@@ -270,6 +332,22 @@ def file_rules(path: str, text: str):
             out.append(("design-record-incomplete", "MED", f"the design record is missing {', '.join(missing)} — Standard mode "
                                                            "writes these (SKILL.md, project layout); the brief and contrast pairs "
                                                            "are where the decisions and the AA evidence live", "§10 Process"))
+
+    # the design language: a page without one written down speaks the skill's own; one without market evidence was
+    # chosen from taste. Both are how ten industries came out 50% alike (design-language.md §1)
+    if is_page and not in_design and base in ("index.html", "index.htm") and os.path.isdir(os.path.join(d, "design")):
+        lang = declared_design_language(path, text)
+        if not lang:
+            out.append(("design-language-unrecorded", "MED", "no valid 'Design language:' line in design/DESIGN.md (nine words: "
+                                                             + ";".join(LANGUAGE_AXES) + ") — the page speaks the skill's own language "
+                                                             "unless the market's is measured and written down; run `shoot.py --profile "
+                                                             "<competitor urls>`, then `shoot.py index.html` and copy its 'language' line "
+                                                             "(design-language.md §3–4)", "§10 Process"))
+        elif not market_evidence(path):
+            out.append(("design-language-unmeasured", "LOW", "'Design language:' is written but no 'Market:' line names measured "
+                                                             "competitors (two URLs from `shoot.py --profile`, or 'by eye' with the "
+                                                             "pages looked at) — a language chosen from taste is the skill's, not the "
+                                                             "market's (design-language.md §3)", "§10 Process"))
 
     # a convergence warning the run saw and neither acted on nor answered in writing
     warn_file = os.path.join(d, "design", "convergence-warnings.json")
@@ -565,7 +643,10 @@ def scan(paths):
             reveal_hides.append(path)
         if NOJS_GUARD.search(text):
             nojs_guard = True
+        relaxed = relaxed_rules(declared_design_language(path, text)) if path.lower().endswith((".html", ".htm", ".css", ".astro", ".jsx", ".tsx", ".vue", ".svelte")) else set()
         for rid, sev, msg, sec in file_rules(path, text):
+            if rid in relaxed:
+                continue
             counts[rid] += 1
             findings.append({"rule": rid, "severity": sev, "file": path, "line": 1, "section": sec, "message": msg, "snippet": ""})
         is_native = path.endswith((".swift", ".kt", ".dart"))
@@ -574,6 +655,8 @@ def scan(paths):
                 continue
             for rid, sev, rx, msg, sec in COMPILED:
                 if rid == "system-ui-primary" and is_native:
+                    continue
+                if rid in relaxed:
                     continue
                 m = rx.search(line)
                 if m:

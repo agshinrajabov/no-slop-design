@@ -16,6 +16,7 @@
 | Platform(s) | {web marketing · web app · iOS · Android · cross-platform (Flutter/RN) · desktop} |
 | Expression register | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {audience decision type + category norm + asset budget} |
 | Interaction depth | {I1 · I2 · I3 · I4} — signature interaction: {top job → result → carries into} |
+| Design language | {decided in Phase 3 from the measured market fingerprint (`design-language.md`); here: how far the brief wants to depart from the category — none · one or two named axes ("stand out") · a named language the brand already owns} |
 | Mode | {Standard (default) · Deep} |
 | Surface type | {landing / marketing · product UI (data-dense) · editorial · e-commerce · tool · hybrid} |
 | Scope of this engagement | {new product · new feature · redesign · single screen · design system only} |

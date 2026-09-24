@@ -52,6 +52,10 @@ job story in the brief. It is:
   a result in ≤ 2 steps. Directly under the hero is one option, not the rule: a hotel may show its rooms first and
   check availability after, a restaurant its menu first. Four different businesses in a row put it directly under
   the hero;
+- **in the page's language** — its form follows the design language the market set (`design-language.md` §5): a
+  playground in a developer tool, a live search in documentation, the scene itself in an immersive launch, a picker
+  beside the photograph in a hospitality page, a raw calculator in a brutalist one. A panel of form controls beside a
+  heading is one form, not the form;
 - **connected** — its result carries into the next action: it prefills the form, the WhatsApp message, the booking;
 - **honest** — estimates say "estimate", assumptions are visible, fees are not hidden, nothing asks for sign-up
   before showing the result;

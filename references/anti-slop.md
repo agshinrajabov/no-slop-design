@@ -132,18 +132,22 @@ The catalog is organised by category. `scripts/slop_lint.py` catches the mechani
 ## §8 Over-correction slop (the anti-default that became a default)
 
 Reacting to the purple-gradient look, a second wave of tells appeared. They are slop for the same reason: chosen for
-"not looking AI" rather than for the brand.
+"not looking AI" rather than for the brand. **None of the genres below is slop in itself.** Brutalism, mono, the
+editorial serif, the dark developer tool, the dense utility page are legitimate design languages when the market
+fingerprint or a brand attribute puts the page there (`design-language.md` §5–6). What this table catches is each
+genre's *untouched default* — the version anyone gets by naming the genre and stopping — and the genre worn as a
+costume by a business whose market speaks another language.
 
 | Tell | Legitimate only when |
 |---|---|
-| Brutalism: black 2px borders, hard shadows, raw system type, hot-pink accents | Counter-cultural, art, architecture, zine, or deliberately provocative positioning |
-| "Technical mono" / terminal-core: mono everywhere, `[ ]` brackets, `//` labels, code-brutalism | Developer tooling with real data/code content, and even then mono only for that content |
+| Brutalism worn whole: black 2px borders, hard shadows, raw system type, hot-pink accents and nothing else | The market line or a brand attribute puts the page there (counter-cultural, art, architecture, zine, agency), and the page has a point of view beyond the borders |
+| "Technical mono" / terminal-core: mono everywhere, `[ ]` brackets, `//` labels, code-brutalism | Developer tooling whose market line reads `type: mono` or with real code content; even then mono is a decision with a voice, not a costume |
 | Editorial serif costume: Instrument Serif / Editor New italics, big numerals, thin rules, "Vol. 01" | Publishing, heritage, long-form reading, luxury |
 | Grain / noise overlays, paper textures | Physical, analog, print-rooted brand story |
 | Cream + terracotta + "warm minimal" | Warmth is an explicit attribute and the category isn't already saturated with it |
 | Frutiger-Aero / Y2K chrome / lo-fi pixel nostalgia | Youth, gaming, music, or an ironic brand voice |
 | Swiss-grid hyper-minimal with 12px labels everywhere | Design-literate audience, information-dense product |
-| Neon-brutalist dark ("Warp × Sentry") | Dev tools, and only once |
+| Neon-brutalist dark ("Warp × Sentry"): black, one glow, a terminal | Dev tools whose market is dark — and then the crafted version: the interface at scale, one brand accent, no glow |
 | **Label/value spec table as the layout device** for most sections of a page ("the ledger site") | Genuine spec content: a technical datasheet, a pricing comparison, a timetable, an app's settings |
 | **Register mismatch**: a festival, hotel, fashion or agency page built at the density and scale of a B2B document | Never; pick the register first (`expression-register.md`) |
 | **Text-only "honest" page**: serif display, fact table / definition list as the hero, one button, no imagery | A brand that is genuinely typographic (type foundry, publication) and names it as the memorable thing; never for a clinic, café, firm, hotel, shop |
@@ -166,8 +170,9 @@ Reacting to the purple-gradient look, a second wave of tells appeared. They are 
 | **Register raised to look different**: the ambition changed because recent projects shared a register, not because the brief asked | Never; break surface, hue, type or structure instead (`design_log.py check`) |
 | **Horizontal-scroll table with no cue**: the last columns sit a few pixels off-screen on a phone and nothing says so | Never; reflow or show an edge cue (`components.md` §8) |
 
-Rule: **a style must be traceable to a brand attribute or a content type.** Never stack more than two trend
-signals. And a second rule: **the absence of material is also a style choice**, and usually the wrong one; see
+Rule: **a style must be traceable to a brand attribute, a content type, or the measured language of the market**
+(`design-language.md`). Within any language, its untouched defaults are the slop. Never stack more than two trend
+signals the market does not speak. And a second rule: **the absence of material is also a style choice**, and usually the wrong one; see
 `visual-material.md`. Match trend intensity to brand stage (an unknown startup can't carry an "understated" look; a bank can't
 carry glitch).
 

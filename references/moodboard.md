@@ -123,6 +123,12 @@ Translate each attribute into concrete, testable consequences. This table become
 Fill every cell for every attribute, or state "no consequence" explicitly. Where two attributes conflict in a cell,
 decide now and write the tie-breaker.
 
+The design code is written **inside the market's language**: the `Market:` line measured in Phase 2
+(`design-language.md` §3) fixes the axes the category shares — surface, chroma, type class, density, radius, imagery,
+layout, motion, controls — and the attributes decide the one or two axes the page departs on. An attribute that would
+move four axes away from the market has moved the page into another category; write the departure and its reason in
+the direction block, or keep the axis.
+
 ## 8. Step 6 — compose 2–3 directions
 
 Each direction gets: a name (two words, evocative, not "Modern Clean"), the **expression register (R1–R4) with a

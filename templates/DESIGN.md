@@ -17,6 +17,7 @@
 | Surface mode | {Persuade · Operate · Read · Play} |
 | **Expression register** | {R1 Utility · R2 Composed · R3 Expressive · R4 Experimental} — because {decision type + category norm + asset budget} |
 | **Interaction depth** | {I1 Static · I2 Functional · I3 Demonstrative · I4 Immersive} — because {top job + whether its answer depends on the visitor's inputs} |
+| **Design language** | {surface;chroma;type;density;radius;imagery;layout;motion;controls — nine words from `design-language.md` §2} — from the market line below, departing on {axes, or none} |
 | Mode | {Standard · Deep} |
 | Token source | `tokens/primitives.json`, `tokens/semantic.json`, `tokens/semantic.dark.json`, `tokens/components.json` |
 | Build | `python3 scripts/build_tokens.py tokens/*.json --out build/` |
@@ -36,6 +37,12 @@
 **Direction: "{Two-word name}"** — {visual thesis in one sentence: typography discipline of X × colour world of Y × density of Z}.
 
 *Standard mode records the direction here; Deep mode also builds `design/moodboard.html`.*
+
+**Design language** (`design-language.md` §4): {nine words, e.g. light;low;serif;airy;square;photo;left;functional;hairline}
+Market: {the `market` line from `python3 scripts/shoot.py --profile <urls>`} — from {n} pages: {url} {url} {url} {url} {or: by eye: urls}
+Splits: {axes where the competitors disagree, from the `split` lines — free choices}
+Departs on: {axis (word) — the brief's reason} · {axis (word) — reason} {or: none — the category is not saturated}
+Nearest calibration point: {§6 name, or "none of the six"}. Measured after the build: {shoot.py `language` line; matches / differs on … because …}
 
 **References** (≥ 5; ≥ 2 from the audience's market; ≥ 30% non-UI; each with what was taken):
 

@@ -605,6 +605,55 @@ def main() -> int:
         out = run("scripts/build_tokens.py", p, "--check").stdout
         check("no phantom 'tokens' mode", "modes: none" in out, out.strip()[:120])
 
+    print("design language — recorded, validated, relaxed in lint, warned across industries")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        centred = ("<html lang='en'><head></head><body><main>"
+                   "<section class='hero text-center'><h1 class='text-center'>Ship</h1><p class='text-center'>x</p>"
+                   "<p class='text-center'>y</p><p class='text-center'>z</p></section><section data-nsd-anchor='product screenshot'>"
+                   "<img src='ui.png' width='1200' height='700' alt='the app'></section><section>" + long_copy + "</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(centred)
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("Anchor type: product screenshot\n")
+        r = rules_of(p)
+        check("a page without a language line is flagged", "design-language-unrecorded" in r, sorted(r))
+        check("centred copy is flagged in the skill's own language", "everything-centered" in r, sorted(r))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write(
+            "Anchor type: product screenshot\n**Design language**: dark;achromatic;grotesk;medium;soft;product;centered;choreographed;hairline\n")
+        r = rules_of(p)
+        check("a language written from taste is flagged as unmeasured", "design-language-unmeasured" in r and "design-language-unrecorded" not in r, sorted(r))
+        check("a centred language relaxes everything-centered", "everything-centered" not in r, sorted(r))
+        open(os.path.join(d, "design", "DESIGN.md"), "a").write("Market: dark;achromatic;grotesk;medium;soft;photo;centered;choreographed;hairline — from 3 pages: https://a.dev https://b.dev https://c.dev\n")
+        r = rules_of(p)
+        check("market evidence clears the unmeasured flag", "design-language-unmeasured" not in r, sorted(r))
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write("Design language: dark;achromatic;grotesk;medium;soft;product;centered;funky;hairline\nMarket: by eye: x\n")
+        r = rules_of(p)
+        check("a word outside the vocabulary is not a language", "design-language-unrecorded" in r, sorted(r))
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env)
+        L = "light;low;serif;airy;square;photo;left;functional;hairline"
+        bad = log("add", "--project", "x", "--language", "light;low;serif;airy;square;photo;left;funky;hairline")
+        check("design_log refuses a language outside the vocabulary", bad.returncode == 2 and "funky" in bad.stdout, bad.stdout[-160:])
+        log("add", "--project", "law", "--industry", "law", "--language", L)
+        out = log("add", "--project", "bakery", "--industry", "bakery", "--language", L).stdout
+        check("the same language on two industries warns", "design language:" in out and "same language" in out, out.strip()[-300:])
+        far = log("add", "--project", "dev", "--industry", "dev tools", "--language", "light;low;serif;airy;square;photo;left;functional;hairline",
+                  "--market-language", "dark;achromatic;grotesk;medium;soft;photo;centered;choreographed;hairline").stdout
+        check("a page far from its market warns", "market fit:" in far, far.strip()[-300:])
+        near = log("add", "--project", "dev2", "--industry", "dev tools", "--language", "dark;achromatic;grotesk;medium;soft;product;centered;choreographed;hairline",
+                   "--market-language", "dark;achromatic;grotesk;medium;soft;photo;centered;choreographed;hairline").stdout
+        check("one departure from the market is fine", "market fit:" not in near, near.strip()[-300:])
+    import shoot
+    check("relaxed floors for a product language", shoot.relax_for("dark;achromatic;grotesk;medium;soft;product;centered;choreographed;hairline") < 1
+          and shoot.relax_for("light;low;serif;airy;square;photo;left;functional;hairline") == 1.0, "relax_for")
+    check("a 22% product screenshot passes R2 under the relaxed floor",
+          shoot.bold_move({"ratio": 3, "graphic": 0.22, "field": 0}, "R2", relax=0.66)[0]
+          and not shoot.bold_move({"ratio": 3, "graphic": 0.22, "field": 0}, "R2")[0], "bold_move relax")
+    m, notes = shoot.market_profile(["light;low;serif;airy;square;photo;left;functional;hairline",
+                                     "light;low;serif;medium;soft;photo;left;functional;solid",
+                                     "light;saturated;serif;medium;square;photo;left;none;solid"])
+    check("the market fingerprint is the mode per axis with splits named", m == "light;low;serif;medium;square;photo;left;functional;solid"
+          and any(n.startswith("density") for n in notes), f"{m} {notes}")
+
     print("contrast — the starter palette passes in both modes")
     with tempfile.TemporaryDirectory() as d:
         run("scripts/build_tokens.py", *[f"templates/tokens/{f}" for f in

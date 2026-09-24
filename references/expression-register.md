@@ -44,6 +44,12 @@ how much the visitor can do: that is interaction depth (I1–I4, `interaction-de
 one signature interaction whatever its register. An R2 translation agency with a live price estimator is right; an
 R2 agency with none is a brochure.
 
+**The design language is a third axis.** The register says how loud; the language says *which world* — a dark
+developer tool, a neutral component library, a quiet editorial page and a brutalist portfolio are all R2 or R3 and
+share nothing else. The language is measured from the category's own pages, not chosen from taste
+(`design-language.md` §2–3), and everything in this file — the bold move, the technique table, the fails-as column —
+is read relative to it (§5 there). This skill's earlier pages were all one language under different registers.
+
 ## 2. Choosing the register
 
 Ask, in the brief, and write the answer down. If the user is unavailable, decide from this table and state it.
@@ -254,6 +260,10 @@ Rules for the seam:
 - Register above the client's asset budget, producing stock-photo theatre.
 - Photographs in every section because R3 "has imagery". The register sets the scale of the anchor, not the number of images.
 - Trend stacking (grain + mono + brutalist borders + custom cursor) with no attribute behind any of it.
+
+**One language for every register** (the failure the register cannot see): a clinic, a café, a hotel and a dev tool
+at R2, R2, R3 and R2, each correct, each in the same composed, tinted, one-anchor language. The register was right and
+the pages were still one studio's. The language comes from the market line (`design-language.md`), not from this file.
 
 ## 11. Checks
 

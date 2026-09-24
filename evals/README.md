@@ -9,6 +9,7 @@ score. Keep transcripts and screenshots under `evals/runs/{date}-{model}/` (git-
 | 01 New product landing page | full path: brief → research → moodboard → tokens → compose → review; Persuade mode; honesty; anti-skeleton | `01-new-saas-landing.md` |
 | 02 Feature inside an existing design system | detection and adoption; no new visual language; Operate mode; state matrix; drift report | `02-existing-system-feature.md` |
 | 03 Native iOS screen | platform posture; HIG; Liquid Glass rules; Dynamic Type; token mapping to SwiftUI | `03-ios-screen.md` |
+| 06 Ten industries, one day | the design language: market fingerprint measured, language written with departures, pages read as their category beside real competitors and not as one studio beside each other | `06-design-language.md` |
 | Fixture | `fixtures/slop-sample.html` must grade D or F in `scripts/slop_lint.py`; `templates/moodboard.html` must grade A or B | — |
 
 ## Grading

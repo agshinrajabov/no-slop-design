@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.22.0 — 2026-09-25
+
+The user's verdict on 1.21: ten industries still come out about half alike, and the reason is structural — the skill
+had one design language (composed, tinted, one anchor, one bold move, a signature panel) and every rule, floor and
+lint was written in it. Brutalism, mono, the editorial serif, the dark developer tool and the dense utility page were
+listed as over-correction slop, so the agent's safe zone was the centre. Anti-convergence made pages differ from the
+skill's own history, which is not the same as fitting the world the business lives in. This release turns the
+language into a measured axis and inverts the direction: converge on the market, diverge from the skill.
+
+- **`references/design-language.md`.** Nine axes with a closed vocabulary — surface, chroma, type, density, radius,
+  imagery, layout, motion, controls — a method for measuring the category's own pages, how to write the language and
+  its departures into the direction, how every rule in the skill reads under a language, six calibration points that
+  are explicitly not a menu, and what stays slop in every language.
+- **`shoot.py --profile <urls>`** fetches competitor pages (scripts off, reveal states forced, each render named so it
+  can be checked by eye), measures each one's nine-axis profile and prints the market fingerprint with its splits.
+  `shoot.py index.html` prints the page's own `language` line and compares it with the declared one; the bold-move
+  floors scale by two thirds for `product` and `tight` languages.
+- **`design_log.py add/plan --language --market-language`**, validated against the vocabulary; `check` warns when two
+  unrelated industries share a language (≤ 2 axes apart), when one language fills three of the last six pages, and
+  when a page departs from its market on four or more axes.
+- **`slop_lint.py`** reads `Design language:` and stops flagging a language's native devices — centred heroes,
+  three-column grids and bento in `centered`/`grid`/`product` languages, dense rows in `tight`, system type in
+  `system`, raw borders in `raw`, pill radii in `pill`, reveals in `choreographed` — while everything nobody chose
+  stays flagged. New rules `design-language-unrecorded` (MED) and `design-language-unmeasured` (LOW).
+- **The references stop prescribing a language.** `anti-slop.md` §8 now says no genre is slop, only its untouched
+  default; `visual-material.md` §11's industry → anchor table is gone (it was a template), the clichés stay;
+  `expression-register.md` names the language as the third axis; `moodboard.md` writes the design code inside the
+  market's language; `interaction-depth.md` lets the signature interaction take the language's form.
+- Eval 06: ten industries in one day, judged beside their real competitors.
+
 ## 1.21.0 — 2026-09-15
 
 The 1.20.0 reruns scored themselves honestly on the new studio crit — a ceramics shop reached A+ (26: "a different

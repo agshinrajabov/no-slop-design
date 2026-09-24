@@ -64,6 +64,42 @@ LOOK = {
 }
 
 
+LANGUAGE = {  # design-language.md §2: the nine axes of a design language and their only allowed words, in this order
+    "surface": ("light", "dark", "mixed"),
+    "chroma": ("achromatic", "low", "saturated"),
+    "type": ("grotesk", "humanist", "serif", "slab", "mono", "condensed", "system"),
+    "density": ("tight", "medium", "airy"),
+    "radius": ("square", "soft", "round", "pill"),
+    "imagery": ("none", "product", "photo", "illustration", "type", "3d"),
+    "layout": ("centered", "left", "asymmetric", "grid"),
+    "motion": ("none", "functional", "choreographed", "scene"),
+    "controls": ("hairline", "solid", "raw"),
+}
+
+
+def parse_language(value: str, what: str = "--language") -> str:
+    """Validate a nine-axis design-language profile against LANGUAGE; '?' is allowed for an axis that could not be
+    measured. Raises ValueError naming the allowed words."""
+    parts = [p.strip().lower() for p in value.strip().split(";")]
+    if len(parts) != len(LANGUAGE):
+        raise ValueError(f"{what} takes {';'.join(LANGUAGE)} — nine words from design-language.md §2, "
+                         "as shoot.py's 'language' line prints them")
+    for (axis, words), p in zip(LANGUAGE.items(), parts):
+        if p != "?" and p not in words:
+            raise ValueError(f"{what} {axis} '{p}' is not one of: {', '.join(words)} (pick the nearest; free words hide repeats)")
+    return ";".join(parts)
+
+
+def language_distance(a: str | None, b: str | None) -> list[str]:
+    """The axes on which two profiles differ (unknown '?' axes are skipped)."""
+    if not a or not b:
+        return []
+    pa, pb = a.split(";"), b.split(";")
+    if len(pa) != len(LANGUAGE) or len(pb) != len(LANGUAGE):
+        return []
+    return [ax for ax, x, y in zip(LANGUAGE, pa, pb) if x != y and x != "?" and y != "?"]
+
+
 def parse_look(value: str) -> str:
     """Validate an --image-look value against LOOK; raises ValueError with the allowed words."""
     v = value.strip().lower()
@@ -326,6 +362,31 @@ def analyse(entries: list[dict]) -> list[str]:
     if len(skels) >= 3 and all(s and s[-1] == "form" for s, _ in skels[-3:]):
         warns.append("closing: the last three pages ended on a contact form — end on the next real step for this business "
                      "(a map and hours, a booking, a phone number, a WhatsApp link, an order)")
+    # the design language (design-language.md): nine axes measured by shoot.py. Pages that differ in colour, idea and
+    # composition still come from one studio when they speak the same language for unrelated industries — the user's
+    # verdict on 1.21 ("50% alike across ten industries") was this. The market fingerprint says what the category speaks;
+    # a page far from it with no written departure is the skill's own language showing.
+    langs = [(e["language"], e.get("industry") or "?", e.get("project")) for e in longer if e.get("language")]
+    if len(langs) >= 2:
+        (a, ia, pa), (b, ib, pb) = langs[-2], langs[-1]
+        diff = language_distance(a, b)
+        known = [ax for ax, x, y in zip(LANGUAGE, a.split(";"), b.split(";")) if x != "?" and y != "?"]
+        if known and len(diff) <= 2 and ia != ib:
+            warns.append(f"design language: '{pb}' ({ib}) speaks the same language as '{pa}' ({ia}) — "
+                         f"{len(known) - len(diff)} of {len(known)} axes match ({b}); two industries that share a language "
+                         "share a studio, not a market. Re-read the market fingerprint and move the axes the market moves")
+    if len(langs) >= 3:
+        top, n = Counter(l for l, _, _ in langs).most_common(1)[0]
+        if n >= 3 and langs[-1][0] == top and len({i for l, i, _ in langs if l == top}) >= 2:
+            warns.append(f"design language: '{top}' on {n} of the last {len(langs)} pages across "
+                         f"{len({i for l, i, _ in langs if l == top})} industries — the skill's house language")
+    me = recent[-1] if recent else {}
+    if me.get("language") and me.get("market_language"):
+        far = language_distance(me["language"], me["market_language"])
+        if len(far) >= 4:
+            warns.append(f"market fit: this page departs from its market fingerprint on {len(far)} axes ({', '.join(far)}) — "
+                         "one or two departures make a page stand out in its category; four or more put it in another "
+                         "category. Write each departure under 'Design language' in DESIGN.md with the brief's reason, or move back")
     industries = [e.get("industry") for e in recent if e.get("industry")]
     if len(set(industries)) >= 3 and len({e.get("surface") for e in recent if e.get("surface")}) == 1:
         warns.append("three different industries came out with the same surface polarity — that is the skill's own tell, not a house style")
@@ -345,6 +406,11 @@ def main() -> int:
                        help="the physical form of the interaction's answer: " + ", ".join(RESULT_FORMS))
         p.add_argument("--display-ratio", dest="display_ratio", type=float, default=None,
                        help="first-viewport display type ÷ body size, from shoot.py's 'first' line (planned: the intended ratio)")
+        p.add_argument("--language", default=None,
+                       help="this page's design language, nine words from design-language.md §2 as shoot.py's 'language' "
+                            "line prints them: " + ";".join(LANGUAGE))
+        p.add_argument("--market-language", dest="market_language", default=None,
+                       help="the market fingerprint from `shoot.py --profile <competitor urls>` (the 'market' line)")
         p.add_argument("--image-look", dest="image_look", default=None,
                        help="angle;light;surface;palette from a fixed vocabulary, e.g. top-down;overcast;stone;neutral, "
                             "or none. Angles: " + ", ".join(LOOK["angle"]) + ". Light: " + ", ".join(LOOK["light"])
@@ -389,6 +455,13 @@ def main() -> int:
         except ValueError as err:
             print(err)
             return 2
+    for name, flag in (("language", "--language"), ("market_language", "--market-language")):
+        if getattr(args, name, None):
+            try:
+                setattr(args, name, parse_language(getattr(args, name), flag))
+            except ValueError as err:
+                print(err)
+                return 2
 
     if args.cmd == "measure":
         share = dark_share(args.png)
@@ -396,7 +469,8 @@ def main() -> int:
         return 0
 
     keys = ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor",
-            "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look", "dialect")
+            "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look", "dialect",
+            "language", "market_language")
     if args.cmd == "plan":
         import time
         missing = [f"--{n.replace('_', '-')}" for n in ("project", "composition", "result_form") if not getattr(args, n, None)]
@@ -439,6 +513,9 @@ def main() -> int:
         if not args.composition:
             print("note: no --composition recorded; shoot.py prints it ('compose' line) — without it a repeated first "
                   "viewport across industries goes unnoticed")
+        if not args.language:
+            print("note: no --language recorded; shoot.py prints it ('language' line) — without it the same design language "
+                  "across unrelated industries goes unnoticed")
         if args.hue is not None:
             entry["hue"] = args.hue
             entry["hue_family"] = hue_family(args.hue)
@@ -493,13 +570,14 @@ def main() -> int:
         print(f"  {'[planned] ' if e.get('status') == 'planned' else ''}{e.get('date','?')}  {e.get('project','?')}: "
               f"{e.get('register','?')} · {e.get('surface','?')} · {e.get('result_form', 'result ?')} · "
               f"{e.get('hue_family','?')} · {e.get('display','?')} · {e.get('composition', 'composition ?')} · "
-              f"{e.get('structure','')[:40]}")
+              f"{e.get('language', 'language ?')} · {e.get('structure','')[:40]}")
     if warns:
         print()
         for w in warns:
             print("CONVERGENCE:", w)
         print("\nBreak at least two axes: surface polarity, hue family, typeface class, first-viewport composition. "
-              "Never the register — it comes from the brief.")
+              "Never the register — it comes from the brief. And never break an axis the market fingerprint fixes: "
+              "the page converges on its market and diverges from this history (design-language.md §5).")
     else:
         print("\nno convergence warnings")
     if note:

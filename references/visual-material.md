@@ -190,22 +190,24 @@ Short loops (6–12 s, muted, `autoplay loop playsinline`, poster frame, `prefer
 be the anchor for hospitality, sport, product, and food. Keep under 2 MB, `preload="metadata"`, never autoplay with
 sound.
 
-## 11. Industry starting points
+## 11. Industry clichés (what not to show)
 
-Starting points for the art direction conversation, not templates; each still needs the moodboard.
+There is no industry → anchor table here any more: it was a template, and the anchor now comes from the measured
+market line (`design-language.md` §3, the `imagery` axis) and the direction. What survives is the list of what every
+category's stock imagery reaches for, so the page does not.
 
-| Industry | Have (what to show) | Anchor | Avoid |
-|---|---|---|---|
-| Dental / clinic | the treatment room, daylight, the team at work, the street entrance | full-bleed room photograph with type; team candids further down | folded-arms doctor, tooth icons, blue gradients |
-| Coffee roaster | beans, the roaster, bags/packaging, origin landscapes, pour, steam | product-first packaging on a surface; texture of beans; origin photography | latte art stock, brown-on-brown everywhere |
-| Law firm | the people, the building/office, the town, documents as material | portraits with real light + place; architectural detail | gavel, scales, columns, handshake, navy + gold by reflex |
-| Restaurant / hotel | food, rooms, light at different hours, staff | full-bleed photography, video loop | stock plates, drone shots only |
-| SaaS / developer tool | the product UI, diagrams of how it works, real customer artefacts | product-first screenshot at scale; explanatory diagram | dashboard mockups in perspective, blobs |
-| E-commerce fashion | product on body, product flat, detail | large product photography, color fields | busy collages, badges |
-| Education | students at work, materials, outcomes | photography of the work itself; illustration system if audience is children | graduation caps, lightbulbs |
-| Finance | people in context, real statements/charts, the app | product/interface first, calm photography | gradients, vault icons, generic city skyline |
-| Real estate / architecture | the buildings, interiors, plans | full-bleed architecture photography, plans as diagrams | drone-only, HDR |
-| Nonprofit | the work, the people served (with consent), the place | documentary photography | sad-eyed stock, hands holding seedling |
+| Industry | Have (what only this business can show) | Avoid (the category's stock reflex) |
+|---|---|---|
+| Dental / clinic | the treatment room, daylight, the team at work, the street entrance | folded-arms doctor, tooth icons, blue gradients |
+| Coffee roaster | beans, the roaster, bags/packaging, origin landscapes, pour, steam | latte art stock, brown-on-brown everywhere |
+| Law firm | the people, the building/office, the town, documents as material | gavel, scales, columns, handshake, navy + gold by reflex |
+| Restaurant / hotel | food, rooms, light at different hours, staff | stock plates, drone shots only |
+| SaaS / developer tool | the product UI, diagrams of how it works, real customer artefacts | dashboard mockups in perspective, blobs |
+| E-commerce fashion | product on body, product flat, detail | busy collages, badges |
+| Education | students at work, materials, outcomes | graduation caps, lightbulbs |
+| Finance | people in context, real statements/charts, the app | gradients, vault icons, generic city skyline |
+| Real estate / architecture | the buildings, interiors, plans | drone-only, HDR |
+| Nonprofit | the work, the people served (with consent), the place | sad-eyed stock, hands holding seedling |
 
 ## 12. Visual-material slop
 

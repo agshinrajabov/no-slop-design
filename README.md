@@ -14,7 +14,7 @@ Works in Claude Code as a skill or a plugin, and in any agent that reads the [Ag
 
 [![checks](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml/badge.svg)](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml)
 ![Agent Skills format](https://img.shields.io/badge/Agent_Skills-SKILL.md-1c1c1c?style=flat-square)
-![version](https://img.shields.io/badge/version-1.21.0-1c1c1c?style=flat-square)
+![version](https://img.shields.io/badge/version-1.22.0-1c1c1c?style=flat-square)
 ![MIT](https://img.shields.io/badge/licence-MIT-1c1c1c?style=flat-square)
 
 ---
@@ -104,6 +104,27 @@ one bold move: poster-scale type, a dominant photograph or drawing, or a saturat
 Two modes. **Standard** (default) targets 10–15 minutes at R1–R2 and 20–25 at R3, plus about five minutes when the
 crit sends an idea back to be rebuilt. **Deep** runs two or three directions and up to three crit passes.
 
+## How it speaks the market's language
+
+Twenty-one releases made pages differ from each other, and they still read as one studio's work across industries,
+because the skill had one design language and every rule was written in it. A page now takes its language from its
+category, measured, not from the skill:
+
+```
+python3 scripts/shoot.py --profile https://local-competitor.az https://second-local.az https://global-leader.com
+  light;low;serif;medium;soft;photo;left;functional;solid     https://local-competitor.az
+  …
+market   light;low;serif;medium;soft;photo;left;functional;solid
+  split  density: medium ×2, airy ×1
+```
+
+Nine axes with a closed vocabulary — surface, chroma, type, density, radius, imagery, layout, motion, controls —
+measured from the competitors' first screens. The page is written in that language and departs from it only where the
+brief pays for it, one or two named axes. Brutalism, mono, the dark developer tool, the neutral component library, the
+dense utility page are languages, not slop; the linter reads the declared language and stops flagging its native
+devices. What stays slop in every language is the default nobody chose. `references/design-language.md` has the
+axes, the method and six calibration points that are deliberately not a menu.
+
 ## How it keeps pages different
 
 Rules alone did not stop pages from converging: each fix produced a new habit. So the skill measures what a page
@@ -118,6 +139,7 @@ Rules alone did not stop pages from converging: each fix produced a new habit. S
 | Image look (angle · light · surface · palette) | generated or stock photos share the image model's default look |
 | UI dialect (control shape · dividers · labels · section headers · display face) | two businesses draw their components the same way |
 | Runs in progress on the same machine | two parallel runs react to the same history the same way |
+| Design language (nine axes) and the market fingerprint | two unrelated industries share a language; one language fills three of the last six pages; a page departs from its market on four or more axes |
 
 Every warning is written into the project. It is either acted on or answered with a reason in `DESIGN.md` — the
 linter checks — never ignored.
@@ -139,7 +161,7 @@ than rounding up.
 ## What it refuses
 
 A catalog of roughly 100 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 61 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 63 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius
@@ -216,9 +238,10 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 | | |
 |---|---|
 | `slop_lint.py <path>` | Scans HTML, CSS, JSX/TSX, Vue, Svelte, Dart, Swift and Kotlin for slop signatures, the skill's own habits, unanswered warnings, unmarked proposals and unfinished copy, and prints a grade with the catalog section to read. `--json`, `--strict` for CI. |
-| `shoot.py <page>` | The review renders in one command with headless Chrome in an explicit colour scheme: desktop and 375 px pages, a JavaScript-disabled page, the 375 px editing test (`--set "#pages=12"`), scroll containers, the bold move on desktop and phone, and the composition, skeleton and UI-dialect fingerprints. Writes outside your project. |
+| `shoot.py <page>` | The review renders in one command with headless Chrome in an explicit colour scheme: desktop and 375 px pages, a JavaScript-disabled page, the 375 px editing test (`--set "#pages=12"`), scroll containers, the bold move on desktop and phone, and the composition, skeleton, UI-dialect and design-language fingerprints. Writes outside your project. |
+| `shoot.py --profile <urls>` | The market fingerprint: each competitor page measured on the nine axes (fetched with scripts off and reveal states forced; every render named so it can be checked by eye) and the most common word per axis with the splits. |
 | `crit_board.py <page>` | The studio crit: your page's first screens beside the best-scored earlier pages and the best and latest for the same industry, rendered to one image to look at before scoring. |
-| `design_log.py` | Cross-project memory. `plan` registers a direction before building (runs in parallel see each other), `add` records the finished page with its measured fingerprints and crit score, `check` warns about repeats, and `--record` writes the warnings into the project. |
+| `design_log.py` | Cross-project memory. `plan` registers a direction before building (runs in parallel see each other), `add` records the finished page with its measured fingerprints, language, market line and crit score, `check` warns about repeats and about a language shared across industries or far from its market, and `--record` writes the warnings into the project. |
 | `build_tokens.py` | Compiles W3C DTCG tokens (aliases, `*.dark.json` modes) to CSS custom properties, Tailwind v4 `@theme`, SwiftUI, Compose, Flutter and flat JSON. `--check` validates and runs a palette sanity check. |
 | `contrast.py` | WCAG 2.x and APCA for a pair, a pairs file, or every text role on every surface role in every mode. Exit 1 on an AA failure. |
 | `type_scale.py` | Fluid modular type scale with line-height and tracking per step. |
@@ -228,14 +251,14 @@ Stdlib Python, no installs. The skill runs these itself; you can run them on any
 
 ```
 SKILL.md          the router: what to do, and which reference to read at that step
-references/       23 deep references, loaded per phase, never all at once
+references/       24 deep references, loaded per phase, never all at once
   discovery · existing-design-system · mini-user-research · moodboard · inspiration-sources
-  expression-register · interaction-depth · visual-material · anti-slop · design-tokens · color · typography
+  expression-register · interaction-depth · design-language · visual-material · anti-slop · design-tokens · color · typography
   spacing-layout · components · ux-patterns · content-microcopy · motion · accessibility
   web-frontend · mobile-ios · mobile-android · review-checklist · handoff
 templates/        brief · DESIGN.md · assets.md · DTCG token starter (names, not a style) · contrast pairs · design log
 scripts/          the tools above
-evals/            five scenarios with rubrics, plus the fixtures the linter is tested against
+evals/            six scenarios with rubrics, plus the fixtures the linter is tested against
 ```
 
 `SKILL.md` stays a router under 500 lines; the depth lives in `references/` and loads only when a phase needs it.
@@ -284,6 +307,7 @@ existing system or from scratch.
 | 1.19 | Two parallel runs read the same warning and both went dark; poster type came back two rounds later | runs in progress compared with each other; habits counted over six runs; plans identified by folder |
 | 1.20 | Every check passed and a restaurant page still got worse | Gate 14 studio crit on a rendered board of the best earlier pages; unfinished copy flagged |
 | 1.21 | Pages still read as one studio's work: 39–41 of 41 structural token values were the template's own | structural scales set from the direction and linted; UI dialect measured and compared; best page per industry on the board; weak ideas rebuilt |
+| 1.22 | Ten industries still half alike: the skill had one design language and every rule, floor and lint was written in it; genres outside it were listed as slop | the design language as a measured nine-axis profile taken from the category's own pages (`shoot.py --profile`); rules and lint read relative to it; convergence judged by language across industries and by distance from the market |
 
 Full detail in [CHANGELOG.md](CHANGELOG.md).
 </details>

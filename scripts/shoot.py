@@ -34,6 +34,8 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from design_log import LANGUAGE  # noqa: E402 — the nine axes and their vocabulary live with the recorder
 MAX_H = 16000          # Chrome refuses larger windows; longer pages are cut and reported
 PHONE_W, PHONE_H = 375, 812
 
@@ -58,14 +60,23 @@ def parse_set(spec: str) -> tuple[str, str]:
     return m.group(1).strip(), m.group(2).strip()
 
 
+REVEAL_JS = r"""
+document.getElementById('nsd').addEventListener('load', function () {
+  try { const d = this.contentDocument, st = d.createElement('style');
+    st.textContent = '*{opacity:1!important;transform:none!important;animation:none!important;visibility:visible!important}';
+    d.head.appendChild(st); } catch (e) {}
+});
+"""
+
 PROBE_JS = r"""
-const ACTIONS = __ACTIONS__, EXPECT = __EXPECT__, VH = __VH__;
+const ACTIONS = __ACTIONS__, EXPECT = __EXPECT__, VH = __VH__, REVEAL = __REVEAL__;
 const f = document.getElementById('nsd');
 function report(o) { document.getElementById('nsd-out').textContent = JSON.stringify(o); }
 f.addEventListener('load', () => setTimeout(() => {
   let d;
   try { d = f.contentDocument; if (!d) throw new Error('no access'); }
   catch (e) { report({error: 'cannot read the page (cross-origin?) — pass a local file'}); return; }
+  if (REVEAL) { const st = d.createElement('style'); st.textContent = '*{opacity:1!important;transform:none!important;animation:none!important;visibility:visible!important}'; d.head.appendChild(st); }
   const w = f.contentWindow, out = {height: d.documentElement.scrollHeight, width: d.documentElement.scrollWidth};
   out.containers = [...d.querySelectorAll('body *')].filter(el => {
     const s = w.getComputedStyle(el);
@@ -174,6 +185,96 @@ f.addEventListener('load', () => setTimeout(() => {
       : /(garamond|caslon|baskerville|fraunces|playfair|lora|newsreader|source serif|bitter|roboto slab|zilla|domine|spectral|cormorant|dm serif|instrument serif|libre bask)/.test(fam) ? 'serif' : 'grotesk';
     out.dialect = [shape, edges, labels, headers, display].join(';');
   }
+  // the design language (design-language.md): nine axes from a closed vocabulary, measured over the first two
+  // viewports so a competitor's site and this page are read the same way. Chroma is measured from pixels in Python.
+  {
+    const vw = w.innerWidth, region = Math.min(d.documentElement.scrollHeight, 1600), vh = Math.min(w.innerHeight, VH);
+    const clipR = r => Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, region) - Math.max(r.top, 0));
+    const vis = el => { const s = w.getComputedStyle(el); return s.display !== 'none' && s.visibility !== 'hidden' && s.opacity !== '0'; };
+    // density: the share of the region covered by lines of text (range rects of every text node, no double counting)
+    let textArea = 0;
+    const walker = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!n.textContent.trim() || !n.parentElement || /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test(n.parentElement.tagName)) continue;
+      if (!vis(n.parentElement)) continue;
+      const rg = d.createRange(); rg.selectNode(n);
+      for (const r of rg.getClientRects()) textArea += clipR(r);
+    }
+    const textShare = textArea / (vw * region);
+    const density = textShare >= 0.16 ? 'tight' : textShare >= 0.07 ? 'medium' : 'airy';
+    // type: the display face, finer than the dialect line
+    const big = [...d.querySelectorAll('h1, h2')].filter(vis).sort((x, y) => parseFloat(w.getComputedStyle(y).fontSize) - parseFloat(w.getComputedStyle(x).fontSize))[0];
+    const fam = big ? w.getComputedStyle(big).fontFamily.toLowerCase() : '';
+    const first = fam.split(',')[0].replace(/["']/g, '').trim();
+    const type = /^(system-ui|-apple-system|blinkmacsystemfont|helvetica( neue)?|arial|segoe ui|ui-sans-serif)$/.test(first) ? 'system'
+      : /mono|courier|consolas|menlo/.test(first) ? 'mono'
+      : /condensed|compressed|narrow|oswald|bebas|anton|league gothic|big shoulders|saira extra|barlow condensed|archivo narrow/.test(fam) ? 'condensed'
+      : /slab|rockwell|arvo|zilla|bitter|roboto slab|josefin slab|crete|aleo|hepta/.test(fam) ? 'slab'
+      : /(garamond|caslon|baskerville|fraunces|playfair|lora|newsreader|source serif|domine|spectral|cormorant|dm serif|instrument serif|libre bask|young serif|times|georgia|merriweather|crimson|literata|eb garamond|bodoni|didot|tiempos|freight|canela|editorial|ogg|reckless|romie|migra)/.test(first) || (/serif/.test(first) && !/sans/.test(first)) ? 'serif'
+      : /(source sans|lato|open sans|pt sans|fira sans|noto sans|nunito|cabin|ubuntu|merriweather sans|mulish|hind|karla|alegreya sans|frutiger|myriad|verdana|tahoma|trebuchet|gill sans|optima|calibri)/.test(first) ? 'humanist'
+      : 'grotesk';
+    // imagery: what the first two viewports show that is not text
+    let imagery = 'none', best = 0;
+    const declared = d.querySelector('[data-nsd-anchor]');
+    if (d.querySelector('canvas')) imagery = '3d';
+    else {
+      for (const el of d.body.querySelectorAll('svg, img, video, picture')) {
+        if (el.parentElement && el.parentElement.closest('svg')) continue;
+        const r = el.getBoundingClientRect();
+        if (r.width < 64 || r.height < 64 || !vis(el)) continue;
+        const a = clipR(r);
+        if (a > best) { best = a; imagery = el.tagName === 'SVG' ? 'illustration' : 'photo'; }
+      }
+      for (const el of d.body.querySelectorAll('*')) {
+        if (!/url\(/.test(w.getComputedStyle(el).backgroundImage)) continue;
+        const r = el.getBoundingClientRect(); const a = clipR(r);
+        if (r.width >= 64 && r.height >= 64 && a > best) { best = a; imagery = 'photo'; }
+      }
+      if (best === 0) imagery = (out.firstView && out.firstView.ratio >= 6) ? 'type' : 'none';
+      else if (declared && /product|interface|screenshot|packaging|object/.test((declared.getAttribute('data-nsd-anchor') || '').toLowerCase())) imagery = 'product';
+    }
+    // layout: where the first viewport's largest heading sits
+    let layout = 'asymmetric';
+    const grids = [...d.body.querySelectorAll('*')].filter(el => { const s = w.getComputedStyle(el); if (s.display !== 'grid') return false;
+      const r = el.getBoundingClientRect(); return r.top < vh && r.bottom > 0 && r.width * Math.min(r.height, vh) > 0.4 * vw * vh
+        && s.gridTemplateColumns.split(' ').filter(t => t !== '0px').length >= 3; });
+    const h = [...d.body.querySelectorAll('h1, h2, [role=heading]')].filter(el => { const r = el.getBoundingClientRect(); return vis(el) && r.top < vh && r.bottom > 0 && r.width > 0; })
+      .sort((x, y) => parseFloat(w.getComputedStyle(y).fontSize) - parseFloat(w.getComputedStyle(x).fontSize))[0];
+    if (grids.length) layout = 'grid';
+    else if (h) {
+      const r = h.getBoundingClientRect(), ta = w.getComputedStyle(h).textAlign;
+      const centre = (r.left + r.right) / 2;
+      if (Math.abs(centre - vw / 2) < vw * 0.06 && (ta === 'center' || Math.abs(r.left - (vw - r.right)) < vw * 0.06)) layout = 'centered';
+      else if (r.left < vw * 0.14) layout = 'left';
+    }
+    // motion: what moves, read from the stylesheets and scripts this page loads
+    let keyframes = 0, transitions = 0, cross = false;
+    for (const sh of d.styleSheets) {
+      try { for (const rule of sh.cssRules) { if (rule instanceof w.CSSKeyframesRule) keyframes++; else if (rule.style && rule.style.transitionProperty && rule.style.transitionProperty !== 'all' && rule.style.transitionProperty !== '') transitions++;
+        else if (rule.style && rule.style.transition) transitions++; } } catch (e) { cross = true; }
+    }
+    const scripts = [...d.scripts].map(sc => (sc.src || '') + ' ' + (sc.textContent || '').slice(0, 20000)).join(' ');
+    const motion = (d.querySelector('canvas') || /three(\.min)?\.js|gsap|scrolltrigger|lenis|locomotive|webgl|@react-three|rive|lottie/i.test(scripts)) ? 'scene'
+      : (keyframes >= 2 || /IntersectionObserver|data-reveal|\.reveal\b|aos\.js|animate-on-scroll|animation-timeline/i.test(scripts + [...d.styleSheets].map(s => { try { return [...s.cssRules].map(r => r.cssText).join(' ').slice(0, 20000); } catch (e) { return ''; } }).join(' '))) ? 'choreographed'
+      : (transitions > 0 || [...d.querySelectorAll('a, button')].slice(0, 30).some(el => { const t = w.getComputedStyle(el).transitionDuration; return t && t !== '0s'; })) ? 'functional' : 'none';
+    // controls: how the main button is drawn
+    let controls = 'solid';
+    const btns = [...d.querySelectorAll('button, a[class*="btn"], a[class*="button"], input[type=submit], [role=button]')]
+      .filter(el => { const r = el.getBoundingClientRect(); return vis(el) && r.top < region && r.width > 40 && r.height > 24; })
+      .sort((x, y) => { const a = x.getBoundingClientRect(), b = y.getBoundingClientRect(); return b.width * b.height - a.width * a.height; });
+    if (btns.length) {
+      const b = btns[0], s = w.getComputedStyle(b);
+      const bw = parseFloat(s.borderTopWidth) || 0, rad = parseFloat(s.borderTopLeftRadius) || 0;
+      const cv2 = document.createElement('canvas'); cv2.width = cv2.height = 1; const cx2 = cv2.getContext('2d', {willReadFrequently: true});
+      const px = css => { cx2.clearRect(0, 0, 1, 1); cx2.fillStyle = '#000'; cx2.fillStyle = css; cx2.fillRect(0, 0, 1, 1); return cx2.getImageData(0, 0, 1, 1).data; };
+      const bg = px(s.backgroundColor);
+      const hardShadow = /rgba?\([^)]*\)\s+\d+px\s+\d+px\s+0(px)?/.test(s.boxShadow) && !/0px 0px/.test(s.boxShadow);
+      if ((bw >= 2 && rad < 3) || hardShadow) controls = 'raw';
+      else if (bg[3] < 128 && !/gradient/.test(s.backgroundImage)) controls = 'hairline';
+    }
+    out.language = {density: +textShare.toFixed(3), densityWord: density, type, imagery, layout, motion, controls,
+                    crossOriginStyles: cross};
+  }
   if (!ACTIONS.length) { report(out); return; }
   // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
   // on the page and prefer the ones whose text the edit changed
@@ -237,10 +338,13 @@ BOLD_PHONE = {
 }
 
 
-def bold_move(first_view: dict, register: str | None, phone: bool = False) -> tuple[bool, str]:
-    """Judge the first viewport against the register's bold-move thresholds. R1 (or unknown) always passes."""
+def bold_move(first_view: dict, register: str | None, phone: bool = False, relax: float = 1.0) -> tuple[bool, str]:
+    """Judge the first viewport against the register's bold-move thresholds. R1 (or unknown) always passes. `relax`
+    scales the floors for a design language whose first screen is the product or dense text (relax_for)."""
     key = (register or "").upper()[:2]
     t = BOLD_PHONE.get(key) if phone else BOLD.get(key)
+    if t and relax != 1.0:
+        t = tuple(round(v * relax, 2) for v in t[:3]) + tuple(t[3:])
     field_type = t[3] if t and len(t) > 3 else 3
     fv = first_view or {}
     ratio, graphic, field = fv.get("ratio", 0), fv.get("graphic", 0), fv.get("field", 0)
@@ -251,7 +355,8 @@ def bold_move(first_view: dict, register: str | None, phone: bool = False) -> tu
         return True, facts
     ok = ratio >= t[0] or graphic >= t[1] or (field >= t[2] and ratio >= field_type)
     need = (f"{key}{' on a phone' if phone else ''} needs one of: type ≥ {t[0]:g}× body, a graphic ≥ {t[1]:.0%} of the "
-            f"viewport, or a colour field ≥ {t[2]:.0%} with type ≥ {field_type:g}×")
+            f"viewport, or a colour field ≥ {t[2]:.0%} with type ≥ {field_type:g}×"
+            + (" (floors scaled for this design language)" if relax != 1.0 else ""))
     return ok, facts + ("" if ok else f" — {need}")
 
 
@@ -280,6 +385,79 @@ def composition(first_view: dict | None) -> str:
     return "heading-and-panel"
 
 
+
+
+def chroma_share(png: str, step: int = 4) -> float:
+    """Share of sampled pixels that carry colour (saturation ≥ 0.25 on a value ≥ 60): achromatic pages sit near 0,
+    a page with a photograph or a colour field well above 0.25."""
+    sys.path.insert(0, HERE)
+    import design_log  # noqa: E402
+    w, h, bpp, rows = design_log.read_png(png)
+    hit = total = 0
+    for y in range(0, h, step):
+        row = rows[y]
+        for x in range(0, w, step):
+            o = x * bpp
+            r, g, b = row[o], row[o + 1], row[o + 2]
+            hi, lo = max(r, g, b), min(r, g, b)
+            total += 1
+            hit += hi >= 60 and (hi - lo) / hi >= 0.25
+    return hit / total if total else 0.0
+
+
+def chroma_word(share: float) -> str:
+    return "achromatic" if share < 0.05 else "low" if share < 0.30 else "saturated"
+
+
+def language_profile(desk: dict, surface: str | None, chroma: str | None) -> str:
+    """The nine-axis profile string shoot.py prints and design_log.py records, in LANGUAGE order."""
+    lang, dial = desk.get("language") or {}, (desk.get("dialect") or ";;;;").split(";")
+    return ";".join([surface or "?", chroma or "?", lang.get("type", "?"), lang.get("densityWord", "?"), dial[0] or "?",
+                     lang.get("imagery", "?"), lang.get("layout", "?"), lang.get("motion", "?"), lang.get("controls", "?")])
+
+
+def market_profile(profiles: list[str]) -> tuple[str, list[str]]:
+    """The market fingerprint: per axis, the most common word across the measured pages, with a note per axis where
+    the pages disagree (so a split market is visible, not averaged away)."""
+    from collections import Counter
+    cols = [p.split(";") for p in profiles if p and len(p.split(";")) == len(LANGUAGE)]
+    if not cols:
+        return "", []
+    words, notes = [], []
+    for i, axis in enumerate(LANGUAGE):
+        c = Counter(col[i] for col in cols if col[i] != "?")
+        if not c:
+            words.append("?"); continue
+        top, n = c.most_common(1)[0]
+        words.append(top)
+        if n < len(cols) and len(c) > 1:
+            notes.append(f"{axis}: {', '.join(f'{k} ×{v}' for k, v in c.most_common())}")
+    return ";".join(words), notes
+
+
+def language_from(page_dir: str | None) -> str | None:
+    """The 'Design language:' profile written in design/DESIGN.md next to the page, if it is valid."""
+    for base in filter(None, [page_dir, page_dir and os.path.dirname(page_dir)]):
+        p = os.path.join(base, "design", "DESIGN.md")
+        if os.path.exists(p):
+            m = re.search(r"Design language\**\s*(?:\|\s*|:\**\s*|\([^)]*\)\**:?\s*)\**\s*`?([a-z0-9;?-]+)", open(p, encoding="utf-8", errors="ignore").read(), re.I)
+            if m and len(m.group(1).split(";")) == len(LANGUAGE):
+                return m.group(1).lower()
+    return None
+
+
+def relax_for(language: str | None) -> float:
+    """Bold-move floors are scaled for languages whose first viewport is the product or dense text: a developer tool
+    or a documentation site owns its first screen with the interface, at 20–25% of the viewport, not a poster."""
+    if not language:
+        return 1.0
+    parts = language.split(";")
+    if len(parts) != len(LANGUAGE):
+        return 1.0
+    imagery, density = parts[5], parts[3]
+    return 0.66 if imagery == "product" or density == "tight" else 1.0
+
+
 def register_from(page_dir: str | None) -> str | None:
     """The register written in design/DESIGN.md (or the brief) next to the page."""
     for base in filter(None, [page_dir, page_dir and os.path.dirname(page_dir)]):
@@ -292,12 +470,17 @@ def register_from(page_dir: str | None) -> str | None:
     return None
 
 
-def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False) -> str:
-    body = f'<iframe id="nsd" src="{html.escape(src)}" style="border:0;display:block;width:{w}px;height:{h}px"></iframe>'
+def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False, fetched=False) -> str:
+    """A fetched competitor page runs with its scripts off (sandbox) and its reveal states forced visible: hydration
+    errors, reveal-on-scroll and consent scripts otherwise leave a blank or broken first screen to measure."""
+    sandbox = ' sandbox="allow-same-origin"' if fetched else ""
+    body = f'<iframe id="nsd" src="{html.escape(src)}"{sandbox} style="border:0;display:block;width:{w}px;height:{h}px"></iframe>'
     if probe or actions:
         js = (PROBE_JS.replace("__ACTIONS__", json.dumps(actions or []))
-              .replace("__EXPECT__", json.dumps(expect)).replace("__VH__", str(h)))
+              .replace("__EXPECT__", json.dumps(expect)).replace("__VH__", str(h)).replace("__REVEAL__", json.dumps(fetched)))
         body += f'<pre id="nsd-out" style="display:none">pending</pre><script>{js}</script>'
+    elif fetched:
+        body += f'<script>{REVEAL_JS}</script>'
     return f'<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;overflow:hidden">{body}</body></html>'
 
 
@@ -319,9 +502,106 @@ def chrome(binary: str, url: str, args: list[str], timeout: int = 40) -> subproc
     return None
 
 
+def fetch(url: str, dest: str) -> str | None:
+    """Download a competitor page and pin its relative URLs with <base>, so the same-origin probe can read it."""
+    import urllib.request
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Macintosh) AppleWebKit/537.36 Chrome/128 Safari/537.36",
+                                               "Accept": "text/html,*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            body = r.read().decode("utf-8", errors="ignore")
+    except Exception as err:  # noqa: BLE001 — any failure means "judge by eye"
+        print(f"shoot.py: could not fetch {url} ({err.__class__.__name__}) — open it in a browser and write its profile by eye")
+        return None
+    body = re.sub(r"<meta[^>]+http-equiv=[\"']?content-security-policy[^>]*>", "", body, flags=re.I)
+    base = f'<base href="{html.escape(url)}">'
+    body = re.sub(r"(<head[^>]*>)", r"\1" + base, body, count=1, flags=re.I) if re.search(r"<head[^>]*>", body, re.I) else base + body
+    with open(dest, "w", encoding="utf-8") as fh:
+        fh.write(body)
+    return "file://" + dest
+
+
+def profile_mode(args, binary: str) -> int:
+    """Measure the design language of one or more pages — usually the category's competitors — and print the market
+    fingerprint (the most common word per axis). Renders nothing for review."""
+    out = os.path.abspath(args.out or os.path.join(tempfile.gettempdir(), "nsd-shots", "profile"))
+    os.makedirs(out, exist_ok=True)
+    sys.path.insert(0, HERE)
+    import design_log  # noqa: E402
+    results = []
+    for i, target in enumerate(args.page):
+        if re.match(r"^https?:", target):
+            src = fetch(target, os.path.join(out, f"_fetch-{i}.html"))
+            if not src:
+                results.append({"page": target, "error": "fetch failed"}); continue
+        elif re.match(r"^file:", target):
+            src = target
+        else:
+            path = os.path.abspath(target)
+            if not os.path.exists(path):
+                results.append({"page": target, "error": "does not exist"}); continue
+            src = "file://" + path
+        fetched = bool(re.match(r"^https?:", target))
+        purl = os.path.join(out, f"_probe-{i}.html")
+        with open(purl, "w", encoding="utf-8") as fh:
+            fh.write(wrapper(src, args.width, 800, None, None, probe=True, fetched=fetched))
+        r = chrome(binary, "file://" + purl, ["--dump-dom", f"--window-size={max(args.width, 500)},800"])
+        m = re.search(r'<pre id="nsd-out"[^>]*>(.*?)</pre>', r.stdout if r else "", re.S)
+        try:
+            desk = json.loads(html.unescape(m.group(1))) if m and m.group(1) != "pending" else {"error": "did not load"}
+        except json.JSONDecodeError:
+            desk = {"error": "unreadable probe output"}
+        if "error" in desk:
+            results.append({"page": target, "error": desk["error"]}); continue
+        surl = os.path.join(out, f"_shot-{i}.html")
+        with open(surl, "w", encoding="utf-8") as fh:
+            fh.write(wrapper(src, args.width, 1600, fetched=fetched))
+        png = os.path.join(out, f"language-{i}.png")
+        if os.path.exists(png):
+            os.remove(png)
+        chrome(binary, "file://" + surl, [f"--window-size={args.width},1600", f"--screenshot={png}", "--force-device-scale-factor=0.5"])
+        surf = chroma = None
+        if os.path.exists(png):
+            surf = design_log.polarity(design_log.dark_share([png]))
+            chroma = chroma_word(chroma_share(png))
+        prof = language_profile(desk, surf, chroma)
+        results.append({"page": target, "language": prof, "text_share": (desk.get("language") or {}).get("density"),
+                        "display_ratio": (desk.get("firstView") or {}).get("ratio"), "png": png if os.path.exists(png) else None,
+                        "cross_origin_styles": (desk.get("language") or {}).get("crossOriginStyles")})
+    for f in os.listdir(out):
+        if f.startswith("_"):
+            os.remove(os.path.join(out, f))
+    market, notes = market_profile([r.get("language", "") for r in results if "language" in r])
+    if args.json:
+        print(json.dumps({"axes": list(LANGUAGE), "pages": results, "market": market, "split": notes}, indent=2, ensure_ascii=False))
+        return 0 if market else 2
+    print(f"design language per page ({';'.join(LANGUAGE)}):")
+    for r in results:
+        if "error" in r:
+            print(f"  {r['page']}: {r['error']}")
+        else:
+            print(f"  {r['language']:<75} {r['page']}" + ("  (styles cross-origin: motion may read low)" if r.get("cross_origin_styles") else ""))
+            if r.get("png"):
+                print(f"           look: {r['png']} — a page rendered without its scripts can be wrong (a menu left open, a hero missing); "
+                      "then judge that page by eye in a browser with the same words")
+    if market:
+        print(f"market   {market}")
+        for n in notes:
+            print(f"  split  {n}")
+        print(f"  write in DESIGN.md: Market: {market} — from {sum('language' in r for r in results)} pages; "
+              "then choose this page's language and name the axes it departs on (design-language.md §4)")
+    else:
+        print("no page could be measured — write the market profile by eye with the vocabulary in design-language.md §2")
+    return 0 if market else 2
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("page", help="local HTML file (or a file:// / http://localhost URL)")
+    ap.add_argument("page", nargs="+", help="local HTML file (or a file:// / http:// URL); several, or --profile, measures the "
+                    "design language of each and the market fingerprint (design-language.md §3)")
+    ap.add_argument("--profile", action="store_true", help="only measure the design-language profile of each page (no review renders)")
+    ap.add_argument("--language", help="the nine-axis design language written in DESIGN.md, for the bold-move floors "
+                    "(default: read from design/DESIGN.md)")
     ap.add_argument("--out", help="output folder (default: <tmp>/nsd-shots/<project>)")
     ap.add_argument("--width", type=int, default=1280, help="desktop width (default 1280)")
     ap.add_argument("--set", action="append", default=[], metavar="SELECTOR=VALUE",
@@ -346,6 +626,9 @@ def main() -> int:
               "  and at 375x812 after changing the main input. Say in the review what could not be verified.")
         return 3
 
+    if args.profile or len(args.page) > 1:
+        return profile_mode(args, binary)
+    args.page = args.page[0]
     if re.match(r"^(https?|file):", args.page):
         src, project = args.page, re.sub(r"\W+", "-", args.page.split("//", 1)[-1]).strip("-")[:40]
         page_dir = None
@@ -413,6 +696,16 @@ def main() -> int:
         import design_log  # noqa: E402
         share = design_log.dark_share([measure])
         report["surface"] = {"dark_share": round(share, 2), "polarity": design_log.polarity(share), "png": measure}
+    lang_png = shot("language", args.width, min(1600, dh), scale=0.5)   # the first two viewports: the same region profile mode reads
+    if lang_png:
+        sys.path.insert(0, HERE)
+        import design_log  # noqa: E402
+        lsurf = design_log.polarity(design_log.dark_share([lang_png]))
+        lchroma = chroma_word(chroma_share(lang_png))
+        os.remove(lang_png)
+    else:
+        lsurf = lchroma = None
+    report["language"] = language_profile(desk, lsurf, lchroma)
     if actions:
         edit = probe(PHONE_W, PHONE_H, actions)
         report["edit"] = {**edit, "png": shot(f"edit-{PHONE_W}", PHONE_W, PHONE_H, acts=actions)}
@@ -422,13 +715,16 @@ def main() -> int:
 
     problems = []
     register = args.register or register_from(page_dir)
-    bold_ok, bold_facts = bold_move(desk.get("firstView"), register)
+    declared_lang = args.language or language_from(page_dir)
+    relax = relax_for(declared_lang)
+    report["declared_language"] = declared_lang
+    bold_ok, bold_facts = bold_move(desk.get("firstView"), register, relax=relax)
     comp = composition(desk.get("firstView"))
     skeleton = ">".join(desk.get("skeleton") or [])
     report["skeleton"], report["media"], report["dialect"] = skeleton, desk.get("media", 0), desk.get("dialect")
     report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts,
                             "composition": comp}
-    phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True)
+    phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True, relax=relax)
     report["phone"]["first_view"] = {**(phone.get("firstView") or {}), "bold_move": phone_ok, "summary": phone_facts}
     if not phone_ok:
         problems.append(f"the phone's first screen (375×812) has no bold move for {register} ({phone_facts.split(' — ')[0]}) "
@@ -461,6 +757,12 @@ def main() -> int:
               f"--skeleton {skeleton} --media {desk.get('media', 0)} --display-ratio {(desk.get('firstView') or {}).get('ratio', 0)}")
         print(f"  dialect  {desk.get('dialect', '?')} (controls;dividers;labels;section headers;display face); record with "
               f"--dialect '{desk.get('dialect', '')}'")
+        print(f"  language {report.get('language', '?')} ({';'.join(LANGUAGE)}); record with --language '{report.get('language', '')}'"
+              + (f" · DESIGN.md declares {declared_lang}" if declared_lang else " · no 'Design language:' line in DESIGN.md"))
+        if declared_lang and report.get("language") and declared_lang != report["language"]:
+            diff = [ax for ax, a, b in zip(LANGUAGE, declared_lang.split(";"), report["language"].split(";")) if a != b and a != "?" and b != "?"]
+            if diff:
+                print(f"           measured differs from the declared language on {', '.join(diff)} — record the measured one, or fix the page")
         conts = report["phone"]["scroll_containers"]
         for c in conts:
             kind = "table" if c["table"] else "content"

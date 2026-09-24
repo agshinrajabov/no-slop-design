@@ -34,7 +34,7 @@ conventions are table stakes; global references are where the differentiation id
 
 | Situation | Time box | Minimum method set |
 |---|---|---|
-| Single screen / component change | 30 min | JTBD (1 job) · heuristic pass on the current screen · 3 competitor screenshots |
+| Single screen / component change | 30 min | JTBD (1 job) · heuristic pass on the current screen · 3 competitor screenshots, profiled (`shoot.py --profile`) |
 | New feature in an existing product | 60 min | 3 jobs · assumption map · review mining · 5-screen competitor teardown |
 | New product / redesign | 120 min (+ 5-user test later) | all of the above · 2 proto-personas · analytics or support-ticket scan · category map |
 | Design system only | 45 min | inventory of existing UI · heuristic pass · platform audit |
