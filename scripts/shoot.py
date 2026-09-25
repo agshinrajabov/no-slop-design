@@ -488,6 +488,17 @@ def market_from(page_dir: str | None) -> str | None:
     return None
 
 
+def market_opening_from(page_dir: str | None) -> str | None:
+    """The 'Market opening:' line (heading;panel;image) written in design/DESIGN.md next to the page."""
+    for base in filter(None, [page_dir, page_dir and os.path.dirname(page_dir)]):
+        p = os.path.join(base, "design", "DESIGN.md")
+        if os.path.exists(p):
+            m = re.search(r"Market opening\**\s*:\**\s*`?(h-[a-z]+;panel-[a-z-]+;img-[a-z]+)", open(p, encoding="utf-8", errors="ignore").read(), re.I)
+            if m:
+                return m.group(1).lower()
+    return None
+
+
 def relax_for(language: str | None) -> float:
     """Bold-move floors are scaled for languages whose first viewport is the product or dense text: a developer tool
     or a documentation site owns its first screen with the interface, at 20–25% of the viewport, not a poster."""
@@ -780,8 +791,11 @@ def main() -> int:
     report["skeleton"], report["media"], report["dialect"] = skeleton, desk.get("media", 0), desk.get("dialect")
     report["opening"] = desk.get("opening")
     market = market_from(page_dir)
-    report["market_language"] = market
-    if market and (desk.get("opening") or "").split(";")[1:2] not in (["panel-none"], ["panel-below-fold"], []):
+    market_open = market_opening_from(page_dir)
+    report["market_language"], report["market_opening"] = market, market_open
+    # the category's own opening may carry a panel (documentation, utilities): then the page may too
+    market_has_panel = bool(market_open) and market_open.split(";")[1:2] not in (["panel-none"], ["panel-below-fold"])
+    if market and not market_has_panel and (desk.get("opening") or "").split(";")[1:2] not in (["panel-none"], ["panel-below-fold"], []):
         mparts = market.split(";")
         if len(mparts) == len(LANGUAGE) and mparts[5] != "product" and mparts[3] != "tight":
             report.setdefault("notes", []).append(
