@@ -240,10 +240,14 @@ def main() -> int:
         return 0
     if args.pairs:
         for line in open(args.pairs, encoding="utf-8"):
-            parts = line.split()
-            if len(parts) < 2 or line.lstrip().startswith("#!"):
+            if line.lstrip().startswith("#!") or not line.strip():
                 continue
-            ok &= report(parts[0], parts[1], args.size, args.weight, " ".join(parts[2:]))
+            # colours first, then the label: an oklch() value carries spaces, so the line is not split on whitespace
+            cols = re.findall(r"oklch\([^)]*\)|#[0-9a-fA-F]{3,8}\b", line)
+            if len(cols) < 2:
+                continue
+            label = line[line.find(cols[1]) + len(cols[1]):].strip()
+            ok &= report(cols[0], cols[1], args.size, args.weight, label)
         return 0 if ok else 1
     if not (args.fg and args.bg):
         ap.print_help()
