@@ -223,7 +223,7 @@ f.addEventListener('load', () => setTimeout(() => {
         const r = el.getBoundingClientRect();
         if (r.width < 64 || r.height < 64 || !vis(el)) continue;
         const a = clipR(r);
-        if (a > best) { best = a; imagery = el.tagName === 'SVG' ? 'illustration' : 'photo'; }
+        if (a > best) { best = a; imagery = el.tagName.toLowerCase() === 'svg' ? 'illustration' : 'photo'; }
       }
       for (const el of d.body.querySelectorAll('*')) {
         if (!/url\(/.test(w.getComputedStyle(el).backgroundImage)) continue;
