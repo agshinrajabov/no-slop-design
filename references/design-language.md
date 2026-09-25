@@ -98,7 +98,10 @@ Rules:
   (`shoot.py index.html` prints the page's actual profile). If the measured line differs from the declared one, either
   the page or the declaration is wrong; record the measured one with `design_log.py add --language` and say which.
 - Every departure names the axis, the word, and the brief's reason. "To be different" is not a reason; the
-  convergence log handles difference.
+  convergence log handles difference. Departures on `layout`, `controls`, `type`, `surface` or `density` that are
+  not named under "Departs on:" are flagged (`departure-unwritten`).
+- The opening is written too: `Market opening: h-…;panel-…;img-…` from the profile, `Opening:` for this page, and the
+  reason if they differ.
 - `data-nsd-design-language="…"` on `<html>` or `<body>` is the same declaration for a page without a design folder.
 - Register `plan --language … --market-language …` in Phase 3 so runs in parallel and the history see it.
 
@@ -109,6 +112,8 @@ mechanical part when a valid `Design language:` line exists.
 
 | Rule | Reads as |
 |---|---|
+| **The opening skeleton** (where the heading, the panel and the image sit in the first viewport) | Taken from the market: `shoot.py --profile` prints each competitor's `opening` (heading;panel;image) and the category's most common one; the page's own is on `shoot.py`'s `opening` line and recorded with `--opening`. The 1.22 test put ten languages on the page and seven of them still opened heading-left with the tool beside or under it — the skill's skeleton. `layout`, `controls` and `type` are likewise taken from the market line; leaving any of them needs a reason under "Departs on:" (`departure-unwritten`) |
+| The signature interaction's place | In the first viewport only in a `product` or `tight` language (a developer tool, documentation, a utility), where the tool is the category's own first screen. Everywhere else it is section 2 or 3, reached from the first viewport: the first screen belongs to what the market opens on — the photograph, the collection, the room, the name. `shoot.py` notes when a page opens on its tool against its market line |
 | The bold move (`expression-register.md` §4b) | Still owed. For `imagery: product` or `density: tight` the floors scale by two thirds: a developer tool owns its first screen with the interface at a quarter of the viewport, documentation with the search and the first answer — not with a poster |
 | The anchor (`visual-material.md` §2) | Chosen inside the language: a `product` language anchors on the interface, an `illustration` language on the system, a `type` language on the words |
 | The signature interaction (`interaction-depth.md` §3) | Still owed on every Persuade page; its *form* follows the language — a playground in a dev tool, a live search in documentation, the scene itself in a `scene` language, a picker beside the photograph in a hospitality page |
@@ -164,6 +169,7 @@ Chosen-by-nobody is the test, and the language does not change it:
 - [ ] every departure from the market line names the axis, the word and the brief's reason; ≤ 3 departures
 - [ ] the built page's measured `language` line matches the declared one, or the difference is explained and the
       measured one recorded
-- [ ] `design_log.py plan … --language … --market-language …` in Phase 3; `add --language` in Phase 7
+- [ ] `design_log.py plan … --language … --market-language …` in Phase 3; `add --language --opening --market-opening` in Phase 7
+- [ ] the first viewport opens the way the market opens, or "Departs on:" says why; the tool is in the first viewport only in a `product` or `tight` language
 - [ ] no "design language" or "market fit" warning left unanswered under "Convergence overrides"
 - [ ] §7 holds: nothing on the page is the language's untouched default

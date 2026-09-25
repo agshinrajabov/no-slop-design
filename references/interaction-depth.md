@@ -49,9 +49,11 @@ job story in the brief. It is:
 - **job-performing** — it answers the question the visitor arrived with (what does it cost, when is it ready, is it
   free on my dates, will it fit, what will it look like) with a result they can see;
 - **close** — within the first three sections and reachable from the first viewport (a button or link jumps to it),
-  a result in ≤ 2 steps. Directly under the hero is one option, not the rule: a hotel may show its rooms first and
-  check availability after, a restaurant its menu first. Four different businesses in a row put it directly under
-  the hero;
+  a result in ≤ 2 steps. In the first viewport itself **only when the market's language is `product` or `tight`**
+  (a developer tool, documentation, a utility: the tool is what the category opens on). Everywhere else the first
+  screen belongs to what the market opens on — the photograph, the collection, the room, the name — and the
+  interaction is section 2 or 3. Four different businesses in a row put it directly under the hero, and the 1.22 test
+  put it in the first viewport of seven pages out of ten, whatever the market showed;
 - **in the page's language** — its form follows the design language the market set (`design-language.md` §5): a
   playground in a developer tool, a live search in documentation, the scene itself in an immersive launch, a picker
   beside the photograph in a hospitality page, a raw calculator in a brutalist one. A panel of form controls beside a

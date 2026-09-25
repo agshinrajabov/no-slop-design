@@ -368,13 +368,31 @@ def analyse(entries: list[dict]) -> list[str]:
     # a page far from it with no written departure is the skill's own language showing.
     langs = [(e["language"], e.get("industry") or "?", e.get("project")) for e in longer if e.get("language")]
     if len(langs) >= 2:
-        (a, ia, pa), (b, ib, pb) = langs[-2], langs[-1]
-        diff = language_distance(a, b)
-        known = [ax for ax, x, y in zip(LANGUAGE, a.split(";"), b.split(";")) if x != "?" and y != "?"]
-        if known and len(diff) <= 2 and ia != ib:
-            warns.append(f"design language: '{pb}' ({ib}) speaks the same language as '{pa}' ({ia}) — "
-                         f"{len(known) - len(diff)} of {len(known)} axes match ({b}); two industries that share a language "
-                         "share a studio, not a market. Re-read the market fingerprint and move the axes the market moves")
+        # compared with every recent page for another industry, not only the previous one: in the 1.22 test a dev tool
+        # and a documentation site matched on eight of nine axes three entries apart and nothing said so
+        b, ib, pb = langs[-1]
+        for a, ia, pa in langs[:-1]:
+            diff = language_distance(a, b)
+            known = [ax for ax, x, y in zip(LANGUAGE, a.split(";"), b.split(";")) if x != "?" and y != "?"]
+            if known and len(diff) <= 2 and ia != ib:
+                warns.append(f"design language: '{pb}' ({ib}) speaks the same language as '{pa}' ({ia}) — "
+                             f"{len(known) - len(diff)} of {len(known)} axes match ({b}); two industries that share a language "
+                             "share a studio, not a market. Re-read the market fingerprint and move the axes the market moves")
+                break
+    # the opening skeleton: heading;panel;image of the first viewport. Seven of ten 1.22 pages opened h-left;panel-right
+    # or h-left;panel-under whatever their market's opening was — the skill's skeleton under ten languages.
+    opens = [(e["opening"], e.get("industry") or "?", e.get("project"), e.get("market_opening")) for e in longer if e.get("opening")]
+    if opens:
+        o, io, po, mo = opens[-1]
+        others = [(x, i) for x, i, _, _ in opens[:-1] if i != io]
+        same_open = [i for x, i in others if x.split(";")[:2] == o.split(";")[:2]]
+        if len(same_open) >= 2:
+            warns.append(f"opening: '{po}' opens {';'.join(o.split(';')[:2])} like {len(same_open)} recent pages for other industries "
+                         f"({', '.join(sorted(set(same_open)))}) — the skill's skeleton; take the opening from the market line "
+                         "('opening' in shoot.py --profile) or write the departure")
+        if mo and o.split(";")[:2] != mo.split(";")[:2] and len(same_open) >= 1:
+            warns.append(f"opening: the market opens {mo} and this page {o}, the same way as another industry's recent page — "
+                         "a departure from the market that lands on the skill's habit needs a reason under 'Departs on:'")
     if len(langs) >= 3:
         top, n = Counter(l for l, _, _ in langs).most_common(1)[0]
         if n >= 3 and langs[-1][0] == top and len({i for l, i, _ in langs if l == top}) >= 2:
@@ -391,6 +409,39 @@ def analyse(entries: list[dict]) -> list[str]:
     if len(set(industries)) >= 3 and len({e.get("surface") for e in recent if e.get("surface")}) == 1:
         warns.append("three different industries came out with the same surface polarity — that is the skill's own tell, not a house style")
     return warns
+
+
+def habits(entries: list[dict], limit: int) -> int:
+    """Per axis: the markets' words against the pages' words, and how often the page left the market — the table that
+    showed the 1.22 pages following their markets on surface and imagery and ignoring them on layout (7 of 10 'left'
+    against markets that said asymmetric or centred)."""
+    import itertools
+    pages = [e for e in entries if e.get("status") != "planned" and e.get("language") and e.get("market_language")][-limit:]
+    if len(pages) < 2:
+        print("habits needs at least two finished pages recorded with --language and --market-language")
+        return 2
+    print(f"the skill's hand across the last {len(pages)} pages ({', '.join(e.get('industry') or e.get('project') or '?' for e in pages)})\n")
+    print(f"{'axis':<10} {'markets said':<34} {'pages did':<34} departed")
+    for i, axis in enumerate(LANGUAGE):
+        mk = Counter(e["market_language"].split(";")[i] for e in pages)
+        pg = Counter(e["language"].split(";")[i] for e in pages)
+        dep = sum(e["language"].split(";")[i] != e["market_language"].split(";")[i] for e in pages)
+        fmt = lambda c: ", ".join(f"{k} {v}" for k, v in c.most_common(3))
+        flag = "  ← the skill's hand" if dep >= len(pages) / 2 and pg.most_common(1)[0][1] >= len(pages) * 0.6 else ""
+        print(f"{axis:<10} {fmt(mk):<34} {fmt(pg):<34} {dep}/{len(pages)}{flag}")
+    def shared(rows):
+        pairs = list(itertools.combinations(rows, 2))
+        return sum(sum(a == b for a, b in zip(x.split(";"), y.split(";"))) for x, y in pairs) / len(pairs) / len(LANGUAGE) if pairs else 0
+    sp, sm = shared([e["language"] for e in pages]), shared([e["market_language"] for e in pages])
+    print(f"\npages alike: {sp:.0%} of axes shared on average · their markets alike: {sm:.0%}")
+    print("pages more alike than their markets on an axis the markets split is the skill's language showing"
+          if sp > sm else "the pages are less alike than their markets: the variety comes from the categories, as it should")
+    opens = [e for e in pages if e.get("opening")]
+    if opens:
+        oc = Counter(";".join(e["opening"].split(";")[:2]) for e in opens)
+        mc = Counter(";".join((e.get("market_opening") or "?").split(";")[:2]) for e in opens)
+        print(f"opening   markets: {', '.join(f'{k} {v}' for k, v in mc.most_common(3))} · pages: {', '.join(f'{k} {v}' for k, v in oc.most_common(3))}")
+    return 0
 
 
 def main() -> int:
@@ -411,6 +462,10 @@ def main() -> int:
                             "line prints them: " + ";".join(LANGUAGE))
         p.add_argument("--market-language", dest="market_language", default=None,
                        help="the market fingerprint from `shoot.py --profile <competitor urls>` (the 'market' line)")
+        p.add_argument("--opening", default=None,
+                       help="the first viewport's skeleton from shoot.py's 'opening' line: heading;panel;image, e.g. h-left;panel-right;img-none")
+        p.add_argument("--market-opening", dest="market_opening", default=None,
+                       help="the competitors' most common opening from `shoot.py --profile` (the 'opening' line)")
         p.add_argument("--image-look", dest="image_look", default=None,
                        help="angle;light;surface;palette from a fixed vocabulary, e.g. top-down;overcast;stone;neutral, "
                             "or none. Angles: " + ", ".join(LOOK["angle"]) + ". Light: " + ", ".join(LOOK["light"])
@@ -447,6 +502,9 @@ def main() -> int:
     l = sub.add_parser("list", help="show recent entries")
     l.add_argument("--limit", type=int, default=10)
 
+    hb = sub.add_parser("habits", help="the skill's own hand: per axis, what the markets said and what the pages did")
+    hb.add_argument("--limit", type=int, default=12, help="how many recent finished pages with a market line to read (default 12)")
+
     args = ap.parse_args()
     entries = load()
     if getattr(args, "image_look", None):
@@ -470,7 +528,7 @@ def main() -> int:
 
     keys = ("project", "register", "surface", "display", "text", "structure", "industry", "market", "anchor",
             "interaction", "composition", "skeleton", "result_form", "display_ratio", "image_look", "dialect",
-            "language", "market_language")
+            "language", "market_language", "opening", "market_opening")
     if args.cmd == "plan":
         import time
         missing = [f"--{n.replace('_', '-')}" for n in ("project", "composition", "result_form") if not getattr(args, n, None)]
@@ -544,6 +602,9 @@ def main() -> int:
                     earlier = []
             record(args.record, entry.get("project"), list(dict.fromkeys(earlier + warns)))
         return 0
+
+    if args.cmd == "habits":
+        return habits(entries, args.limit)
 
     if args.cmd == "list":
         for e in entries[-args.limit:]:

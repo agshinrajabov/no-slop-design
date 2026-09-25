@@ -60,13 +60,16 @@ def parse_set(spec: str) -> tuple[str, str]:
     return m.group(1).strip(), m.group(2).strip()
 
 
+REVEAL_CSS = ("*{opacity:1!important;transform:none!important;animation:none!important;visibility:visible!important}"
+              "[class*=cookie],[id*=cookie],[class*=consent],[id*=consent],[class*=gdpr],[id*=gdpr],[aria-modal=true],[role=dialog],"
+              "[class*=newsletter-popup],[class*=modal]:not(main),[class*=overlay]:not(main){display:none!important}")
 REVEAL_JS = r"""
 document.getElementById('nsd').addEventListener('load', function () {
   try { const d = this.contentDocument, st = d.createElement('style');
-    st.textContent = '*{opacity:1!important;transform:none!important;animation:none!important;visibility:visible!important}';
+    st.textContent = __REVEAL_CSS__;
     d.head.appendChild(st); } catch (e) {}
 });
-"""
+""".replace("__REVEAL_CSS__", json.dumps(REVEAL_CSS))
 
 PROBE_JS = r"""
 const ACTIONS = __ACTIONS__, EXPECT = __EXPECT__, VH = __VH__, REVEAL = __REVEAL__;
@@ -76,7 +79,7 @@ f.addEventListener('load', () => setTimeout(() => {
   let d;
   try { d = f.contentDocument; if (!d) throw new Error('no access'); }
   catch (e) { report({error: 'cannot read the page (cross-origin?) — pass a local file'}); return; }
-  if (REVEAL) { const st = d.createElement('style'); st.textContent = '*{opacity:1!important;transform:none!important;animation:none!important;visibility:visible!important}'; d.head.appendChild(st); }
+  if (REVEAL) { const st = d.createElement('style'); st.textContent = __REVEAL_CSS__; d.head.appendChild(st); }
   const w = f.contentWindow, out = {height: d.documentElement.scrollHeight, width: d.documentElement.scrollWidth};
   out.containers = [...d.querySelectorAll('body *')].filter(el => {
     const s = w.getComputedStyle(el);
@@ -275,6 +278,34 @@ f.addEventListener('load', () => setTimeout(() => {
     out.language = {density: +textShare.toFixed(3), densityWord: density, type, imagery, layout, motion, controls,
                     crossOriginStyles: cross};
   }
+  // the opening: where the first viewport puts its heading and its panel of controls. Seven of ten 1.22 pages opened
+  // heading-left + panel-right whatever their market said — the skill's own skeleton under ten different languages.
+  {
+    const vw = w.innerWidth, vh = Math.min(w.innerHeight, VH);
+    const vis = el => { const s = w.getComputedStyle(el); return s.display !== 'none' && s.visibility !== 'hidden' && s.opacity !== '0'; };
+    const h = [...d.body.querySelectorAll('h1, h2, [role=heading]')].filter(el => { const r = el.getBoundingClientRect(); return vis(el) && r.top < vh && r.bottom > 0 && r.width > 0; })
+      .sort((x, y) => parseFloat(w.getComputedStyle(y).fontSize) - parseFloat(w.getComputedStyle(x).fontSize))[0];
+    let heading = 'none';
+    if (h) { const r = h.getBoundingClientRect(), c = (r.left + r.right) / 2;
+      heading = r.width > vw * 0.7 ? 'wide' : c < vw * 0.42 ? 'left' : c > vw * 0.58 ? 'right' : 'centre'; }
+    // the panel: the interaction root, else the largest form/group of controls in the first viewport
+    let panelEl = d.querySelector('[data-nsd-interaction]');
+    if (!panelEl) {
+      const cands = [...d.body.querySelectorAll('form, fieldset, [role=group], section, div')].filter(el => {
+        const r = el.getBoundingClientRect(); return vis(el) && r.top < vh && r.bottom > 0 && el.querySelectorAll('input, select, button, textarea').length >= 2 && r.width < vw * 0.9 && r.height < vh * 0.95; });
+      panelEl = cands.sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length)[0] || null;
+    }
+    let panel = 'none';
+    if (panelEl) { const r = panelEl.getBoundingClientRect();
+      if (r.top >= vh) panel = 'below-fold';
+      else { const c = (r.left + r.right) / 2, hc = h ? (h.getBoundingClientRect().left + h.getBoundingClientRect().right) / 2 : vw / 2;
+        panel = r.width > vw * 0.7 ? 'full' : r.top > vh * 0.55 ? 'under' : c > hc + vw * 0.15 ? 'right' : c < hc - vw * 0.15 ? 'left' : 'under'; } }
+    const media = [...d.body.querySelectorAll('img, video, canvas, svg, picture')].filter(el => { const r = el.getBoundingClientRect(); return vis(el) && r.top < vh && r.bottom > 0 && r.width >= 120 && r.height >= 120 && !(el.parentElement && el.parentElement.closest('svg')); });
+    let image = 'none';
+    if (media.length) { const r = media.sort((a, b) => { const x = a.getBoundingClientRect(), y = b.getBoundingClientRect(); return y.width * y.height - x.width * x.height; })[0].getBoundingClientRect();
+      const c = (r.left + r.right) / 2; image = r.width > vw * 0.7 ? 'full' : c > vw * 0.58 ? 'right' : c < vw * 0.42 ? 'left' : 'centre'; }
+    out.opening = ['h-' + heading, 'panel-' + panel, 'img-' + image].join(';');
+  }
   if (!ACTIONS.length) { report(out); return; }
   // results can live outside the interaction root (a sticky bar is often a sibling), so watch every live region
   // on the page and prefer the ones whose text the edit changed
@@ -446,6 +477,17 @@ def language_from(page_dir: str | None) -> str | None:
     return None
 
 
+def market_from(page_dir: str | None) -> str | None:
+    """The 'Market:' fingerprint written in design/DESIGN.md next to the page, if valid."""
+    for base in filter(None, [page_dir, page_dir and os.path.dirname(page_dir)]):
+        p = os.path.join(base, "design", "DESIGN.md")
+        if os.path.exists(p):
+            m = re.search(r"^\W*Market\**\s*:\**\s*`?([a-z0-9;?-]+)", open(p, encoding="utf-8", errors="ignore").read(), re.I | re.M)
+            if m and len(m.group(1).split(";")) == len(LANGUAGE):
+                return m.group(1).lower()
+    return None
+
+
 def relax_for(language: str | None) -> float:
     """Bold-move floors are scaled for languages whose first viewport is the product or dense text: a developer tool
     or a documentation site owns its first screen with the interface, at 20–25% of the viewport, not a poster."""
@@ -470,14 +512,15 @@ def register_from(page_dir: str | None) -> str | None:
     return None
 
 
-def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False, fetched=False) -> str:
-    """A fetched competitor page runs with its scripts off (sandbox) and its reveal states forced visible: hydration
-    errors, reveal-on-scroll and consent scripts otherwise leave a blank or broken first screen to measure."""
-    sandbox = ' sandbox="allow-same-origin"' if fetched else ""
+def wrapper(src: str, w: int, h: int, actions=None, expect=None, probe=False, fetched=False, scripts=False) -> str:
+    """A fetched competitor page runs with its scripts off (sandbox) and its reveal states and overlays forced:
+    hydration errors, reveal-on-scroll and consent scripts otherwise leave a blank or broken first screen to measure.
+    When that render is blank the page is tried once more with its scripts on (scripts=True)."""
+    sandbox = (' sandbox="allow-same-origin allow-scripts"' if scripts else ' sandbox="allow-same-origin"') if fetched else ""
     body = f'<iframe id="nsd" src="{html.escape(src)}"{sandbox} style="border:0;display:block;width:{w}px;height:{h}px"></iframe>'
     if probe or actions:
         js = (PROBE_JS.replace("__ACTIONS__", json.dumps(actions or []))
-              .replace("__EXPECT__", json.dumps(expect)).replace("__VH__", str(h)).replace("__REVEAL__", json.dumps(fetched)))
+              .replace("__EXPECT__", json.dumps(expect)).replace("__VH__", str(h)).replace("__REVEAL__", json.dumps(fetched)).replace("__REVEAL_CSS__", json.dumps(REVEAL_CSS)))
         body += f'<pre id="nsd-out" style="display:none">pending</pre><script>{js}</script>'
     elif fetched:
         body += f'<script>{REVEAL_JS}</script>'
@@ -524,7 +567,7 @@ def fetch(url: str, dest: str) -> str | None:
 def profile_mode(args, binary: str) -> int:
     """Measure the design language of one or more pages — usually the category's competitors — and print the market
     fingerprint (the most common word per axis). Renders nothing for review."""
-    out = os.path.abspath(args.out or os.path.join(tempfile.gettempdir(), "nsd-shots", "profile"))
+    out = os.path.abspath(args.out or os.path.join(tempfile.gettempdir(), "nsd-shots", f"profile-{os.getpid()}"))   # one folder per run: parallel runs overwrote each other's renders in 1.22
     os.makedirs(out, exist_ok=True)
     sys.path.insert(0, HERE)
     import design_log  # noqa: E402
@@ -542,20 +585,26 @@ def profile_mode(args, binary: str) -> int:
                 results.append({"page": target, "error": "does not exist"}); continue
             src = "file://" + path
         fetched = bool(re.match(r"^https?:", target))
-        purl = os.path.join(out, f"_probe-{i}.html")
-        with open(purl, "w", encoding="utf-8") as fh:
-            fh.write(wrapper(src, args.width, 800, None, None, probe=True, fetched=fetched))
-        r = chrome(binary, "file://" + purl, ["--dump-dom", f"--window-size={max(args.width, 500)},800"])
-        m = re.search(r'<pre id="nsd-out"[^>]*>(.*?)</pre>', r.stdout if r else "", re.S)
-        try:
-            desk = json.loads(html.unescape(m.group(1))) if m and m.group(1) != "pending" else {"error": "did not load"}
-        except json.JSONDecodeError:
-            desk = {"error": "unreadable probe output"}
+        desk, scripts = {"error": "did not load"}, False
+        for scripts in ((False, True) if fetched else (False,)):
+            purl = os.path.join(out, f"_probe-{i}.html")
+            with open(purl, "w", encoding="utf-8") as fh:
+                fh.write(wrapper(src, args.width, 800, None, None, probe=True, fetched=fetched, scripts=scripts))
+            r = chrome(binary, "file://" + purl, ["--dump-dom", f"--window-size={max(args.width, 500)},800"])
+            m = re.search(r'<pre id="nsd-out"[^>]*>(.*?)</pre>', r.stdout if r else "", re.S)
+            try:
+                desk = json.loads(html.unescape(m.group(1))) if m and m.group(1) != "pending" else {"error": "did not load"}
+            except json.JSONDecodeError:
+                desk = {"error": "unreadable probe output"}
+            # a blank first screen (no text, no media) is a render failure, not a language: try once with scripts
+            blank = "error" not in desk and (desk.get("language") or {}).get("density", 0) < 0.015 and (desk.get("firstView") or {}).get("graphic", 0) < 0.05
+            if "error" not in desk and not blank:
+                break
         if "error" in desk:
             results.append({"page": target, "error": desk["error"]}); continue
         surl = os.path.join(out, f"_shot-{i}.html")
         with open(surl, "w", encoding="utf-8") as fh:
-            fh.write(wrapper(src, args.width, 1600, fetched=fetched))
+            fh.write(wrapper(src, args.width, 1600, fetched=fetched, scripts=scripts))
         png = os.path.join(out, f"language-{i}.png")
         if os.path.exists(png):
             os.remove(png)
@@ -565,22 +614,28 @@ def profile_mode(args, binary: str) -> int:
             surf = design_log.polarity(design_log.dark_share([png]))
             chroma = chroma_word(chroma_share(png))
         prof = language_profile(desk, surf, chroma)
-        results.append({"page": target, "language": prof, "text_share": (desk.get("language") or {}).get("density"),
+        results.append({"page": target, "language": prof, "opening": desk.get("opening"), "scripts": scripts,
+                        "text_share": (desk.get("language") or {}).get("density"),
                         "display_ratio": (desk.get("firstView") or {}).get("ratio"), "png": png if os.path.exists(png) else None,
                         "cross_origin_styles": (desk.get("language") or {}).get("crossOriginStyles")})
     for f in os.listdir(out):
         if f.startswith("_"):
             os.remove(os.path.join(out, f))
     market, notes = market_profile([r.get("language", "") for r in results if "language" in r])
+    openings = [r["opening"] for r in results if r.get("opening")]
+    from collections import Counter
+    opening_mode = ";".join(Counter(o.split(";")[k] for o in openings).most_common(1)[0][0] for k in range(3)) if openings else ""
     if args.json:
-        print(json.dumps({"axes": list(LANGUAGE), "pages": results, "market": market, "split": notes}, indent=2, ensure_ascii=False))
+        print(json.dumps({"axes": list(LANGUAGE), "pages": results, "market": market, "split": notes, "market_opening": opening_mode}, indent=2, ensure_ascii=False))
         return 0 if market else 2
     print(f"design language per page ({';'.join(LANGUAGE)}):")
     for r in results:
         if "error" in r:
             print(f"  {r['page']}: {r['error']}")
         else:
-            print(f"  {r['language']:<75} {r['page']}" + ("  (styles cross-origin: motion may read low)" if r.get("cross_origin_styles") else ""))
+            print(f"  {r['language']:<75} {r['page']}" + ("  (styles cross-origin: motion may read low)" if r.get("cross_origin_styles") else "")
+                  + ("  (rendered with scripts)" if r.get("scripts") else ""))
+            print(f"           opening {r.get('opening')}")
             if r.get("png"):
                 print(f"           look: {r['png']} — a page rendered without its scripts can be wrong (a menu left open, a hero missing); "
                       "then judge that page by eye in a browser with the same words")
@@ -588,6 +643,7 @@ def profile_mode(args, binary: str) -> int:
         print(f"market   {market}")
         for n in notes:
             print(f"  split  {n}")
+        print(f"opening  {opening_mode} (heading;panel;image in the first viewport) — record with design_log.py plan/add --market-opening")
         print(f"  write in DESIGN.md: Market: {market} — from {sum('language' in r for r in results)} pages; "
               "then choose this page's language and name the axes it departs on (design-language.md §4)")
     else:
@@ -722,6 +778,16 @@ def main() -> int:
     comp = composition(desk.get("firstView"))
     skeleton = ">".join(desk.get("skeleton") or [])
     report["skeleton"], report["media"], report["dialect"] = skeleton, desk.get("media", 0), desk.get("dialect")
+    report["opening"] = desk.get("opening")
+    market = market_from(page_dir)
+    report["market_language"] = market
+    if market and (desk.get("opening") or "").split(";")[1:2] not in (["panel-none"], ["panel-below-fold"], []):
+        mparts = market.split(";")
+        if len(mparts) == len(LANGUAGE) and mparts[5] != "product" and mparts[3] != "tight":
+            report.setdefault("notes", []).append(
+                f"the signature interaction sits in the first viewport ({desk.get('opening')}) while the market line is "
+                f"{market} — only a product or dense-text language opens on its tool; here it belongs in section 2–3 "
+                "unless 'Departs on:' in DESIGN.md gives the brief's reason (design-language.md §5)")
     report["first_view"] = {**(desk.get("firstView") or {}), "register": register, "bold_move": bold_ok, "summary": bold_facts,
                             "composition": comp}
     phone_ok, phone_facts = bold_move(phone.get("firstView"), register, phone=True, relax=relax)
@@ -757,6 +823,9 @@ def main() -> int:
               f"--skeleton {skeleton} --media {desk.get('media', 0)} --display-ratio {(desk.get('firstView') or {}).get('ratio', 0)}")
         print(f"  dialect  {desk.get('dialect', '?')} (controls;dividers;labels;section headers;display face); record with "
               f"--dialect '{desk.get('dialect', '')}'")
+        print(f"  opening  {report.get('opening', '?')} (heading;panel;image in the first viewport); record with --opening '{report.get('opening', '')}'")
+        for n in report.get("notes", []):
+            print(f"  note     {n}")
         print(f"  language {report.get('language', '?')} ({';'.join(LANGUAGE)}); record with --language '{report.get('language', '')}'"
               + (f" · DESIGN.md declares {declared_lang}" if declared_lang else " · no 'Design language:' line in DESIGN.md"))
         if declared_lang and report.get("language") and declared_lang != report["language"]:

@@ -42,6 +42,7 @@
 Market: {the `market` line from `python3 scripts/shoot.py --profile <urls>`} — from {n} pages: {url} {url} {url} {url} {or: by eye: urls}
 Splits: {axes where the competitors disagree, from the `split` lines — free choices}
 Departs on: {axis (word) — the brief's reason} · {axis (word) — reason} {or: none — the category is not saturated}
+Market opening: {the `opening` line from `shoot.py --profile`: heading;panel;image} · Opening: {this page's, from `shoot.py`; if it differs, why}
 Nearest calibration point: {§6 name, or "none of the six"}. Measured after the build: {shoot.py `language` line; matches / differs on … because …}
 
 **References** (≥ 5; ≥ 2 from the audience's market; ≥ 30% non-UI; each with what was taken):

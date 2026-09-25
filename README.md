@@ -14,7 +14,7 @@ Works in Claude Code as a skill or a plugin, and in any agent that reads the [Ag
 
 [![checks](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml/badge.svg)](https://github.com/agshinrajabov/no-slop-design/actions/workflows/ci.yml)
 ![Agent Skills format](https://img.shields.io/badge/Agent_Skills-SKILL.md-1c1c1c?style=flat-square)
-![version](https://img.shields.io/badge/version-1.22.0-1c1c1c?style=flat-square)
+![version](https://img.shields.io/badge/version-1.23.0-1c1c1c?style=flat-square)
 ![MIT](https://img.shields.io/badge/licence-MIT-1c1c1c?style=flat-square)
 
 ---
@@ -161,7 +161,7 @@ than rounding up.
 ## What it refuses
 
 A catalog of roughly 100 tells across colour, type, layout, components, iconography, copy, motion, imagery,
-accessibility and process. 63 of the mechanical ones are checked by the linter, some of them across files. A few:
+accessibility and process. 64 of the mechanical ones are checked by the linter, some of them across files. A few:
 
 - purple/indigo gradients, gradient text, glow blobs, an accent imported from outside the brand hue
 - the three-icon-card feature grid, the centred hero with a pill badge, cards inside cards, uniform bubbly radius

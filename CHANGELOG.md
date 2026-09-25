@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.23.0 — 2026-09-25
+
+The 1.22 test ran ten industries in one day. The ten pages measured 54% alike on the nine axes (their markets: 63%)
+and read as ten worlds beside their real competitors — and seven of them still opened the same way: heading left,
+the tool beside or under it, a solid button, a grotesk. The markets had said centred, asymmetric, photograph first.
+The language had changed; the skeleton had not.
+
+- **The skeleton follows the market.** `shoot.py` measures the first viewport's opening (heading;panel;image) on
+  the page and on every competitor (`--profile` prints the category's most common opening); `design_log.py` records
+  `--opening --market-opening` and warns when a page opens like two recent pages for other industries or leaves its
+  market's opening onto the skill's habit. Layout, controls and type class come from the market line;
+  `slop_lint.py` flags `departure-unwritten` when the language leaves the market on layout, controls, type, surface
+  or density with no axis named under "Departs on:". The signature interaction sits in the first viewport only in a
+  `product` or `tight` language; `shoot.py` notes when it does otherwise.
+- **Measurement that survives real sites.** Competitor renders hide cookie and consent overlays and modals, retry
+  with scripts when the scripts-off render is blank, and write to a folder per run (parallel runs overwrote each
+  other's PNGs). The "same language" warning compares the new page with every recent page for another industry, not
+  only the previous one (a dev tool and a documentation site matched on eight of nine axes three entries apart).
+- **`design_log.py habits`**: per axis, what the markets said against what the pages did, how often the page left
+  the market, and the pages' mutual likeness against their markets' — the skill's own hand as a number.
+- `contrast.py --pairs` accepts oklch() values; inline SVG is read as illustration, not photo.
+
 ## 1.22.0 — 2026-09-25
 
 The user's verdict on 1.21: ten industries still come out about half alike, and the reason is structural — the skill

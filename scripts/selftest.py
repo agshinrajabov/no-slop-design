@@ -642,6 +642,35 @@ def main() -> int:
         near = log("add", "--project", "dev2", "--industry", "dev tools", "--language", "dark;achromatic;grotesk;medium;soft;product;centered;choreographed;hairline",
                    "--market-language", "dark;achromatic;grotesk;medium;soft;photo;centered;choreographed;hairline").stdout
         check("one departure from the market is fine", "market fit:" not in near, near.strip()[-300:])
+    print("1.23 — the skeleton follows the market: departures written, openings compared, habits report")
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "design"))
+        page = ("<html lang='en'><body><main><section><h1>Hi</h1><p>x</p></section><section data-nsd-anchor='colour field'>"
+                + long_copy + "</section></main></body></html>")
+        p = os.path.join(d, "index.html"); open(p, "w", encoding="utf-8").write(page)
+        open(os.path.join(d, "design", "DESIGN.md"), "w").write(
+            "Design language: light;low;grotesk;medium;soft;photo;left;functional;solid\n"
+            "Market: light;low;grotesk;medium;soft;photo;centered;functional;hairline — from 3 pages: https://a https://b https://c\n"
+            "Departs on: controls (solid — one action per section)\n")
+        r = rules_of(p)
+        check("a layout departure with no written reason is flagged", "departure-unwritten" in r, sorted(r))
+        open(os.path.join(d, "design", "DESIGN.md"), "a").write("Departs on: layout (left — the brief's photograph reads left to right)\n")
+        r = rules_of(p)
+        check("naming the axis under 'Departs on:' clears it", "departure-unwritten" not in r, sorted(r))
+        env = dict(os.environ, NSD_HISTORY=os.path.join(d, "h.json"))
+        log = lambda *a: subprocess.run([PY, "scripts/design_log.py", *a], cwd=ROOT, capture_output=True, text=True, env=env).stdout
+        L = "light;low;grotesk;medium;soft;photo;left;functional;solid"
+        log("add", "--project", "law", "--industry", "law", "--language", L, "--market-language", "light;low;grotesk;medium;soft;photo;centered;functional;solid",
+            "--opening", "h-left;panel-right;img-none", "--market-opening", "h-centre;panel-under;img-full")
+        log("add", "--project", "cafe", "--industry", "cafe", "--language", "dark;saturated;serif;airy;pill;photo;asymmetric;scene;hairline",
+            "--market-language", "light;low;grotesk;medium;soft;photo;centered;functional;solid", "--opening", "h-left;panel-right;img-right", "--market-opening", "h-centre;panel-none;img-full")
+        out = log("add", "--project", "hotel", "--industry", "hotel", "--language", "mixed;low;serif;airy;square;photo;asymmetric;choreographed;solid",
+                  "--market-language", "light;low;serif;airy;square;photo;asymmetric;functional;solid", "--opening", "h-left;panel-right;img-full", "--market-opening", "h-centre;panel-none;img-full")
+        check("the same opening on three industries warns", "opening:" in out and "skeleton" in out, out.strip()[-400:])
+        far = log("add", "--project", "docs", "--industry", "documentation", "--language", "light;low;grotesk;medium;soft;photo;left;functional;solid")
+        check("the same language as a page three entries back warns", "design language:" in far and "law" in far, far.strip()[-400:])
+        hab = log("habits")
+        check("habits reports the skill's hand per axis", "markets said" in hab and "layout" in hab and "pages alike" in hab, hab[-300:])
     import shoot
     check("relaxed floors for a product language", shoot.relax_for("dark;achromatic;grotesk;medium;soft;product;centered;choreographed;hairline") < 1
           and shoot.relax_for("light;low;serif;airy;square;photo;left;functional;hairline") == 1.0, "relax_for")

@@ -349,6 +349,25 @@ def file_rules(path: str, text: str):
                                                              "pages looked at) — a language chosen from taste is the skill's, not the "
                                                              "market's (design-language.md §3)", "§10 Process"))
 
+    # a departure from the market on the skeleton axes with no written reason: the 1.22 pages left their markets on
+    # layout in 7 of 10 cases, all toward the skill's own 'left', and none of the records said why
+    if is_page and not in_design and base in ("index.html", "index.htm") and os.path.isdir(os.path.join(d, "design")):
+        lang = declared_design_language(path, text)
+        design_md = os.path.join(d, "design", "DESIGN.md")
+        body = open(design_md, encoding="utf-8", errors="ignore").read() if os.path.exists(design_md) else ""
+        mk = re.search(r"^\W*Market\**\s*:\**\s*`?([a-z0-9;?-]+)", body, re.I | re.M)
+        market = mk.group(1).lower().split(";") if mk else None
+        if lang and market and len(market) == len(LANGUAGE_AXES):
+            dep = re.search(r"Departs on\**\s*:\**(.*?)(?:\n\s*\n|\n\*\*|\Z)", body, re.I | re.S)
+            written = (dep.group(1) if dep else "").lower()
+            unwritten = [ax for ax in ("layout", "controls", "type", "surface", "density") if lang[ax] != "?"
+                         and market[LANGUAGE_AXES.index(ax)] != "?" and lang[ax] != market[LANGUAGE_AXES.index(ax)]
+                         and not re.search(r"\b" + ax + r"\b", written)]
+            if unwritten:
+                out.append(("departure-unwritten", "MED", f"the design language leaves the market line on {', '.join(unwritten)} and "
+                                                          "'Departs on:' in DESIGN.md does not name that axis — a departure the brief did "
+                                                          "not buy is the skill's own habit (design-language.md §4–5)", "§10 Process"))
+
     # a convergence warning the run saw and neither acted on nor answered in writing
     warn_file = os.path.join(d, "design", "convergence-warnings.json")
     if is_page and not in_design and base in ("index.html", "index.htm") and os.path.exists(warn_file):
