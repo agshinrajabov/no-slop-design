@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.24.0 — 2026-09-25
+
+The 1.23 rerun of the ten industries: the opening skeleton moved to the market in nine pages of ten (the tool left
+the first viewport in eight; layout left the market in two, down from seven), the pages measured as alike as their
+markets (56% against 56%; 1.22: 54% against 63%) and the UI dialects less alike (55%, down from 65%). What
+`design_log.py habits` still marked as the skill's hand: density (`tight` on six pages against markets that said
+`medium`) and motion (`functional` on all ten against three markets that said `scene`).
+
+- **Density no longer counts display type.** A 262 px festival name is a picture, not reading matter; text set at
+  three times the body size or more is left out of the coverage measure. Four 1.23 pages moved from `tight` to
+  `medium` or `airy` with no change to the page.
+- **A market that moves owes a scene.** `design-language.md` §5 and `expression-register.md` §5: when the market
+  line reads `motion: scene` and the register is R3 or above, the signature moment is a scroll-driven sequence, a
+  canvas or an image sequence over a static page, with the reduced-motion and no-JS paths intact. Dropping to
+  `functional` there is a departure; `departure-unwritten` now covers the motion axis.
+- README: the two ten-industry rounds, the habits table before and after, four new output images.
+
 ## 1.23.0 — 2026-09-25
 
 The 1.22 test ran ten industries in one day. The ten pages measured 54% alike on the nine axes (their markets: 63%)

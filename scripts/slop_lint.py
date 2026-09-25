@@ -360,13 +360,14 @@ def file_rules(path: str, text: str):
         if lang and market and len(market) == len(LANGUAGE_AXES):
             dep = re.search(r"Departs on\**\s*:\**(.*?)(?:\n\s*\n|\n\*\*|\Z)", body, re.I | re.S)
             written = (dep.group(1) if dep else "").lower()
-            unwritten = [ax for ax in ("layout", "controls", "type", "surface", "density") if lang[ax] != "?"
+            unwritten = [ax for ax in ("layout", "controls", "type", "surface", "density", "motion") if lang[ax] != "?"
                          and market[LANGUAGE_AXES.index(ax)] != "?" and lang[ax] != market[LANGUAGE_AXES.index(ax)]
                          and not re.search(r"\b" + ax + r"\b", written)]
             if unwritten:
                 out.append(("departure-unwritten", "MED", f"the design language leaves the market line on {', '.join(unwritten)} and "
                                                           "'Departs on:' in DESIGN.md does not name that axis — a departure the brief did "
-                                                          "not buy is the skill's own habit (design-language.md §4–5)", "§10 Process"))
+                                                          "not buy is the skill's own habit (design-language.md §4–5); a market that "
+                                                          "moves ('scene') and a page that only transitions is such a departure", "§10 Process"))
 
     # a convergence warning the run saw and neither acted on nor answered in writing
     warn_file = os.path.join(d, "design", "convergence-warnings.json")

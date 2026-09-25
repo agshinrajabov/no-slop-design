@@ -195,11 +195,14 @@ f.addEventListener('load', () => setTimeout(() => {
     const clipR = r => Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, region) - Math.max(r.top, 0));
     const vis = el => { const s = w.getComputedStyle(el); return s.display !== 'none' && s.visibility !== 'hidden' && s.opacity !== '0'; };
     // density: the share of the region covered by lines of text (range rects of every text node, no double counting)
+    // display type is a picture, not reading matter: a 262 px festival name once made an airy page measure 'tight'
+    const bodySize = (out.firstView && out.firstView.body) || 16;
     let textArea = 0;
     const walker = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
       if (!n.textContent.trim() || !n.parentElement || /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test(n.parentElement.tagName)) continue;
       if (!vis(n.parentElement)) continue;
+      if (parseFloat(w.getComputedStyle(n.parentElement).fontSize) >= 3 * bodySize) continue;
       const rg = d.createRange(); rg.selectNode(n);
       for (const r of rg.getClientRects()) textArea += clipR(r);
     }

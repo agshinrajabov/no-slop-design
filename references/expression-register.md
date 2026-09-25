@@ -140,6 +140,10 @@ still has to be the direction's idea, not a big word chosen to pass.
   inside a vertical page, deliberate breakout images.
 - **Motion:** one entrance choreography (staggered 20–60 ms), scroll-linked reveals used *once per section at most*,
   a signature moment (a mask reveal, an image sequence, a type transition), page transitions if the site is an SPA.
+  When the market line reads `motion: scene` (festivals, studios, launches, fashion film), the signature moment is a
+  real scene — scroll-driven, canvas or an image sequence — not a fade: R3 allows one contained scene (§7) and the
+  category expects it. The static page underneath, the reduced-motion path and the no-JS render stay
+  (`design-language.md` §5).
 - **Sound:** off by default, opt-in only, never on scroll.
 - **Still ships:** `prefers-reduced-motion` path, keyboard operability, LCP under 2.5 s, real content.
 
